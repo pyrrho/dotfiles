@@ -1,0 +1,25 @@
+Chocolatey v0.10.15
+awscli 1.16.274
+chocolatey 0.10.15
+chocolatey-core.extension 1.3.4
+chocolatey-windowsupdate.extension 1.0.4
+curl 7.66.0.20190926
+dbeaver 6.2.4
+DotNet4.5.2 4.5.2.20140902
+git.install 2.24.0
+jq 1.6
+KB2919355 1.0.20160915
+KB2919442 1.0.20160915
+KB2999226 1.0.20181019
+KB3033929 1.0.5
+KB3035131 1.0.3
+pandoc 2.7.3
+postman 7.10.0
+putty 0.73
+putty.portable 0.73
+ripgrep 11.0.2
+slack 4.1.2
+vcredist140 14.23.27820
+vcredist2015 14.0.24215.20170201
+vscode 1.39.2
+23 packages installed.

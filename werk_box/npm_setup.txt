@@ -1,0 +1,16 @@
+nvm install 12.yy.zz
+nvm use 12.yy.zz
+
+rm %USERPROFILE%/.npmrc2
+echo registry=https://kcftech.pkgs.visualstudio.com/_packaging/KCFTech/npm/registry/ > %USERPROFILE%/.npmrc2
+echo always-auth=true >> %USERPROFILE%/.npmrc2
+
+npm install -g vsts-npm-auth --registry https://registry.npmjs.com --always-auth false
+npm install -g typescript
+npm install -g aws-azure-login
+
+cd C:\KCFTech\Prometheus\Prometheus.Site
+vsts-npm-auth -config C:\Users\dpirrone-brusse\.npmrc
+
+rm -rf node_install
+npm install
