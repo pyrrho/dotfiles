@@ -1,11 +1,7 @@
 {
     "workbench.colorTheme": "Gatito Theme",
-    // Render all whitespace, but set their foreground color to the
-    // un-selected, un-highlighted editor background color.
-    "editor.renderWhitespace": "all",
-    "workbench.colorCustomizations": {
-        "editorWhitespace.foreground": "#252b2e"
-    },
+    "editor.fontFamily": "Source Code Pro",
+    "editor.cursorBlinking": "phase",
     "editor.rulers": [
         50,
         70,
@@ -15,23 +11,19 @@
         120,
         160
     ],
-    "cSpell.showCommandsInEditorContextMenu": true,
-    "editor.cursorBlinking": "phase",
+    "debug.allowBreakpointsEverywhere": true,
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "editor.codeLens": false,
     "editor.dragAndDrop": false,
-    "editor.fontFamily": "Source Code Pro",
+    "editor.minimap.enabled": false,
+    "editor.quickSuggestionsDelay": 40,
+    "editor.wordWrap": "on",
+    "editor.wordWrapColumn": 100,
     "explorer.enableDragAndDrop": false,
     "files.hotExit": "onExitAndWindowClose",
-    "debug.allowBreakpointsEverywhere": true,
     "terminal.integrated.scrollback": 100000,
     "trailing-spaces.highlightCurrentLine": false,
-    "editor.acceptSuggestionOnCommitCharacter": false,
-    "editor.quickSuggestionsDelay": 40,
-    "editor.wordWrapColumn": 100,
-    // These will likely change based on toggles. Place new setting above.
-    "editor.wordWrap": "on",
-    "editor.minimap.enabled": false,
-    "editor.codeLens": false,
-    "window.zoomLevel": 0,
+    "cSpell.showCommandsInEditorContextMenu": true,
     "cSpell.userWords": [
         "Cognito",
         "Includable",
@@ -66,9 +58,18 @@
     "gitlens.views.search.location": "gitlens",
     "gitlens.codeLens.enabled": false,
     "explorer.autoReveal": false,
-    "python.jediEnabled": false,
-    "clipring.selectTextAfterPasteFromMenu": false
+    "clipring.selectTextAfterPasteFromMenu": false,
+    "workbench.editor.showTabs": true,
+    "window.zoomLevel": 0
 }
+
+// Legacy Render-Whitespace workaround. Should be obviated by renderWhitespace: selection
+// Render all whitespace, but set their foreground color to the
+// un-selected, un-highlighted editor background color.
+// "editor.renderWhitespace": "all",
+// "workbench.colorCustomizations": {
+//     "editorWhitespace.foreground": "#252b2e"
+// },
 
 // These are some legacy color changes I injected for C++ devl. Not
 // sure if they're still salient.
