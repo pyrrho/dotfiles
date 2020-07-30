@@ -24,19 +24,50 @@
     "debug.allowBreakpointsEverywhere": true,
     "terminal.integrated.scrollback": 100000,
     "trailing-spaces.highlightCurrentLine": false,
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "editor.quickSuggestionsDelay": 40,
+    "editor.wordWrapColumn": 100,
     // These will likely change based on toggles. Place new setting above.
-    "editor.minimap.enabled": true,
+    "editor.wordWrap": "on",
+    "editor.minimap.enabled": false,
+    "editor.codeLens": false,
     "window.zoomLevel": 0,
     "cSpell.userWords": [
+        "Cognito",
+        "Includable",
+        "Includables",
+        "enqueues",
+        "executables",
         "hardcode",
         "hardcoded",
         "postgres",
-        "timeseries"
+        "recurse",
+        "timeseries",
+        "transpile",
+        "transpiled",
+        "unconfigured"
     ],
     "cSpell.ignoreWords": [
         "enumerables",
         "initialisms"
-    ]
+    ],
+    "[markdown]": {
+        "editor.wordWrap": "on"
+    },
+    "[plaintext]": {
+        "editor.quickSuggestions": false
+    },
+    "gitlens.defaultDateFormat": "YYYY MMMM D, H:mm",
+    "gitlens.defaultDateShortFormat": "YYYY MMM D",
+    "gitlens.views.repositories.location": "gitlens",
+    "gitlens.views.fileHistory.location": "gitlens",
+    "gitlens.views.lineHistory.location": "gitlens",
+    "gitlens.views.compare.location": "gitlens",
+    "gitlens.views.search.location": "gitlens",
+    "gitlens.codeLens.enabled": false,
+    "explorer.autoReveal": false,
+    "python.jediEnabled": false,
+    "clipring.selectTextAfterPasteFromMenu": false
 }
 
 // These are some legacy color changes I injected for C++ devl. Not

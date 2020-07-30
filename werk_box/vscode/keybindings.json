@@ -58,12 +58,12 @@
     {
         "key": "ctrl+shift+up",
         "command": "editor.action.insertCursorAbove",
-        "when": "editorTextFocus"
+        "when": "editorFocus"
     },
     {
         "key": "ctrl+shift+down",
         "command": "editor.action.insertCursorBelow",
-        "when": "editorTextFocus"
+        "when": "editorFocus"
     },
     {
         "key": "ctrl+j",
@@ -142,7 +142,7 @@
         "command": "-workbench.view.scm"
     },
     {
-        "key": "ctrl+shift+\\",
+        "key": "ctrl+alt+\\",
         "command": "workbench.files.action.showActiveFileInExplorer"
     },
     {
@@ -221,5 +221,86 @@
     {
         "key": "ctrl+k ctrl+shift+right",
         "command": "workbench.action.moveEditorToRightGroup"
+    },
+    {
+        "key": "ctrl+m",
+        "command": "-editor.action.toggleTabFocusMode"
+    },
+    {
+        "key": "ctrl+m",
+        "command": "editor.action.toggleMinimap"
+    },
+    {
+        "key": "alt+x",
+        "command": "settings.cycle",
+        "when": "editorTextFocus",
+        "args": {
+            "id": "toggle_code_lens",
+            "overrideWorkspaceSettings": false,
+            "values": [
+                { "editor.codeLens": false },
+                { "editor.codeLens": true  }
+            ]
+        }
+    },
+    {
+        "key": "alt+z",
+        "command": "-editor.action.toggleWordWrap"
+    },
+    {
+        "key": "alt+z",
+        "command": "settings.cycle",
+        "args": {
+            "id": "toggle_word_wrap",
+            "overrideWorkspaceSettings": false,
+            "values": [
+                { "editor.wordWrap": "off",     "[markdown]": { "editor.wordWrap": "off"     } },
+                { "editor.wordWrap": "on",      "[markdown]": { "editor.wordWrap": "on"      } },
+                { "editor.wordWrap": "bounded", "[markdown]": { "editor.wordWrap": "bounded" } }
+            ]
+        }
+    },
+    {
+        "key": "shift+alt+x",
+        "command": "gitlens.toggleLineBlame",
+        "when": "editorTextFocus && gitlens:enabled"
+    },
+    {
+        "key": "ctrl+alt+x",
+        "command": "gitlens.toggleFileBlame",
+        "when": "editorTextFocus && gitlens:enabled"
+    },
+    {
+        "key": "alt+j alt+q",
+        "command": "extension.jq",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+shift+v",
+        "command": "-markdown.showPreview",
+        "when": "editorLangId == 'markdown'"
+    },
+    {
+        "key": "ctrl+shift+v",
+        "command": "-clipring.pasteRingItem",
+        "when": "editorFocus"
+    },
+    {
+        "key": "ctrl+shift+v",
+        "command": "clipring.selectAndPasteRingItem",
+        "when": "editorFocus"
+    },
+    {
+        "key": "alt+`",
+        "command": "workbench.action.togglePanel"
+    },
+    {
+        "key": "ctrl+k ctrl+shift+c",
+        "command": "-copyRelativeFilePath",
+        "when": "!editorFocus"
+    },
+    {
+        "key": "ctrl+k ctrl+shift+c",
+        "command": "copyRelativeFilePath"
     }
 ]
