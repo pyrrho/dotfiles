@@ -37,6 +37,7 @@
         "timeseries",
         "transpile",
         "transpiled",
+        "ubiquiti",
         "unconfigured"
     ],
     "cSpell.ignoreWords": [
@@ -56,11 +57,12 @@
     "gitlens.views.lineHistory.location": "gitlens",
     "gitlens.views.compare.location": "gitlens",
     "gitlens.views.search.location": "gitlens",
-    "gitlens.codeLens.enabled": false,
     "explorer.autoReveal": false,
     "clipring.selectTextAfterPasteFromMenu": false,
     "workbench.editor.showTabs": true,
-    "window.zoomLevel": 0
+    "window.zoomLevel": 0,
+    "gitlens.keymap": "none",
+    "gitlens.codeLens.enabled": false,
 }
 
 // Legacy Render-Whitespace workaround. Should be obviated by renderWhitespace: selection

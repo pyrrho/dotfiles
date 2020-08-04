@@ -8,7 +8,7 @@
     // use of Cmd in user applications, I don't consider it reasonable to unify
     // OSX with the other platforms.
 
-    /// Navigate Spatially (not LRU)
+    /// Navigate Tabs Spatially (not LRU)
     { "key": "ctrl+tab",        "command": "workbench.action.nextEditor" },
     { "key": "ctrl+shift+tab",  "command": "workbench.action.previousEditor" },
     { "key": "ctrl+pagedown",   "command": "workbench.action.nextEditor" },
@@ -16,6 +16,18 @@
 
     { "key": "ctrl+tab",        "command": "-workbench.action.openNextRecentlyUsedEditorInGroup" },
     { "key": "ctrl+shift+tab",  "command": "-workbench.action.openPreviousRecentlyUsedEditorInGroup" },
+
+    /// Subword Navigation
+    { "key": "alt+right",       "command": "cursorWordPartRight",
+                                "when": "textInputFocus" },
+    { "key": "shift+alt+right", "command": "cursorWordPartRightSelect",
+                                "when": "textInputFocus" },
+    { "key": "alt+left",        "command": "cursorWordPartStartLeft",
+                                "when": "textInputFocus" },
+    { "key": "shift+alt+left",  "command": "cursorWordPartStartLeftSelect",
+                                "when": "textInputFocus" },
+    { "key": "alt+backspace",   "command": "deleteWordPartLeft",
+                                "when": "textInputFocus && !editorReadonly" },
 
     /// Rebind Trigger Suggest & the Suggest Widget
     /// ctrl+space is eaten by my quake editor, gotta rejigger.
@@ -123,10 +135,14 @@
                                  "when": "editorFocus" },
     { "key": "ctrl+alt+g",    "command": "addCursorsAtSearchResults",
                                  "when": "fileMatchOrMatchFocus && searchViewletVisible" },
-    { "key": "ctrl+g",        "command": "editor.action.nextMatchFindAction",
+    { "key": "ctrl+g",        "command": "editor.action.nextSelectionMatchFindAction",
                                  "when": "editorFocus" },
-    { "key": "ctrl+shift+g",  "command": "editor.action.previousMatchFindAction",
+    { "key": "ctrl+shift+g",  "command": "editor.action.previousSelectionMatchFindAction",
                                  "when": "editorFocus" },
+    // { "key": "ctrl+g",        "command": "editor.action.nextMatchFindAction",
+    //                              "when": "editorFocus" },
+    // { "key": "ctrl+shift+g",  "command": "editor.action.previousMatchFindAction",
+    //                              "when": "editorFocus" },
 
     { "key": "ctrl+shift+l",  "command": "-editor.action.selectHighlights",
                                  "when": "editorFocus" },
@@ -188,6 +204,7 @@
             ]
         }
     },
+    { "key": "alt+z", "command": "-editor.action.toggleWordWrap" },
 
     /// Code Lens Toggles
     /// Requires the Settings Cycler extension for the global toggle
@@ -207,13 +224,7 @@
             ]
         }
     },
-    { "key": "alt+z", "command": "-editor.action.toggleWordWrap" },
-
-    // Let's try to learn the defaults, shall we?
-    // { "key": "shift+alt+x", "command": "gitlens.toggleLineBlame",
-    //                            "when": "editorTextFocus && gitlens:enabled" },
-    // { "key": "ctrl+alt+x", "command": "gitlens.toggleFileBlame",
-    //                            "when": "editorTextFocus && gitlens:enabled" },
+    { "key": "shift+alt+x", "command": "codelens.showLensesInCurrentLine" },
 
     /// JQ Hotkey
     /// Requires the vscode-jq extension
@@ -239,9 +250,59 @@
     /// Globally Enable Copying File Path
     /// Normally you have to be in the tree view (or another widget?) for these
     /// hotkeys to be active. I want them all the time!
+    { "key": "ctrl+k ctrl+c",       "command": "copyFilePath" },
     { "key": "ctrl+k ctrl+shift+c", "command": "copyRelativeFilePath" },
+    { "key": "ctrl+k ctrl+c",       "command": "-copyFilePath",
+                                       "when": "!editorFocus" },
     { "key": "ctrl+k ctrl+shift+c", "command": "-copyRelativeFilePath",
                                        "when": "!editorFocus" },
-    { "key": "ctrl+k ctrl+shift+c", "command": "-copyFilePath",
-                                       "when": "!editorFocus" },
+
+    { "key": "ctrl+k ctrl+c",       "command": "-editor.action.addCommentLine",
+                                       "when": "editorTextFocus && !editorReadonly" },
+
+    /// Git Lens Overrides
+    /// The chord-ing hotkey, ctrl+shift+g, is eaten by my searching shortcuts.
+    /// These are default, save for the opening chord. Assumes the setting
+    /// `"gitlens.keymap": "none"`.
+    /// Requires the Git Lens extension
+    ///     code --install-extension eamodio.gitlens
+
+    { "key": "ctrl+alt+z b",       "command": "gitlens.toggleFileBlame",
+                                   "when": "editorTextFocus && gitlens:activeFileStatus =~ /blameable/" },
+    { "key": "ctrl+alt+z shift+b", "command": "gitlens.toggleCodeLens",
+                                   "when": "editorTextFocus && gitlens:canToggleCodeLens && gitlens:enabled" },
+    { "key": "ctrl+alt+z -",       "command": "gitlens.showLastQuickPick",
+                                   "when": "gitlens:enabled" },
+    { "key": "ctrl+alt+z /",       "command": "gitlens.showCommitSearch",
+                                   "when": "gitlens:enabled" },
+    { "key": "ctrl+alt+z h",       "command": "gitlens.showQuickFileHistory",
+                                   "when": "gitlens:enabled" },
+    { "key": "ctrl+alt+z shift+h", "command": "gitlens.showQuickRepoHistory",
+                                   "when": "gitlens:enabled" },
+    { "key": "ctrl+alt+z s",       "command": "gitlens.showQuickRepoStatus",
+                                   "when": "gitlens:enabled" },
+    { "key": "ctrl+alt+z c",       "command": "gitlens.showQuickCommitFileDetails",
+                                   "when": "editorTextFocus && gitlens:enabled" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNext",
+                                   "when": "editorTextFocus && !isInDiffEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNext",
+                                   "when": "editorTextFocus && isInDiffRightEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNextInDiffLeft",
+                                   "when": "editorTextFocus && isInDiffLeftEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPrevious",
+                                   "when": "editorTextFocus && !isInDiffEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPrevious",
+                                   "when": "editorTextFocus && isInDiffLeftEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPreviousInDiffRight",
+                                   "when": "editorTextFocus && isInDiffRightEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z shift+,", "command": "gitlens.diffLineWithPrevious",
+                                   "when": "editorTextFocus && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z shift+.", "command": "gitlens.diffWithWorking",
+                                   "when": "editorTextFocus && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z w",       "command": "gitlens.diffLineWithWorking",
+                                   "when": "editorTextFocus && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z [IntlBackslash]",       "command": "gitlens.diffLineWithPrevious",
+                                                 "when": "editorTextFocus && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z shift+[IntlBackslash]", "command": "gitlens.diffWithWorking",
+                                                 "when": "editorTextFocus && gitlens:activeFileStatus =~ /revision/" },
 ]
