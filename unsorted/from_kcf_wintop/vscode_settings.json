@@ -1,0 +1,156 @@
+{
+    "workbench.colorTheme": "Gatito Theme",
+    // Render all whitespace, but set their foreground color to the
+    // un-selected, un-highlighted editor background color.
+    "editor.renderWhitespace": "all",
+    "workbench.colorCustomizations": {
+        "editorWhitespace.foreground": "#252b2e"
+    },
+    "editor.rulers": [
+        50,
+        70,
+        78,
+        80,
+        100,
+        120,
+        160
+    ],
+    "cSpell.showCommandsInEditorContextMenu": true,
+    "editor.cursorBlinking": "phase",
+    "editor.dragAndDrop": false,
+    "editor.fontFamily": "Source Code Pro",
+    "explorer.enableDragAndDrop": false,
+    "files.hotExit": "onExitAndWindowClose",
+    "debug.allowBreakpointsEverywhere": true,
+    "terminal.integrated.scrollback": 100000,
+    "trailing-spaces.highlightCurrentLine": false,
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "editor.quickSuggestionsDelay": 40,
+    "editor.wordWrapColumn": 100,
+    // These will likely change based on toggles. Place new setting above.
+    "editor.wordWrap": "bounded",
+    "editor.minimap.enabled": false,
+    "editor.codeLens": true,
+    "window.zoomLevel": 0,
+    "cSpell.userWords": [
+        "Cognito",
+        "Includable",
+        "Includables",
+        "enqueues",
+        "executables",
+        "hardcode",
+        "hardcoded",
+        "postgres",
+        "recurse",
+        "timeseries",
+        "transpile",
+        "transpiled",
+        "unconfigured"
+    ],
+    "cSpell.ignoreWords": [
+        "enumerables",
+        "initialisms"
+    ],
+    "[markdown]": {
+        "editor.wordWrap": "bounded"
+    },
+    "[plaintext]": {
+        "editor.quickSuggestions": false
+    },
+    "gitlens.defaultDateFormat": "YYYY MMMM D, H:mm",
+    "gitlens.defaultDateShortFormat": "YYYY MMM D",
+    "gitlens.views.repositories.location": "gitlens",
+    "gitlens.views.fileHistory.location": "gitlens",
+    "gitlens.views.lineHistory.location": "gitlens",
+    "gitlens.views.compare.location": "gitlens",
+    "gitlens.views.search.location": "gitlens",
+    "gitlens.codeLens.enabled": false,
+    "explorer.autoReveal": false,
+    "python.jediEnabled": false,
+    "clipring.selectTextAfterPasteFromMenu": false
+}
+
+// These are some legacy color changes I injected for C++ devl. Not
+// sure if they're still salient.
+// "editor.tokenColorCustomizations": {
+//     "textMateRules": [
+//         // Bimbo Colors (Did Gatito change things?)
+//         // ------------
+//         // background   : #252b2e
+//         // primary fg   : #d4d4d4
+//         // secondary fg : #7f7f7f
+//         // red          : #e15a60
+//         // orange       : #f99157
+//         // green        : #99c794
+//         // yellow       : #fac863
+//         // blue         : #6699cc
+//         // magenta      : #c594c5
+//         // cyan         : #5fb3b3
+//         {
+//             "scope": [
+//                 "keyword.control.directive",
+//                 "punctuation.definition.directive.c"
+//             ],
+//             "settings": {
+//                 "foreground": "#e15a60"
+//             }
+//         },
+//         {
+//             "scope": "keyword.control",
+//             "settings": {
+//                 "foreground": "#99c794"
+//             }
+//         },
+//         {
+//             "scope": [
+//                 "storage.type",
+//                 "support.type"
+//             ],
+//             "settings": {
+//                 "foreground": "#fac863"
+//             }
+//         },
+//         {
+//             "scope": [
+//                 "storage.modifier",
+//                 "storage.type.template"
+//             ],
+//             "settings": {
+//                 "foreground": "#c594c5"
+//             }
+//         },
+//         {
+//             "scope": "constant.numeric",
+//             "settings": {
+//                 "foreground": "#d4d4d4"
+//             }
+//         },
+//         {
+//             "scope": "punctuation",
+//             "settings": {
+//                 "foreground": "#d4d4d4"
+//             }
+//         },
+//         {
+//             "scope": [
+//                 "punctuation.definition.string",
+//                 "string.quoted"
+//             ],
+//             "settings": {
+//                 "foreground": "#c594c5"
+//             }
+//         } /* ,
+//         {
+//             "scope": "punctuation.separator.namespace.access",
+//             "settings": {
+//                 "foreground": "#99c794"
+//             }
+//         } */,
+//         {
+//             "scope": "meta.function-call",
+//             "settings": {
+//                 "foreground": "#d4d4d4"
+//             }
+//         }
+//     ]
+// },
