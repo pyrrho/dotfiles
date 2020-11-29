@@ -1,0 +1,1 @@
+To get these working out of the box, you need to add the DOTFILES_ROOT env var, pointing to the root of this repo, and add this .../scripts dir to your PATH.
