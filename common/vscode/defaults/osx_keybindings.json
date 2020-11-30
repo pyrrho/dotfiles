@@ -1,4 +1,3 @@
-// Override key bindings by placing them into your key bindings file.
 [
 { "key": "escape escape",         "command": "workbench.action.exitZenMode",
                                      "when": "inZenMode" },
