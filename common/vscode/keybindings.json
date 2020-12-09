@@ -80,17 +80,17 @@
     // shift+tab is also used fo r config.editor.tabCompletion. I don't use that tho.
     { "key": "shift+tab",        "command": "editor.action.triggerSuggest",
                                     "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !inSnippetMode" },
-    { "key": "shift+space",      "command": "editor.action.triggerSuggest",
-                                    "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly" },
-
     { "key": "shift+tab",        "command": "toggleSuggestionDetails",
-                                    "when": "suggestWidgetVisible && textInputFocus" },
-    { "key": "shift+space",      "command": "toggleSuggestionDetails",
                                     "when": "suggestWidgetVisible && textInputFocus" },
     { "key": "shift+alt+tab",    "command": "toggleSuggestionFocus",
                                     "when": "suggestWidgetVisible && textInputFocus" },
-    { "key": "shift+alt+space",  "command": "toggleSuggestionFocus",
-                                    "when": "suggestWidgetVisible && textInputFocus" },
+
+    // { "key": "shift+space",      "command": "editor.action.triggerSuggest",
+    //                                 "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly" },
+    // { "key": "shift+space",      "command": "toggleSuggestionDetails",
+    //                                 "when": "suggestWidgetVisible && textInputFocus" },
+    // { "key": "shift+alt+space",  "command": "toggleSuggestionFocus",
+    //                                 "when": "suggestWidgetVisible && textInputFocus" },
 
     { "key": "ctrl+pagedown",    "command": "selectNextPageSuggestion",
                                     "when": "suggestWidgetVisible && suggestWidgetMultipleSuggestions && textInputFocus" },
