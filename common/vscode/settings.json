@@ -19,6 +19,10 @@
     "editor.cursorBlinking": "phase",
     "editor.dragAndDrop": false,
     "editor.fontFamily": "Source Code Pro",
+    // The sequence 'l l' is a single-width ligature in Source Code
+    // Pro for... reasons? It renders incorrectly, and causes
+    // navigation and rendering to not really work. Disable it.
+    "editor.fontLigatures": "'ccmp' off",
     "explorer.enableDragAndDrop": false,
     "files.hotExit": "onExitAndWindowClose",
     "debug.allowBreakpointsEverywhere": true,
