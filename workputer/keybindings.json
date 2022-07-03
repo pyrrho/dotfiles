@@ -1,0 +1,767 @@
+[
+    // This is an attempt to unify my Windows, Linux, and OSX editor key maps.
+    // VSCode parses `cmd`, `meta`, and `win` interchangeably; they all refer to
+    // the current OS's specific meta key; "Super" on linux, "Windows" on
+    // Windows, and "Cmd" on OSX. Because OSX (rightly?) chose to make heavy use
+    // of Cmd in user applications, I don't consider it reasonable to fully
+    // unify OSX with the other platforms. Lucky me, VSCode's `"when"`
+    // conditionals provided per-platform checks, so some day I can go crazy and
+    // add isMac sections where applicable.
+    // Oh wait, that day was this day. Oops I'm insane now.
+
+    /// Normalize Word and Sub-word navigation
+    /// --------------------------------------
+    // Passing on the accessibilityModeEnabled commands for now. There are very
+    // few in osx's default set, and I don't use that mode. So. /Shrug.
+    { "key": "ctrl+right",           "command": "cursorWordEndRight",
+                                        "when": "textInputFocus" },
+    { "key": "ctrl+shift+right",     "command": "cursorWordEndRightSelect",
+                                        "when": "textInputFocus" },
+    { "key": "ctrl+left",            "command": "cursorWordLeft",
+                                        "when": "textInputFocus" },
+    { "key": "ctrl+shift+left",      "command": "cursorWordLeftSelect",
+                                        "when": "textInputFocus" },
+    { "key": "ctrl+backspace",       "command": "deleteWordLeft",
+                                        "when": "textInputFocus && !editorReadonly" },
+
+    { "key": "alt+right",            "command": "cursorWordPartRight",
+                                        "when": "textInputFocus" },
+    { "key": "shift+alt+right",      "command": "cursorWordPartRightSelect",
+                                        "when": "textInputFocus" },
+    { "key": "alt+left",             "command": "cursorWordPartStartLeft",
+                                        "when": "textInputFocus" },
+    { "key": "shift+alt+left",       "command": "cursorWordPartStartLeftSelect",
+                                        "when": "textInputFocus" },
+    { "key": "alt+backspace",        "command": "deleteWordPartLeft",
+                                        "when": "textInputFocus && !editorReadonly" },
+
+    // Unbind overloaded keybindings.
+    { "key": "ctrl+shift+right",     "command": "-editor.action.smartSelect.expand",
+                                        "when": "editorTextFocus" },
+    { "key": "ctrl+shift+left",      "command": "-editor.action.smartSelect.shrink",
+                                        "when": "editorTextFocus" },
+
+    // Unbind unused commands.
+    { "key": "alt+right",            "command": "-cursorWordEndRight",
+                                        "when": "isMac && textInputFocus" },
+    { "key": "shift+alt+right",      "command": "-cursorWordEndRightSelect",
+                                        "when": "isMac && textInputFocus" },
+    { "key": "alt+left",             "command": "-cursorWordLeft",
+                                        "when": "isMac && textInputFocus" },
+    { "key": "shift+alt+left",       "command": "-cursorWordLeftSelect",
+                                        "when": "isMac && textInputFocus" },
+    { "key": "ctrl+alt+left",        "command": "-cursorWordPartLeft",
+                                        "when": "isMac && textInputFocus" },
+    { "key": "ctrl+shift+alt+left",  "command": "-cursorWordPartLeftSelect",
+                                        "when": "isMac && textInputFocus" },
+    { "key": "ctrl+alt+right",       "command": "-cursorWordPartRight",
+                                        "when": "isMac && textInputFocus" },
+    { "key": "ctrl+shift+alt+right", "command": "-cursorWordPartRightSelect",
+                                        "when": "isMac && textInputFocus" },
+    { "key": "ctrl+f",               "command": "-cursorRight",
+                                        "when": "isMac && textInputFocus" },
+    { "key": "ctrl+b",               "command": "-cursorLeft",
+                                        "when": "isMac && textInputFocus" },
+
+    /// Navigate Tabs Spatially (not LRU)
+    /// ---------------------------------
+    { "key": "ctrl+tab",        "command": "workbench.action.nextEditor" },
+    { "key": "ctrl+shift+tab",  "command": "workbench.action.previousEditor" },
+    { "key": "ctrl+pagedown",   "command": "workbench.action.nextEditor" },
+    { "key": "ctrl+pageup",     "command": "workbench.action.previousEditor" },
+
+    { "key": "ctrl+tab",        "command": "-workbench.action.quickOpenLeastRecentlyUsedEditorInGroup" },
+    { "key": "ctrl+shift+tab",  "command": "-workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup" },
+
+
+    /// Normalize the Suggest Widget (and friends)
+    /// ------------------------------------------
+    // ctrl+space is eaten by my global terminal show/hide hotkey on all platforms. Gotta rejigger.
+    // shift+tab is also used fo r config.editor.tabCompletion. I don't use that tho.
+    { "key": "shift+tab",        "command": "editor.action.triggerSuggest",
+                                    "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !inSnippetMode" },
+    { "key": "shift+tab",        "command": "toggleSuggestionDetails",
+                                    "when": "suggestWidgetVisible && textInputFocus" },
+    { "key": "shift+alt+tab",    "command": "toggleSuggestionFocus",
+                                    "when": "suggestWidgetVisible && textInputFocus" },
+
+    // { "key": "shift+space",      "command": "editor.action.triggerSuggest",
+    //                                 "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly" },
+    // { "key": "shift+space",      "command": "toggleSuggestionDetails",
+    //                                 "when": "suggestWidgetVisible && textInputFocus" },
+    // { "key": "shift+alt+space",  "command": "toggleSuggestionFocus",
+    //                                 "when": "suggestWidgetVisible && textInputFocus" },
+
+    { "key": "ctrl+pagedown",    "command": "selectNextPageSuggestion",
+                                    "when": "suggestWidgetVisible && suggestWidgetMultipleSuggestions && textInputFocus" },
+    { "key": "ctrl+down",        "command": "selectNextSuggestion",
+                                    "when": "suggestWidgetVisible && suggestWidgetMultipleSuggestions && textInputFocus" },
+    { "key": "ctrl+pageup",      "command": "selectPrevPageSuggestion",
+                                    "when": "suggestWidgetVisible && suggestWidgetMultipleSuggestions && textInputFocus" },
+    { "key": "ctrl+up",          "command": "selectPrevSuggestion",
+                                    "when": "suggestWidgetVisible && suggestWidgetMultipleSuggestions && textInputFocus" },
+
+    // TODO: ???? 
+    { "key": "ctrl+/",           "command": "toggleExplainMode",
+                                    "when": "suggestWidgetVisible" },
+    // { "key": "ctrl+shift+space",   "command": "editor.action.triggerParameterHints",
+    //                                 "when": "editorHasSignatureHelpProvider && editorTextFocus" },
+
+    // Unbind overloaded keybindings.
+    // Used by all three.
+    { "key": "shift+tab",        "command": "-acceptAlternativeSelectedSuggestion",
+                                    "when": "suggestWidgetVisible && textInputFocus && textInputFocus" },
+    { "key": "shift+tab",        "command": "-outdent",
+                                    "when": "editorTextFocus && !editorReadonly && !editorTabMovesFocus" },
+
+    // Unbind unused commands.
+    // Used by all three.
+    { "key": "ctrl+space",       "command": "-editor.action.triggerSuggest",
+                                    "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly" },
+    { "key": "ctrl+space",       "command": "-toggleSuggestionDetails",
+                                    "when": "suggestWidgetVisible && textInputFocus" },
+    { "key": "ctrl+alt+space",   "command": "-toggleSuggestionFocus",
+                                    "when": "suggestWidgetVisible && textInputFocus" },
+    { "key": "ctrl+shift+space", "command": "-editor.action.triggerParameterHints",
+                                    "when": "editorHasSignatureHelpProvider && editorTextFocus" },
+
+    // Mac's gonna mac.
+    { "key": "cmd+pagedown",     "command": "-selectNextPageSuggestion",
+                                    "when": "isMac && suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus" },
+    { "key": "cmd+down",         "command": "-selectNextSuggestion",
+                                    "when": "isMac && suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus" },
+    { "key": "cmd+pageup",       "command": "-selectPrevPageSuggestion",
+                                    "when": "isMac && suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus" },
+    { "key": "cmd+up",           "command": "-selectPrevSuggestion",
+                                    "when": "isMac && suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus" },
+    { "key": "ctrl+p",           "command": "-selectPrevSuggestion",
+                                    "when": "isMac && suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus" },
+    { "key": "ctrl+n",           "command": "-selectNextSuggestion",
+                                    "when": "isMac && suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus" },
+    { "key": "cmd+/",            "command": "-toggleExplainMode",
+                                    "when": "isMac && suggestWidgetVisible" },
+
+
+    /// Normalize Cursor Inserts
+    /// ------------------------
+    // Each platform got its own defaults for... reasons?
+    // Normalize on *nix...
+    { "key": "ctrl+shift+up",   "command": "editor.action.insertCursorAbove",
+                                   "when": "editorTextFocus" },
+    { "key": "ctrl+shift+down", "command": "editor.action.insertCursorBelow",
+                                   "when": "editorTextFocus" },
+    { "key": "shift+alt+i",     "command": "editor.action.insertCursorAtEndOfEachLineSelected",
+                                   "when": "editorTextFocus" },
+
+    // Unbind overloaded keybindings.
+    { "key": "ctrl+shift+up",   "command": "-cursorUpSelect",
+                                   "when": "isWindows && textInputFocus" },
+    { "key": "ctrl+shift+down", "command": "-cursorDownSelect",
+                                   "when": "isWindows && textInputFocus" },
+
+    // Unbind unused commands.
+    { "key": "ctrl+alt+up",     "command": "-editor.action.insertCursorAbove",
+                                   "when": "isWindows && editorTextFocus" },
+    { "key": "ctrl+alt+down",   "command": "-editor.action.insertCursorBelow",
+                                   "when": "isWindows && editorTextFocus" },
+
+    { "key": "alt+cmd+up",      "command": "-editor.action.insertCursorAbove",
+                                   "when": "isMac && editorTextFocus" },
+    { "key": "alt+cmd+down",    "command": "-editor.action.insertCursorBelow",
+                                   "when": "isMac && editorTextFocus" },
+
+
+    /// Some Sublime Keybindings
+    /// ------------------------
+    // Requires the Sublime Commands extension:
+    //     code --install-extension zarel.sublime-commands
+    //
+    // This is only required for splitIntoLines, and a transpose implementation that works on
+    // selections, rather than individual characters.
+    // TODO: Test editor.action.transpose
+    { "key": "ctrl+j",       "command": "editor.action.joinLines",
+                                "when": "isWindows && textInputFocus && !editorReadonly" },
+    { "key": "ctrl+l",       "command": "expandLineSelection",
+                                "when": "isWindows && textInputFocus" },
+    { "key": "ctrl+t",       "command": "extension.transpose",
+                                "when": "isWindows && textInputFocus && !editorReadonly" },
+    { "key": "ctrl+shift+l", "command": "extension.splitIntoLines",
+                                "when": "isWindows && editorTextFocus"},
+
+    { "key": "ctrl+j",       "command": "editor.action.joinLines",
+                                "when": "isLinux && textInputFocus && !editorReadonly" },
+    { "key": "ctrl+l",       "command": "expandLineSelection",
+                                "when": "isLinux && textInputFocus" },
+    { "key": "ctrl+t",       "command": "extension.transpose",
+                                "when": "isLinux && textInputFocus && !editorReadonly" },
+    { "key": "ctrl+shift+l", "command": "extension.splitIntoLines",
+                                "when": "isLinux && editorTextFocus"},
+
+    { "key": "cmd+j",        "command": "editor.action.joinLines",
+                                "when": "isMac && textInputFocus && !editorReadonly" },
+    { "key": "cmd+l",        "command": "expandLineSelection",
+                                "when": "isMac && textInputFocus" },
+    { "key": "cmd+t",        "command": "extension.transpose",
+                                "when": "isMac && textInputFocus && !editorReadonly" },
+    { "key": "cmd+shift+l",  "command": "extension.splitIntoLines",
+                                "when": "isMac && editorTextFocus"},
+
+    // Unbind overloaded keybindings.
+    { "key": "ctrl+j",       "command": "-workbench.action.togglePanel",
+                                "when": "isWindows" },
+    { "key": "ctrl+t",       "command": "-workbench.action.showAllSymbols", //TODO: Re-expose this?
+                                "when": "isWindows" },
+    { "key": "ctrl+shift+l", "command": "-editor.action.selectHighlights",
+                                "when": "isWindows && editorFocus" },
+
+    { "key": "ctrl+j",       "command": "-workbench.action.togglePanel",
+                                "when": "isLinux" },
+    { "key": "ctrl+t",       "command": "-workbench.action.showAllSymbols", //TODO: Re-expose this?
+                                "when": "isLinux" },
+    { "key": "ctrl+shift+l", "command": "-editor.action.selectHighlights",
+                                "when": "isLinux && editorFocus" },
+
+    { "key": "cmd+j",        "command": "-workbench.action.togglePanel",
+                                "when": "isMac" },
+    { "key": "cmd+t",        "command": "-workbench.action.showAllSymbols",  //TODO: Re-expose this?
+                                "when": "isMac" },
+    { "key": "shift+cmd+l",  "command": "-editor.action.selectHighlights",
+                                "when": "isMac && editorFocus" },
+
+    // Unbind unused commands.
+    { "key": "ctrl+t",       "command": "-editor.action.transposeLetters",
+                                "when": "isMac && textInputFocus && !editorReadonly" },
+
+
+    /// Normalize Block Comments
+    /// ------------------------
+    { "key": "ctrl+shift+/", "command": "editor.action.blockComment",
+                                "when": "editorTextFocus && !editorReadonly" },
+    { "key": "cmd+/",        "command": "editor.action.blockComment",
+                                "when": "isMac && editorTextFocus && !editorReadonly" },
+    // Unbind unused commands.
+    // Note that Windows is the odd one out here.
+    { "key": "ctrl+shift+a", "command": "-editor.action.blockComment",
+                                "when": "isWindows && editorTextFocus && !editorReadonly" },
+    { "key": "shift+alt+a",  "command": "-editor.action.blockComment",
+                                "when": "isLinux && editorTextFocus && !editorReadonly" },
+    { "key": "shift+alt+a",  "command": "-editor.action.blockComment",
+                                "when": "isMac && editorTextFocus && !editorReadonly" },
+
+    /// Cursor Navigation
+    /// -----------------
+    { "key": "alt+-",            "command": "workbench.action.navigateBackInNavigationLocations" },
+    { "key": "alt+shift+-",      "command": "workbench.action.navigateForwardInNavigationLocations" },
+    { "key": "ctrl+alt+-",       "command": "workbench.action.navigateForwardInEditLocations" },
+    { "key": "ctrl+alt+shift+-", "command": "workbench.action.navigateBackInEditLocations" },
+
+    // { "key": "ctrl+-",        "command": "workbench.action.navigateBack" },
+    // { "key": "ctrl+shift+-",  "command": "workbench.action.navigateForward" },
+    // { "key": "ctrl+alt+-",    "command": "workbench.action.navigateToLastEditLocation" },
+
+    // Unbind unused commands.
+    { "key": "alt+left",      "command": "-workbench.action.navigateBack",
+                                 "when": "isWindows" },
+    { "key": "alt+right",     "command": "-workbench.action.navigateForward",
+                                 "when": "isWindows"  },
+    { "key": "ctrl+k ctrl+q", "command": "-workbench.action.navigateToLastEditLocation",
+                                 "when": "isWindows" },
+
+    { "key": "ctrl+alt+-",    "command": "-workbench.action.navigateBack",
+                                 "when": "isLinux" },
+    { "key": "ctrl+k ctrl+q", "command": "-workbench.action.navigateToLastEditLocation",
+                                 "when": "isLinux" },
+
+    { "key": "cmd+k cmd+q",   "command": "-workbench.action.navigateToLastEditLocation",
+                                 "when": "isMac" },
+
+    // Also Disable that Damn Workspace Zoom
+    { "key": "ctrl+-",        "command": "-workbench.action.zoomOut",
+                                 "when": "isWindows" },
+    { "key": "ctrl+=",        "command": "-workbench.action.zoomIn",
+                                 "when": "isWindows" },
+    { "key": "ctrl+shift+-",  "command": "-workbench.action.zoomOut",
+                                 "when": "isWindows" },
+    { "key": "ctrl+shift+=",  "command": "-workbench.action.zoomIn",
+                                 "when": "isWindows" },
+
+    { "key": "ctrl+-",        "command": "-workbench.action.zoomOut",
+                                 "when": "isLinux" },
+    { "key": "ctrl+=",        "command": "-workbench.action.zoomIn",
+                                 "when": "isLinux" },
+    { "key": "ctrl+shift+-",  "command": "-workbench.action.zoomOut",
+                                 "when": "isLinux" },
+    { "key": "ctrl+shift+=",  "command": "-workbench.action.zoomIn",
+                                 "when": "isLinux" },
+
+    { "key": "cmd+-",         "command": "-workbench.action.zoomOut",
+                                 "when": "isMac" },
+    { "key": "cmd+=",         "command": "-workbench.action.zoomIn",
+                                 "when": "isMac" },
+    { "key": "shift+cmd+-",   "command": "-workbench.action.zoomOut",
+                                 "when": "isMac" },
+    { "key": "shift+cmd+=",   "command": "-workbench.action.zoomIn",
+                                 "when": "isMac" },
+
+    // Some of the IsLinux command removals seem to not be working. Not sure why.
+    { "key": "ctrl+alt+-",           "command": "-workbench.action.navigateBack" },
+    { "key": "ctrl+shift+-",         "command": "-workbench.action.navigateForward" },
+    { "key": "ctrl+numpad_add",      "command": "-workbench.action.zoomIn" },
+    { "key": "ctrl+numpad_subtract", "command": "-workbench.action.zoomOut" },
+    { "key": "ctrl+=",               "command": "-workbench.action.zoomIn" },
+    { "key": "ctrl+shift+=",         "command": "-workbench.action.zoomIn" },
+    { "key": "ctrl+-",               "command": "-workbench.action.zoomOut" },
+    /// Vim-ish Go-to-Line
+    /// ------------------
+    { "key": "ctrl+;", "command": "workbench.action.gotoLine",
+                          "when": "isWindows" },
+    { "key": "ctrl+;", "command": "workbench.action.gotoLine",
+                          "when": "isLinux" },
+    { "key": "ctrl+alt+;", "command": "workbench.action.gotoLine",
+                        "when": "isLinux" },
+    { "key": "cmd+;",  "command": "workbench.action.gotoLine",
+                          "when": "isMac" },
+
+    // Unbind unused commands.
+    // Used by all three.
+    { "key": "ctrl+g", "command": "-workbench.action.gotoLine" },
+
+    /// Searching Helpers and Hotkeys
+    /// -----------------------------
+    { "key": "ctrl+alt+g",   "command": "editor.action.selectHighlights",
+                                "when": "isWindows && editorFocus" },
+    { "key": "ctrl+alt+g",   "command": "addCursorsAtSearchResults",
+                                "when": "isWindows && fileMatchOrMatchFocus && searchViewletVisible" },
+    { "key": "ctrl+alt+g",   "command": "selectAllSearchEditorMatches",
+                                "when": "isWindows && inSearchEditor" },
+    { "key": "ctrl+g",       "command": "editor.action.nextMatchFindAction",
+                                "when": "isWindows && editorFocus && findWidgetVisible" },
+    { "key": "ctrl+shift+g", "command": "editor.action.previousMatchFindAction",
+                                "when": "isWindows && editorFocus && findWidgetVisible" },
+    { "key": "ctrl+g",       "command": "editor.action.nextSelectionMatchFindAction",
+                                "when": "isWindows && editorFocus && !findWidgetVisible" },
+    { "key": "ctrl+shift+g", "command": "editor.action.previousSelectionMatchFindAction",
+                                "when": "isWindows && editorFocus && !findWidgetVisible" },
+    { "key": "alt+enter",    "command": "editor.action.selectAllMatches",
+                                "when": "isWindows && editorFocus && findWidgetVisible" },
+
+    { "key": "ctrl+alt+g",   "command": "editor.action.selectHighlights",
+                                "when": "isLinux && editorFocus" },
+    { "key": "ctrl+alt+g",   "command": "addCursorsAtSearchResults",
+                                "when": "isLinux && fileMatchOrMatchFocus && searchViewletVisible" },
+    { "key": "ctrl+alt+g",   "command": "selectAllSearchEditorMatches",
+                                "when": "isLinux && inSearchEditor" },
+    { "key": "ctrl+g",       "command": "editor.action.nextMatchFindAction",
+                                "when": "isLinux && editorFocus && findWidgetVisible" },
+    { "key": "ctrl+shift+g", "command": "editor.action.previousMatchFindAction",
+                                "when": "isLinux && editorFocus && findWidgetVisible" },
+    { "key": "ctrl+g",       "command": "editor.action.nextSelectionMatchFindAction",
+                                "when": "isLinux && editorFocus && !findWidgetVisible" },
+    { "key": "ctrl+shift+g", "command": "editor.action.previousSelectionMatchFindAction",
+                                "when": "isLinux && editorFocus && !findWidgetVisible" },
+    { "key": "alt+enter",    "command": "editor.action.selectAllMatches",
+                                "when": "isLinux && editorFocus && findWidgetVisible" },
+
+    // Finding References
+    { "key": "shift+alt+f12",  "command": "editor.action.peekImplementation",
+                                  "when": "editorHasReferenceProvider" },
+    { "key": "ctrl+shift+f12", "command": "references-view.findReferences",
+                                  "when": "editorHasImplementationProvider && editorTextFocus && !inReferenceSearchEditor && !isInEmbeddedEditor" },
+
+    { "key": "ctrl+cmd+g",   "command": "editor.action.selectHighlights",
+                                "when": "isMac && editorFocus" },
+    { "key": "ctrl+cmd+g",   "command": "addCursorsAtSearchResults",
+                                "when": "isMac && fileMatchOrMatchFocus && searchViewletVisible" },
+    { "key": "ctrl+cmd+g",   "command": "selectAllSearchEditorMatches",
+                                "when": "isMac && inSearchEditor" },
+    { "key": "cmd+g",        "command": "editor.action.nextMatchFindAction",
+                                "when": "isMac && editorFocus && findWidgetVisible" },
+    { "key": "shift+cmd+g",  "command": "editor.action.previousMatchFindAction",
+                                "when": "isMac && editorFocus && findWidgetVisible" },
+    { "key": "cmd+g",        "command": "editor.action.nextSelectionMatchFindAction",
+                                "when": "isMac && editorFocus && !findWidgetVisible" },
+    { "key": "shift+cmd+g",  "command": "editor.action.previousSelectionMatchFindAction",
+                                "when": "isMac && editorFocus && !findWidgetVisible" },
+
+    // Unbind overloaded keybindings.
+    { "key": "ctrl+shift+g", "command": "-workbench.view.scm" },
+
+    // Unbind unused commands.
+    { "key": "ctrl+shift+l", "command": "-editor.action.selectHighlights",
+                                "when": "isWindows && editorFocus" },
+    { "key": "ctrl+shift+l", "command": "-addCursorsAtSearchResults",
+                                "when": "isWindows && fileMatchOrMatchFocus && searchViewletVisible" },
+    { "key": "ctrl+shift+l", "command": "-selectAllSearchEditorMatches",
+                                "when": "isWindows && inSearchEditor" },
+
+    { "key": "ctrl+shift+l", "command": "-editor.action.selectHighlights",
+                                "when": "isLinux && editorFocus" },
+    { "key": "ctrl+shift+l", "command": "-addCursorsAtSearchResults",
+                                "when": "isLinux && fileMatchOrMatchFocus && searchViewletVisible" },
+    { "key": "ctrl+shift+l", "command": "-selectAllSearchEditorMatches",
+                                "when": "isLinux && inSearchEditor" },
+
+    { "key": "shift+cmd+l",  "command": "-editor.action.selectHighlights",
+                                "when": "isMac && editorFocus" },
+    { "key": "shift+cmd+l",  "command": "-addCursorsAtSearchResults",
+                                "when": "isMac && fileMatchOrMatchFocus && searchViewletVisible" },
+    { "key": "shift+cmd+l",  "command": "-selectAllSearchEditorMatches",
+                                "when": "isMac && inSearchEditor" },
+
+    // Used by all three.
+    { "key": "ctrl+g",         "command": "-workbench.action.gotoLine" },
+
+    { "key": "shift+alt+f12",  "command": "-references-view.findReferences" },
+    { "key": "ctrl+shift+f12", "command": "-editor.action.peekImplementation", },
+
+
+    /// Show File in Explorer
+    /// ---------------------
+    { "key": "ctrl+alt+\\", "command": "workbench.files.action.showActiveFileInExplorer" },
+
+    /// Change-Case Chords
+    /// ------------------
+    /// Requires the 'change-case' extension (one of many, actually...):
+    ///     code --install-extension wmaurer.change-case
+    { "key": "ctrl+' ctrl+u", "command": "extension.changeCase.upper",
+                                 "when": "isWindows && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+i", "command": "extension.changeCase.title",
+                                 "when": "isWindows && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+l", "command": "extension.changeCase.lower",
+                                 "when": "isWindows && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+s", "command": "extension.changeCase.snake",
+                                 "when": "isWindows && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+p", "command": "extension.changeCase.pascal",
+                                 "when": "isWindows && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+c", "command": "extension.changeCase.camel",
+                                 "when": "isWindows && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+k", "command": "extension.changeCase.constant",
+                                 "when": "isWindows && editorTextFocus && !editorReadonly" },
+
+    { "key": "ctrl+' ctrl+u", "command": "extension.changeCase.upper",
+                                 "when": "isLinux && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+i", "command": "extension.changeCase.title",
+                                 "when": "isLinux && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+l", "command": "extension.changeCase.lower",
+                                 "when": "isLinux && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+s", "command": "extension.changeCase.snake",
+                                 "when": "isLinux && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+p", "command": "extension.changeCase.pascal",
+                                 "when": "isLinux && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+c", "command": "extension.changeCase.camel",
+                                 "when": "isLinux && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+k", "command": "extension.changeCase.constant",
+                                 "when": "isLinux && editorTextFocus && !editorReadonly" },
+
+    { "key": "cmd+' cmd+u",   "command": "extension.changeCase.upper",
+                                 "when": "isMac && editorTextFocus && !editorReadonly" },
+    { "key": "cmd+' cmd+i",   "command": "extension.changeCase.title",
+                                 "when": "isMac && editorTextFocus && !editorReadonly" },
+    { "key": "cmd+' cmd+l",   "command": "extension.changeCase.lower",
+                                 "when": "isMac && editorTextFocus && !editorReadonly" },
+    { "key": "cmd+' cmd+s",   "command": "extension.changeCase.snake",
+                                 "when": "isMac && editorTextFocus && !editorReadonly" },
+    { "key": "cmd+' cmd+p",   "command": "extension.changeCase.pascal",
+                                 "when": "isMac && editorTextFocus && !editorReadonly" },
+    { "key": "cmd+' cmd+c",   "command": "extension.changeCase.camel",
+                                 "when": "isMac && editorTextFocus && !editorReadonly" },
+    { "key": "cmd+' cmd+k",   "command": "extension.changeCase.constant",
+                                 "when": "isMac && editorTextFocus && !editorReadonly" },
+
+
+    /// Delete Helper
+    /// -------------
+    { "key": "ctrl+k ctrl+k", "command": "deleteAllRight",
+                                 "when": "isWindows && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+k ctrl+k", "command": "deleteAllRight",
+                                 "when": "isLinux && editorTextFocus && !editorReadonly" },
+    { "key": "cmd+k cmd+k",   "command": "deleteAllRight",
+                                 "when": "editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+shift+k",  "command": "editor.action.deleteLines",
+                                 "when": "textInputFocus && !editorReadonly" },
+
+    // Unbind overloaded keybindings.
+    // TODO: Re-export these
+    { "key": "ctrl+k ctrl+k", "command": "-editor.action.selectFromAnchorToCursor",
+                                 "when": "isWindows && editorTextFocus && selectionAnchorSet" },
+    { "key": "ctrl+k ctrl+b", "command": "-editor.action.setSelectionAnchor",
+                                 "when": "isWindows && editorTextFocus" },
+    { "key": "ctrl+k ctrl+k", "command": "-editor.action.selectFromAnchorToCursor",
+                                 "when": "isLinux && editorTextFocus && selectionAnchorSet" },
+    { "key": "ctrl+k ctrl+b", "command": "-editor.action.setSelectionAnchor",
+                                 "when": "isLinux && editorTextFocus" },
+    { "key": "cmd+k cmd+k",   "command": "-editor.action.selectFromAnchorToCursor",
+                                 "when": "isMac && editorTextFocus && selectionAnchorSet" },
+    { "key": "cmd+k cmd+b",   "command": "-editor.action.setSelectionAnchor",
+                                 "when": "isMac && editorTextFocus" },
+
+
+    { "key": "ctrl+k",        "command": "-deleteAllRight",
+                                 "when": "isMac && textInputFocus && !editorReadonly" },
+
+    /// Toggle Minimap
+    /// --------------
+    { "key": "ctrl+m",       "command": "editor.action.toggleMinimap",
+                                "when": "isWindows" },
+    { "key": "ctrl+m",       "command": "editor.action.toggleMinimap",
+                                "when": "isLinux" },
+    { "key": "cmd+m",        "command": "editor.action.toggleMinimap",
+                                "when": "isMac" },
+
+    // Unbind overloaded keybindings.
+    // Also, I _hate_ TabFocusMode
+    { "key": "ctrl+m",       "command": "-editor.action.toggleTabFocusMode",
+                                "when": "isWindows" },
+    { "key": "ctrl+m",       "command": "-editor.action.toggleTabFocusMode",
+                                "when": "isLinux" },
+    { "key": "ctrl+shift+m", "command": "-editor.action.toggleTabFocusMode",
+                                "when": "isMac"  },
+
+    /// Word Wrap Cycle
+    /// ---------------
+    /// Requires the 'Settings Cycler' extension:
+    ///     code --install-extension hoovercj.vscode-settings-cycler
+    {
+        "key": "alt+z", "command": "settings.cycle",
+        "args": {
+            "id": "toggle_word_wrap",
+            "overrideWorkspaceSettings": false,
+            "values": [
+                { "editor.wordWrap": "off",     "[markdown]": { "editor.wordWrap": "off"     } },
+                { "editor.wordWrap": "on",      "[markdown]": { "editor.wordWrap": "on"      } },
+                { "editor.wordWrap": "bounded", "[markdown]": { "editor.wordWrap": "bounded" } }
+            ]
+        }
+    },
+
+    // Unbind overloaded keybindings.
+    // Unbind unused commands.
+    // Used by all three.
+    { "key": "alt+z", "command": "-editor.action.toggleWordWrap" },
+
+
+    /// Code Lens Toggles
+    /// -----------------
+    /// Requires the 'Settings Cycler' extension:
+    ///     code --install-extension hoovercj.vscode-settings-cycler
+    {
+        "key": "alt+x", "command": "settings.cycle",
+        "args": {
+            "id": "toggle_code_lens",
+            "overrideWorkspaceSettings": false,
+            "values": [
+                { "editor.codeLens": false },
+                { "editor.codeLens": true  }
+            ]
+        }
+    },
+    // TODO: Find out if this can work w/o the above enabled.
+    { "key": "shift+alt+x", "command": "codelens.showLensesInCurrentLine" },
+
+
+    /// JQ Hotkey
+    /// ---------
+    /// Requires the 'vscode-jq' (*not* the 'jq-vscode') extension
+    ///     code --install-extension dandric.vscode-jq
+    // TODO: Look into 'Visual Code Jq playground'
+    { "key": "alt+j alt+q", "command": "extension.jq",
+                               "when": "editorTextFocus" },
+
+
+    /// Clipbard Ring Overrides
+    /// -----------------------
+    /// Requires the 'Clipboard Ring' extension
+    ///     code --install-extension sirtobi.code-clip-ring
+    { "key": "ctrl+shift+v", "command": "clipring.selectAndPasteRingItem",
+                                "when": "isWindows && textInputFocus && !editorReadonly" },
+    { "key": "ctrl+shift+v", "command": "clipring.selectAndPasteRingItem",
+                                "when": "isLinux && textInputFocus && !editorReadonly" },
+    { "key": "shift+cmd+v",  "command": "clipring.selectAndPasteRingItem",
+                                "when": "isMac && textInputFocus && !editorReadonly" },
+
+    // Unbind overloaded keybindings.
+    { "key": "ctrl+shift+v", "command": "-clipring.pasteRingItem",
+                                "when": "isWindows && editorFocus" },
+    { "key": "ctrl+shift+v", "command": "-markdown.showPreview",
+                                "when": "isWindows && !notebookEditorFocused && editorLangId == 'markdown'" },
+    { "key": "ctrl+shift+v", "command": "-clipring.pasteRingItem",
+                                "when": "isLinux && editorFocus" },
+    { "key": "ctrl+shift+v", "command": "-markdown.showPreview",
+                                "when": "isLinux && !notebookEditorFocused && editorLangId == 'markdown'" },
+    { "key": "shift+cmd+v",  "command": "-clipring.pasteRingItem",
+                                "when": "isMac && editorFocus" },
+    { "key": "shift+cmd+v",  "command": "-markdown.showPreview",
+                                "when": "isMac && !notebookEditorFocused && editorLangId == 'markdown'" },
+
+    /// Reasonable Bottom Panel Toggle
+    /// ------------------------------
+    { "key": "alt+`",        "command": "workbench.action.togglePanel",
+                                "when": "isWindows" },
+    { "key": "ctrl+alt+`",   "command": "workbench.action.togglePanel",
+                                "when": "isLinux" },
+    { "key": "cmd+`",        "command": "workbench.action.togglePanel",
+                                "when": "isMac" },
+    { "key": "ctrl+`",       "command": "workbench.action.terminal.toggleTerminal" },
+    { "key": "ctrl+shift+`", "command": "workbench.action.terminal.new" },
+
+    // Unbind unused commands.
+    { "key": "ctrl+j", "command": "-workbench.action.togglePanel",
+                          "when": "isWindows" },
+    { "key": "ctrl+j", "command": "-workbench.action.togglePanel",
+                          "when": "isLinux" },
+    { "key": "cmd+j",  "command": "-workbench.action.togglePanel",
+                          "when": "isMac" },
+
+
+    /// Globally Enable Copying File Path
+    /// ---------------------------------
+    // Normally you have to be in the tree view (`!editorFocus`, do other
+    /// widgets work?) for these hotkeys to be active. I want them all the time!
+    { "key": "ctrl+k ctrl+c",       "command": "copyFilePath",
+                                       "when": "isWindows" },
+    { "key": "ctrl+k ctrl+shift+c", "command": "copyRelativeFilePath",
+                                       "when": "isWindows" },
+    { "key": "ctrl+k ctrl+c",       "command": "copyFilePath",
+                                       "when": "isLinux" },
+    { "key": "ctrl+k ctrl+shift+c", "command": "copyRelativeFilePath",
+                                       "when": "isLinux" },
+    { "key": "cmd+k cmd+c",         "command": "copyFilePath",
+                                       "when": "isMac" },
+    { "key": "cmd+k shift+cmd+c",   "command": "copyRelativeFilePath",
+                                       "when": "isMac" },
+
+    // Unbind overloaded keybindings.
+    { "key": "ctrl+k ctrl+c",       "command": "-editor.action.addCommentLine",
+                                       "when": "isWindows && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+k ctrl+c",       "command": "-editor.action.addCommentLine",
+                                       "when": "isLinux && editorTextFocus && !editorReadonly" },
+    { "key": "cmd+k cmd+c",         "command": "-editor.action.addCommentLine",
+                                       "when": "isMac && editorTextFocus && !editorReadonly" },
+
+    // Unbind unused commands.
+    { "key": "shift+alt+c",         "command": "-copyFilePath",
+                                       "when": "isWindows && !editorFocus" },
+    { "key": "ctrl+k ctrl+shift+c", "command": "-copyRelativeFilePath",
+                                       "when": "isWindows && !editorFocus" },
+    { "key": "ctrl+alt+c",          "command": "-copyFilePath",
+                                       "when": "isLinux && !editorFocus" },
+    { "key": "ctrl+shift+alt+c",    "command": "-copyRelativeFilePath",
+                                       "when": "isLinux && !editorFocus" },
+    { "key": "alt+cmd+c",           "command": "-copyFilePath",
+                                       "when": "isMac && !editorFocus" },
+    { "key": "shift+alt+cmd+c",     "command": "copyRelativeFilePath",
+                                       "when": "isMac && !editorFocus" },
+
+
+    /// Git Lens Overrides
+    /// ------------------
+    /// Requires the 'Git Lens' extension
+    ///     code --install-extension eamodio.gitlens
+    /// Assumes the the setting `"gitlens.keymap": "none"` to disable defaults.
+    // The gitlens chord'-'ing hotkey, ctrl+shift+g (or shift+cmd+g), is eaten
+    // by my searching shortcuts, so I had to pick something new.
+    // These started out as default, save for the opening chord, but they're
+    // starting to drift.
+    { "key": "ctrl+alt+z z",       "command": "gitlens.toggleCodeLens",
+                                      "when": "isWindows && editorTextFocus && !gitlens:disabled && !gitlens:disabledToggleCodeLens" },
+    { "key": "ctrl+alt+z b",       "command": "gitlens.toggleFileBlame",
+                                      "when": "isWindows && editorTextFocus && gitlens:activeFileStatus =~ /blameable/" },
+    { "key": "ctrl+alt+z /",       "command": "gitlens.gitCommands",
+                                      "when": "isWindows && !gitlens:disabled" },
+    { "key": "ctrl+alt+z h",       "command": "gitlens.showQuickFileHistory",
+                                      "when": "isWindows && !gitlens:disabled" },
+    { "key": "ctrl+alt+z shift+h", "command": "gitlens.showQuickRepoHistory",
+                                      "when": "isWindows && !gitlens:disabled" },
+    { "key": "ctrl+alt+z s",       "command": "gitlens.showQuickRepoStatus",
+                                      "when": "isWindows && !gitlens:disabled" },
+    { "key": "ctrl+alt+z c",       "command": "gitlens.showQuickCommitFileDetails",
+                                      "when": "isWindows && editorTextFocus && !gitlens:disabled" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPrevious",
+                                      "when": "isWindows && editorTextFocus && !isInDiffEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPreviousInDiffLeft",
+                                      "when": "isWindows && editorTextFocus && isInDiffEditor && !isInDiffRightEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPreviousInDiffRight",
+                                      "when": "isWindows && editorTextFocus && isInDiffRightEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNext",
+                                      "when": "isWindows && editorTextFocus && !isInDiffEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNextInDiffLeft",
+                                      "when": "isWindows && editorTextFocus && isInDiffEditor && !isInDiffRightEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNextInDiffRight",
+                                      "when": "isWindows && editorTextFocus && isInDiffRightEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z shift+.", "command": "gitlens.diffWithWorking",
+                                      "when": "isWindows && editorTextFocus && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z shift+,", "command": "gitlens.diffLineWithPrevious",
+                                      "when": "isWindows && editorTextFocus && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z g",       "command": "workbench.view.scm",
+                                      "when": "isWindows && !gitlens:disabled" },
+
+    { "key": "ctrl+alt+z z",       "command": "gitlens.toggleCodeLens",
+                                      "when": "isLinux && editorTextFocus && !gitlens:disabled && !gitlens:disabledToggleCodeLens" },
+    { "key": "ctrl+alt+z b",       "command": "gitlens.toggleFileBlame",
+                                      "when": "isLinux && editorTextFocus && gitlens:activeFileStatus =~ /blameable/" },
+    { "key": "ctrl+alt+z /",       "command": "gitlens.gitCommands",
+                                      "when": "isLinux && !gitlens:disabled" },
+    { "key": "ctrl+alt+z h",       "command": "gitlens.showQuickFileHistory",
+                                      "when": "isLinux && !gitlens:disabled" },
+    { "key": "ctrl+alt+z shift+h", "command": "gitlens.showQuickRepoHistory",
+                                      "when": "isLinux && !gitlens:disabled" },
+    { "key": "ctrl+alt+z s",       "command": "gitlens.showQuickRepoStatus",
+                                      "when": "isLinux && !gitlens:disabled" },
+    { "key": "ctrl+alt+z c",       "command": "gitlens.showQuickCommitFileDetails",
+                                      "when": "isLinux && editorTextFocus && !gitlens:disabled" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPrevious",
+                                      "when": "isLinux && editorTextFocus && !isInDiffEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPreviousInDiffLeft",
+                                      "when": "isLinux && editorTextFocus && isInDiffEditor && !isInDiffRightEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPreviousInDiffRight",
+                                      "when": "isLinux && editorTextFocus && isInDiffRightEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNext",
+                                      "when": "isLinux && editorTextFocus && !isInDiffEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNextInDiffLeft",
+                                      "when": "isLinux && editorTextFocus && isInDiffEditor && !isInDiffRightEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNextInDiffRight",
+                                      "when": "isLinux && editorTextFocus && isInDiffRightEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z shift+.", "command": "gitlens.diffWithWorking",
+                                      "when": "isLinux && editorTextFocus && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z shift+,", "command": "gitlens.diffLineWithPrevious",
+                                      "when": "isLinux && editorTextFocus && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z g",       "command": "workbench.view.scm",
+                                      "when": "isLinux && !gitlens:disabled" },
+
+    { "key": "ctrl+alt+z z",       "command": "gitlens.toggleCodeLens",
+                                      "when": "isMac && editorTextFocus && !gitlens:disabled && !gitlens:disabledToggleCodeLens" },
+    { "key": "ctrl+alt+z b",       "command": "gitlens.toggleFileBlame",
+                                      "when": "isMac && editorTextFocus && gitlens:activeFileStatus =~ /blameable/" },
+    { "key": "ctrl+alt+z /",       "command": "gitlens.gitCommands",
+                                      "when": "isMac && !gitlens:disabled" },
+    { "key": "ctrl+alt+z h",       "command": "gitlens.showQuickFileHistory",
+                                      "when": "isMac && !gitlens:disabled" },
+    { "key": "ctrl+alt+z shift+h", "command": "gitlens.showQuickRepoHistory",
+                                      "when": "isMac && !gitlens:disabled" },
+    { "key": "ctrl+alt+z s",       "command": "gitlens.showQuickRepoStatus",
+                                      "when": "isMac && !gitlens:disabled" },
+    { "key": "ctrl+alt+z c",       "command": "gitlens.showQuickCommitFileDetails",
+                                      "when": "isMac && editorTextFocus && !gitlens:disabled" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPrevious",
+                                      "when": "isMac && editorTextFocus && !isInDiffEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPreviousInDiffLeft",
+                                      "when": "isMac && editorTextFocus && isInDiffEditor && !isInDiffRightEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPreviousInDiffRight",
+                                      "when": "isMac && editorTextFocus && isInDiffRightEditor && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNext",
+                                      "when": "isMac && editorTextFocus && !isInDiffEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNextInDiffLeft",
+                                      "when": "isMac && editorTextFocus && isInDiffEditor && !isInDiffRightEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNextInDiffRight",
+                                      "when": "isMac && editorTextFocus && isInDiffRightEditor && gitlens:activeFileStatus =~ /revision/ && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z shift+.", "command": "gitlens.diffWithWorking",
+                                      "when": "isMac && editorTextFocus && gitlens:activeFileStatus =~ /revision/" },
+    { "key": "ctrl+alt+z shift+,", "command": "gitlens.diffLineWithPrevious",
+                                      "when": "isMac && editorTextFocus && gitlens:activeFileStatus =~ /tracked/" },
+    { "key": "ctrl+alt+z g",       "command": "workbench.view.scm",
+                                    "when": "isMac && !gitlens:disabled"
+    }
+
+    /// Unsorted Binds
+    /// --------------
+]
