@@ -10,14 +10,14 @@ Keybindings should be soft-linked into environments s.t. updates can more easily
   ```
 
 * Linux
+  This one probably differs base on distro. The below is for Pop!_OS 22.04, manual installation
   ```
-  ln -s $(pwd)/keybindings.json ????
+  ln -s "$(pwd)/keybindings.json" "${HOME}/.config/Code/User/keybindings.json"
   ```
-  This one probably differs based on distro. TBD, I guess?
 
 * Mac
   ```
-  ln -s $(pwd)/keybindings.json "${HOME}/Library/Application Support/Code/User/keybindings.json"
+  ln -s "$(pwd)/keybindings.json" "${HOME}/Library/Application Support/Code/User/keybindings.json"
   ```
 
 Settings

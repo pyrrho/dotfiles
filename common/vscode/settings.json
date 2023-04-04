@@ -31,10 +31,6 @@
     "editor.acceptSuggestionOnCommitCharacter": false,
     "editor.quickSuggestionsDelay": 40,
     "editor.wordWrapColumn": 100,
-    // These will likely change based on toggles. Place new setting above.
-    "editor.wordWrap": "bounded",
-    "editor.minimap.enabled": false,
-    "editor.codeLens": true,
     "window.zoomLevel": 0,
     "cSpell.userWords": [
         "Cognito",
@@ -55,9 +51,6 @@
         "enumerables",
         "initialisms"
     ],
-    "[markdown]": {
-        "editor.wordWrap": "bounded"
-    },
     "[plaintext]": {
         "editor.quickSuggestions": false
     },
@@ -71,7 +64,22 @@
     "gitlens.codeLens.enabled": false,
     "explorer.autoReveal": false,
     "python.jediEnabled": false,
-    "clipring.selectTextAfterPasteFromMenu": false
+    "clipring.selectTextAfterPasteFromMenu": false,
+    "workbench.editor.untitled.hint": "hidden",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "workbench.editor.navigationScope": "editorGroup",
+    // "editor.quickSuggestions": {
+    //     "other": "inline",
+    //     "comments": "inline"
+    // },
+    // "editor.suggest.selectionMode": "never"
+    // These will likely change based on toggles. Place new setting above.
+    "editor.wordWrap": "bounded",
+    "[markdown]": {
+        "editor.wordWrap": "bounded"
+    },
+    "editor.minimap.enabled": false,
+    "editor.codeLens": true
 }
 
 // These are some legacy color changes I injected for C++ devl. Not

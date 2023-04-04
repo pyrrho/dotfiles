@@ -250,7 +250,6 @@
 
     /// Cursor Navigation
     /// -----------------
-    // Also Disable that Damn Workspace Zoom
     { "key": "ctrl+-",        "command": "workbench.action.navigateBack" },
     { "key": "ctrl+shift+-",  "command": "workbench.action.navigateForward" },
     { "key": "ctrl+alt+-",    "command": "workbench.action.navigateToLastEditLocation" },
@@ -265,12 +264,15 @@
 
     { "key": "ctrl+alt+-",    "command": "-workbench.action.navigateBack",
                                  "when": "isLinux" },
+    { "key": "ctrl+shift+-",  "command": "-workbench.action.navigateForward",
+                                 "when": "isLinux" },
     { "key": "ctrl+k ctrl+q", "command": "-workbench.action.navigateToLastEditLocation",
                                  "when": "isLinux" },
 
     { "key": "cmd+k cmd+q",   "command": "-workbench.action.navigateToLastEditLocation",
                                  "when": "isMac" },
 
+    // Also Disable that Damn Workspace Zoom
     { "key": "ctrl+-",        "command": "-workbench.action.zoomOut",
                                  "when": "isWindows" },
     { "key": "ctrl+=",        "command": "-workbench.action.zoomIn",
@@ -298,14 +300,27 @@
     { "key": "shift+cmd+=",   "command": "-workbench.action.zoomIn",
                                  "when": "isMac" },
 
+    // Something seems to be up with unbinding the Cursor Navigation set. Some of the conditional
+    // unbinds are not being respected, and there seems to be some inconsistencies in and in-between
+    // the windows and linux default sets.
+    { "key": "ctrl+alt+-",           "command": "-workbench.action.navigateBack" },
+    { "key": "ctrl+shift+-",         "command": "-workbench.action.navigateForward" },
+    { "key": "ctrl+numpad_add",      "command": "-workbench.action.zoomIn" },
+    { "key": "ctrl+numpad_subtract", "command": "-workbench.action.zoomOut" },
+    { "key": "ctrl+=",               "command": "-workbench.action.zoomIn" },
+    { "key": "ctrl+shift+=",         "command": "-workbench.action.zoomIn" },
+    { "key": "ctrl+-",               "command": "-workbench.action.zoomOut" },
+
     /// Vim-ish Go-to-Line
     /// ------------------
-    { "key": "ctrl+;", "command": "workbench.action.gotoLine",
-                          "when": "isWindows" },
-    { "key": "ctrl+;", "command": "workbench.action.gotoLine",
-                          "when": "isLinux" },
-    { "key": "cmd+;",  "command": "workbench.action.gotoLine",
-                          "when": "isMac" },
+    { "key": "ctrl+;",     "command": "workbench.action.gotoLine",
+                              "when": "isWindows" },
+    { "key": "ctrl+;",     "command": "workbench.action.gotoLine",
+                              "when": "isLinux" },
+    { "key": "ctrl+alt+;", "command": "workbench.action.gotoLine",
+                              "when": "isLinux" },
+    { "key": "cmd+;",      "command": "workbench.action.gotoLine",
+                              "when": "isMac" },
 
     // Unbind unused commands.
     // Used by all three.
@@ -328,7 +343,7 @@
     { "key": "ctrl+shift+g", "command": "editor.action.previousSelectionMatchFindAction",
                                 "when": "isWindows && editorFocus && !findWidgetVisible" },
     { "key": "alt+enter",    "command": "editor.action.selectAllMatches",
-                                "when": "editorFocus && findWidgetVisible" },
+                                "when": "isWindows && editorFocus && findWidgetVisible" },
 
     { "key": "ctrl+alt+g",   "command": "editor.action.selectHighlights",
                                 "when": "isLinux && editorFocus" },
@@ -345,7 +360,13 @@
     { "key": "ctrl+shift+g", "command": "editor.action.previousSelectionMatchFindAction",
                                 "when": "isLinux && editorFocus && !findWidgetVisible" },
     { "key": "alt+enter",    "command": "editor.action.selectAllMatches",
-                                "when": "editorFocus && findWidgetVisible" },
+                                "when": "isLinux && editorFocus && findWidgetVisible" },
+
+    // Finding References
+    { "key": "shift+alt+f12",  "command": "editor.action.peekImplementation",
+                                  "when": "editorHasReferenceProvider" },
+    { "key": "ctrl+shift+f12", "command": "references-view.findReferences",
+                                  "when": "editorHasImplementationProvider && editorTextFocus && !inReferenceSearchEditor && !isInEmbeddedEditor" },
 
     { "key": "ctrl+cmd+g",   "command": "editor.action.selectHighlights",
                                 "when": "isMac && editorFocus" },
@@ -388,7 +409,10 @@
                                 "when": "isMac && inSearchEditor" },
 
     // Used by all three.
-    { "key": "ctrl+g",       "command": "-workbench.action.gotoLine" },
+    { "key": "ctrl+g",         "command": "-workbench.action.gotoLine" },
+
+    { "key": "shift+alt+f12",  "command": "-references-view.findReferences" },
+    { "key": "ctrl+shift+f12", "command": "-editor.action.peekImplementation", },
 
 
     /// Show File in Explorer
@@ -531,8 +555,25 @@
             ]
         }
     },
-    // TODO: Find out if this can work w/p the above enabled.
+    // TODO: Find out if this can work w/o the above enabled.
     { "key": "shift+alt+x", "command": "codelens.showLensesInCurrentLine" },
+
+
+    /// Format On Type Toggle
+    /// ---------------------
+    /// Requires the 'Settings Cycler' extension:
+    ///     code --install-extension hoovercj.vscode-settings-cycler
+    {
+        "key": "ctrl+k ctrl+z", "command": "settings.cycle",
+        "args": {
+            "id": "toggle_format_on_type",
+            "overrideWorkspaceSettings": false,
+            "values": [
+                { "editor.formatOnType": false },
+                { "editor.formatOnType": true }
+            ]
+        }
+    },
 
 
     /// JQ Hotkey
@@ -573,7 +614,7 @@
     /// ------------------------------
     { "key": "alt+`",        "command": "workbench.action.togglePanel",
                                 "when": "isWindows" },
-    { "key": "alt+`",        "command": "workbench.action.togglePanel",
+    { "key": "ctrl+alt+`",   "command": "workbench.action.togglePanel",
                                 "when": "isLinux" },
     { "key": "cmd+`",        "command": "workbench.action.togglePanel",
                                 "when": "isMac" },
