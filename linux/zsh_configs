@@ -1,0 +1,54 @@
+ZSH_THEME="mortalscumbag"
+
+export AWS_PAGER="less -F -X"
+
+alias rf="rm -rf"
+alias ll="ls -lAh"
+alias la="ls -lah"
+alias l1="ls -1"
+
+function mkcd {
+    mkdir -p $1
+    cd $1
+}
+
+function prg {
+    ps aux | rg $@ | less -F -X
+}
+
+function hrg {
+    history | rg $@ | less -F -X
+}
+
+alias c="pyc"
+function pyc {
+    python3 -c "from math import *; print($*)"
+}
+function pp_epoch {
+    python3 <<EOF
+import time;
+if len("$1") == 13:
+    print(time.strftime("%Y/%m/%d %H:%M:%S.{} %Z".format($1%1000), time.gmtime($1/1000)))
+else:
+    print(time.strftime("%Y/%m/%d %H:%M:%S %Z", time.gmtime($1)))
+EOF
+}
+function pp_local_epoch {
+    python3 <<EOF
+import time;
+if len("$1") == 13:
+    print(time.strftime("%Y/%m/%d %H:%M:%S.{} %Z".format($1%1000), time.localtime($1/1000)))
+else:
+    print(time.strftime("%Y/%m/%d %H:%M:%S %Z", time.localtime($1)))
+EOF
+}
+
+function unquote {
+    sed "s/^\([\"']\)\(.*\)\1\$/\2/g"
+}
+
+function diffly {
+    /usr/bin/diff -w -y $@ -W $(( $(tput cols) - 9 )) --color | colordiff | less -r -N --use-color
+}
+
+
