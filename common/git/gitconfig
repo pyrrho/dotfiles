@@ -1,6 +1,6 @@
 [user]
 	name = Drew Pirrone-Brusse
-	email = dpirrone-brusse@kcftech.com
+	email = drew.pirrone.brusse@gmail.com
 
 [alias]
 	# Shortcuts, cuz' I'm lazy
@@ -38,7 +38,7 @@
 	#   TODO: Consider overriding `push` w/ that one...
 	# - `git track` will set the upstream tracking branch on the given
 	#   remote (defaults to "origin")
-	pu = ! [[ $(git config "branch.$(git rev-parse --abbrev-ref HEAD).merge") = '' ]] && git push -u || git push
+	# pu = ! [[ $(git config "branch.$(git rev-parse --abbrev-ref HEAD).merge") = '' ]] && git push -u || git push
 	track-on-remote = "!f() { git branch --set-upstream-to=${1}/`git symbolic-ref --short HEAD`; }; f"
 	track = "!f() { [[ \"$1\" == \"\" ]] && git track-on-remote origin || git track-on-remote $1; }; f"
 
@@ -56,9 +56,6 @@
 	fpurge = ! git purgeable | xargs git branch -D
 	rpop = ! git rpo && git purge
 	fpop = ! git rpo && git fpurge
-	# Possible Power Shell versions...
-	# git branch -vv | Select-String -Pattern ": gone]" | % { $_.toString().Trim().Split(" ")[0]} | % {git branch -d $_}
-	# git branch --merged | select-string -notmatch "master" | % { $_.toString().Trim().Split(" ")[0]} | % {git branch -d $_}
 
 	# The only way(s) to look at git logs.
 	lg = log --graph --abbrev-commit --date=iso --decorate --format=format:'%C(yellow)%h%C(reset) %C(bold red)<%an>%C(reset) - %s %C(green)(%ad)%C(reset)%C(yellow)%d%C(reset)'
