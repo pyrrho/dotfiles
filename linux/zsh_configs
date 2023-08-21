@@ -7,10 +7,7 @@ alias ll="ls -lAh"
 alias la="ls -lah"
 alias l1="ls -1"
 
-function mkcd {
-    mkdir -p $1
-    cd $1
-}
+alias xcc="xclip -r -selection clipboard"
 
 function prg {
     ps aux | rg $@ | less -F -X
@@ -19,6 +16,23 @@ function prg {
 function hrg {
     history | rg $@ | less -F -X
 }
+
+function diffly {
+    /usr/bin/diff -w -y $@ -W $(( $(tput cols) - 9 )) --color | colordiff | less -r -N --use-color
+}
+
+function unquote {
+    sed "s/^\([\"']\)\(.*\)\1\$/\2/g"
+}
+
+alias py="python"
+alias py2="python2"
+alias py3="python3"
+alias pypip="python -m pip"
+alias py2pip="python2 -m pip"
+alias py3pip="python3 -m pip"
+
+alias pye="pyenv"
 
 alias c="pyc"
 function pyc {
@@ -41,14 +55,6 @@ if len("$1") == 13:
 else:
     print(time.strftime("%Y/%m/%d %H:%M:%S %Z", time.localtime($1)))
 EOF
-}
-
-function unquote {
-    sed "s/^\([\"']\)\(.*\)\1\$/\2/g"
-}
-
-function diffly {
-    /usr/bin/diff -w -y $@ -W $(( $(tput cols) - 9 )) --color | colordiff | less -r -N --use-color
 }
 
 
