@@ -317,14 +317,117 @@
                               "when": "isWindows" },
     { "key": "ctrl+;",     "command": "workbench.action.gotoLine",
                               "when": "isLinux" },
-    { "key": "ctrl+alt+;", "command": "workbench.action.gotoLine",
-                              "when": "isLinux" },
     { "key": "cmd+;",      "command": "workbench.action.gotoLine",
                               "when": "isMac" },
+
+    /// Vim-ish Relative Go-to-Line
+    /// ---------------------------
+    /// Requires pyrrho.vscode-relative-motion
+    ///     git clone https://github.com/pyrrho/vscode-relative-motion.git
+    ///     cd vscode-relative-motion
+    ///     npm install
+    ///     npm install -g @vscode/vsce
+    ///     vsce package
+    ///     code --install-extension vscode-relative-motion-*.vsix
+    { "key": "ctrl+up",    "command": "vscode-relative-motion.up",
+                              "when": "isWindows && editorFocus" },
+    { "key": "ctrl+up",    "command": "vscode-relative-motion.up",
+                              "when": "isLinux && editorFocus" },
+    { "key": "cmd+up",     "command": "vscode-relative-motion.up",
+                              "when": "isMac && editorFocus" },
+
+    { "key": "ctrl+down",  "command": "vscode-relative-motion.down",
+                              "when": "isWindows && editorFocus" },
+    { "key": "ctrl+down",  "command": "vscode-relative-motion.down",
+                              "when": "isLinux && editorFocus" },
+    { "key": "cmd+down",   "command": "vscode-relative-motion.down",
+                              "when": "isMac && editorFocus" },
 
     // Unbind unused commands.
     // Used by all three.
     { "key": "ctrl+g", "command": "-workbench.action.gotoLine" },
+
+    /// Keyboard window motions
+    /// -----------------------
+    { "key": "alt+shift+w", "command": "editorScroll",
+                              "when": "true",
+      "args": {
+        "to": "up",
+        "value": 1,
+        "by": "line",
+        "revealCursor": false
+      }},
+    { "key": "alt+shift+a", "command": "runCommands",
+                              "when": "true",
+      "args": {
+        "commands": [
+            "scrollLeft",
+            "scrollLeft",
+            "scrollLeft"]
+      }},
+    { "key": "alt+shift+s", "command": "editorScroll",
+                              "when": "true",
+      "args": {
+        "to": "down",
+        "value": 1,
+        "by": "line",
+        "revealCursor": false
+      }},
+    { "key": "alt+shift+d", "command": "runCommands",
+                              "when": "true",
+      "args": {
+        "commands": [
+            "scrollRight",
+            "scrollRight",
+            "scrollRight"]
+      }},
+
+    { "key": "ctrl+alt+shift+w", "command": "editorScroll",
+                                    "when": "true",
+      "args": {
+        "to": "up",
+        "value": 6,
+        "by": "line",
+        "revealCursor": false
+      }},
+    { "key": "ctrl+alt+shift+a", "command": "runCommands",
+                                    "when": "true",
+      "args": {
+        "commands": [
+            "scrollLeft",
+            "scrollLeft",
+            "scrollLeft",
+            "scrollLeft",
+            "scrollLeft",
+            "scrollLeft",
+            "scrollLeft",
+            "scrollLeft",
+            "scrollLeft",
+            "scrollLeft"]
+      }},
+    { "key": "ctrl+alt+shift+s", "command": "editorScroll",
+                                    "when": "true",
+      "args": {
+        "to": "down",
+        "value": 6,
+        "by": "line",
+        "revealCursor": false
+      }},
+    { "key": "ctrl+alt+shift+d", "command": "runCommands",
+                                    "when": "true",
+      "args": {
+        "commands": [
+            "scrollRight",
+            "scrollRight",
+            "scrollRight",
+            "scrollRight",
+            "scrollRight",
+            "scrollRight",
+            "scrollRight",
+            "scrollRight",
+            "scrollRight",
+            "scrollRight"]
+      }},
 
     /// Searching Helpers and Hotkeys
     /// -----------------------------
@@ -558,6 +661,18 @@
     // TODO: Find out if this can work w/o the above enabled.
     { "key": "shift+alt+x", "command": "codelens.showLensesInCurrentLine" },
 
+    {
+      "key": "ctrl+alt+x", "command": "settings.cycle",
+      "args": {
+          "id": "toggle_inlay_hints",
+          "overrideWorkspaceSettings": false,
+          "values": [
+              { "editor.inlayHints.enabled": "offUnlessPressed" },
+              { "editor.inlayHints.enabled": "on" }
+          ]
+      }
+  },
+
 
     /// Format On Type Toggle
     /// ---------------------
@@ -575,38 +690,50 @@
         }
     },
 
+    /// Inlay Hints
+    /// -----------
+    /// Requires the 'Settings Cycler' extension:
+    ///     code --install-extension hoovercj.vscode-settings-cycler
+    {
+        "key": "ctrl+alt+x", "command": "settings.cycle",
+        "args": {
+            "id": "toggle_inlay_hints",
+            "overrideWorkspaceSettings": false,
+            "values": [
+                { "editor.inlayHints.enabled": "offUnlessPressed" },
+                { "editor.inlayHints.enabled": "on" }
+            ]
+        }
+    },
 
-    /// JQ Hotkey
-    /// ---------
-    /// Requires the 'vscode-jq' (*not* the 'jq-vscode') extension
-    ///     code --install-extension dandric.vscode-jq
-    // TODO: Look into 'Visual Code Jq playground'
-    { "key": "alt+j alt+q", "command": "extension.jq",
-                               "when": "editorTextFocus" },
-
-
-    /// Clipbard Ring Overrides
-    /// -----------------------
-    /// Requires the 'Clipboard Ring' extension
-    ///     code --install-extension sirtobi.code-clip-ring
-    { "key": "ctrl+shift+v", "command": "clipring.selectAndPasteRingItem",
+    /// Clipboard Ring Overrides
+    /// ------------------------
+    /// Requires the 'Multiple clipboards for VSCode' extension
+    ///     code --install-extension slevesque.vscode-multiclip
+    { "key": "ctrl+shift+v", "command": "multiclip.list",
                                 "when": "isWindows && textInputFocus && !editorReadonly" },
-    { "key": "ctrl+shift+v", "command": "clipring.selectAndPasteRingItem",
+    { "key": "ctrl+shift+v", "command": "multiclip.list",
                                 "when": "isLinux && textInputFocus && !editorReadonly" },
-    { "key": "shift+cmd+v",  "command": "clipring.selectAndPasteRingItem",
+    { "key": "shift+cmd+v",  "command": "multiclip.list",
+                                "when": "isMac && textInputFocus && !editorReadonly" },
+    { "key": "ctrl+alt+v",   "command": "multiclip.paste",
+                                "when": "isWindows && textInputFocus && !editorReadonly" },
+    { "key": "ctrl+alt+v",   "command": "multiclip.paste",
+                                "when": "isLinux && textInputFocus && !editorReadonly" },
+    { "key": "alt+cmd+v",    "command": "multiclip.paste",
                                 "when": "isMac && textInputFocus && !editorReadonly" },
 
     // Unbind overloaded keybindings.
-    { "key": "ctrl+shift+v", "command": "-clipring.pasteRingItem",
-                                "when": "isWindows && editorFocus" },
+    {  "key": "ctrl+shift+v", "command": "-multiclip.paste",
+                                 "when": "editorTextFocus && editorLangId != 'markdown'" },
+    {  "key": "shift+cmd+v",  "command": "-multiclip.paste",
+                                 "when": "editorTextFocus && editorLangId != 'markdown'" },
+
+    // Unbind overloaded keybindings (extension agnostic).
     { "key": "ctrl+shift+v", "command": "-markdown.showPreview",
                                 "when": "isWindows && !notebookEditorFocused && editorLangId == 'markdown'" },
-    { "key": "ctrl+shift+v", "command": "-clipring.pasteRingItem",
-                                "when": "isLinux && editorFocus" },
     { "key": "ctrl+shift+v", "command": "-markdown.showPreview",
                                 "when": "isLinux && !notebookEditorFocused && editorLangId == 'markdown'" },
-    { "key": "shift+cmd+v",  "command": "-clipring.pasteRingItem",
-                                "when": "isMac && editorFocus" },
     { "key": "shift+cmd+v",  "command": "-markdown.showPreview",
                                 "when": "isMac && !notebookEditorFocused && editorLangId == 'markdown'" },
 
@@ -776,5 +903,16 @@
     { "key": "ctrl+alt+z shift+,", "command": "gitlens.diffLineWithPrevious",
                                       "when": "isMac && editorTextFocus && gitlens:activeFileStatus =~ /tracked/" },
     { "key": "ctrl+alt+z g",       "command": "workbench.view.scm",
-                                      "when": "isMac && !gitlens:disabled" }
+                                      "when": "isMac && !gitlens:disabled" },
+
+
+    /// GitHub CoPilot Overrides
+    /// ------------------------
+
+    { "key": "ctrl+shift+space", "command": "github.copilot.generate",
+                                    "when": "editorTextFocus && github.copilot.activated && !inInteractiveInput && !interactiveEditorFocused" },
+    { "key": "ctrl+alt+enter",   "command": "-workbench.action.chat.runInTerminal",
+                                    "when": "hasChatProvider && inChat" },
+    { "key": "ctrl+enter",       "command": "-github.copilot.generate",
+                                    "when": "editorTextFocus && github.copilot.activated && !inInteractiveInput && !interactiveEditorFocused" }
 ]

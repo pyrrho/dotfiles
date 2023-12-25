@@ -24,6 +24,8 @@
     // navigation and rendering to not really work. Disable it.
     "editor.fontLigatures": "'ccmp' off",
     "explorer.enableDragAndDrop": false,
+    "explorer.autoReveal": false,
+    "explorer.excludeGitIgnore": false,
     "files.hotExit": "onExitAndWindowClose",
     "debug.allowBreakpointsEverywhere": true,
     "terminal.integrated.scrollback": 100000,
@@ -33,15 +35,19 @@
     "editor.wordWrapColumn": 100,
     "window.zoomLevel": 0,
     "cSpell.userWords": [
+        "boid",
+        "boids",
+        "cmds",
         "Cognito",
-        "Includable",
-        "Includables",
         "enqueues",
         "executables",
         "hardcode",
         "hardcoded",
+        "Includable",
+        "Includables",
         "postgres",
         "recurse",
+        "rustfmt",
         "timeseries",
         "transpile",
         "transpiled",
@@ -52,7 +58,11 @@
         "initialisms"
     ],
     "[plaintext]": {
-        "editor.quickSuggestions": false
+        "editor.quickSuggestions": {
+            "comments": "off",
+            "strings": "off",
+            "other": "off"
+        }
     },
     "gitlens.defaultDateFormat": "YYYY MMMM D, H:mm",
     "gitlens.defaultDateShortFormat": "YYYY MMM D",
@@ -62,7 +72,6 @@
     "gitlens.views.compare.location": "gitlens",
     "gitlens.views.search.location": "gitlens",
     "gitlens.codeLens.enabled": false,
-    "explorer.autoReveal": false,
     "python.jediEnabled": false,
     "clipring.selectTextAfterPasteFromMenu": false,
     "workbench.editor.untitled.hint": "hidden",
@@ -79,9 +88,18 @@
         "editor.wordWrap": "bounded"
     },
     "editor.minimap.enabled": false,
-    "editor.codeLens": true
+    "editor.codeLens": false,
+    "security.workspace.trust.untrustedFiles": "open",
+    "files.exclude": {
+        "**/.git": false,
+        "**/.hg": false,
+        "**/.svn": false,
+        "**/CVS": false,
+    },
+    "window.confirmBeforeClose": "keyboardOnly",
+    "editor.inlayHints.enabled": "offUnlessPressed",
+    "editor.lineNumbers": "relative"
 }
-
 // These are some legacy color changes I injected for C++ devl. Not
 // sure if they're still salient.
 // "editor.tokenColorCustomizations": {
