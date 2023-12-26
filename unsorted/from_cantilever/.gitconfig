@@ -1,0 +1,97 @@
+[user]
+	name = Drew Pirrone-Brusse
+	email = drew.pirrone.brusse@gmail.com
+#	signingkey = 62A5C8AA8375299F
+
+[alias]
+	# Shortcuts, cuz' I'm lazy
+	ci = commit
+	br = branch -vv
+	bra = branch -vv -a
+	co = checkout
+	cp = cherry-pick
+	nb = checkout -b
+	fwl = push --force-with-lease
+
+	# Simplified Status output, for easy reading
+	st = status --short
+	sta = status --short --ignored --branch
+	stat = show --stat
+
+	# Difference between the stage and HEAD (rather than the working dir and HEAD)
+	siff = diff --staged
+
+	# Somewhat dangerous; adds staged changes to HEAD
+	amend = commit --amend --no-edit
+
+	# Helpers to quickly interact with the stage and working tree
+	unstage = reset HEAD
+	uncommit = reset --soft HEAD^
+	unci = reset --soft HEAD^
+
+	# Rebase helpers
+	rc = rebase --continue
+	ra = rebase --abort
+
+	# Branch Tracking
+	# - `git pu` will either `push -u` (if no tracking branch is set),
+	#   or `push` (if a tracking branch is set).
+	#   TODO: Consider overriding `push` w/ that one...
+	# - `git track` will set the upstream tracking branch on the given
+	#   remote (defaults to "origin")
+	# pu = ! [[ $(git config "branch.$(git rev-parse --abbrev-ref HEAD).merge") = '' ]] && git push -u || git push
+	track-on-remote = "!f() { git branch --set-upstream-to=${1}/`git symbolic-ref --short HEAD`; }; f"
+	track = "!f() { [[ \"$1\" == \"\" ]] && git track-on-remote origin || git track-on-remote $1; }; f"
+
+	# Branch Pruning;
+	# - `remote prune` will delete local references to branches on the given remote
+	#   that have been deleted on the remote. `rpo` shortcuts to `origin`.
+	# - `git purge` will delete local branches that were set to track remote branches
+	#   that have been deleted on the remote.
+	# - `git rpop` combines the two, but only if it's "safe" to (see `branch -d`).
+	# - `git fpop` combines the two, aggressively (see `branch -D`).
+	rp = remote prune
+	rpo = remote prune origin
+	purgeable = ! git branch -vv | grep ': gone]' | grep -v \"*\" | awk '{ print $1 }'
+	purge = ! git purgeable | xargs git branch -d
+	fpurge = ! git purgeable | xargs git branch -D
+	rpop = ! git rpo && git purge
+	fpop = ! git rpo && git fpurge
+
+	# The only way(s) to look at git logs.
+	lg = log --graph --abbrev-commit --date=iso --decorate --format=format:'%C(yellow)%h%C(reset) %C(bold red)<%an>%C(reset) - %s %C(green)(%ad)%C(reset)%C(yellow)%d%C(reset)'
+	lga = log --graph --all --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) %C(bold red)<%an>%C(reset) - %s %C(green)(%ad)%C(reset)%C(yellow)%d%C(reset)'
+	lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s'
+	lga2 = log --graph --all --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s'
+	lg2s = log --name-status --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s'
+	lga2s = log --name-status --graph --all --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s'
+
+	# VERY DANGEROUS; clears _all_ changes in the working directory.
+	# Can accept a path specify on, but that path is RELATIVE TO THE ROOT OF THE
+	# REPO, NOT `pwd`.
+	flush = "!f() { git checkout -f $1 && git clean -xdf $1; }; f"
+
+[color]
+	ui = true
+
+[push]
+	# Changes default remote branch tracking behavior.
+	# If you don't know what this does, I would advise _against_ using it.
+	default = current
+
+[fetch]
+	# Configures fetch to behave as if `--prune` is always passed in.
+	prune = true
+
+[pull]
+	# Don't initiate a merge or rebase when local has diverged from remote.
+	ff = only
+
+[diff]
+	# `git diff` will use (i)ndex, (w)ork tree, (c)ommit,  and (o)bject
+	# instead of a/b/c/d as prefixes for patches.
+	mnemonicprefix = true
+
+[core]
+	editor = vim
+	pager = less -F -X
