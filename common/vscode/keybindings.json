@@ -349,32 +349,32 @@
 
     /// Keyboard window motions
     /// -----------------------
-    { "key": "alt+shift+w", "command": "editorScroll",
-                              "when": "true",
+    { "key": "alt+ctrl+shift+w", "command": "editorScroll",
+                                    "when": "true",
       "args": {
         "to": "up",
         "value": 1,
         "by": "line",
         "revealCursor": false
       }},
-    { "key": "alt+shift+a", "command": "runCommands",
-                              "when": "true",
+    { "key": "alt+ctrl+shift+a", "command": "runCommands",
+                                    "when": "true",
       "args": {
         "commands": [
             "scrollLeft",
             "scrollLeft",
             "scrollLeft"]
       }},
-    { "key": "alt+shift+s", "command": "editorScroll",
-                              "when": "true",
+    { "key": "alt+ctrl+shift+s", "command": "editorScroll",
+                                    "when": "true",
       "args": {
         "to": "down",
         "value": 1,
         "by": "line",
         "revealCursor": false
       }},
-    { "key": "alt+shift+d", "command": "runCommands",
-                              "when": "true",
+    { "key": "alt+ctrl+shift+d", "command": "runCommands",
+                                    "when": "true",
       "args": {
         "commands": [
             "scrollRight",
@@ -382,16 +382,16 @@
             "scrollRight"]
       }},
 
-    { "key": "ctrl+alt+shift+w", "command": "editorScroll",
-                                    "when": "true",
+    { "key": "ctrl+alt+w", "command": "editorScroll",
+                              "when": "true",
       "args": {
         "to": "up",
-        "value": 6,
+        "value": 4,
         "by": "line",
         "revealCursor": false
       }},
-    { "key": "ctrl+alt+shift+a", "command": "runCommands",
-                                    "when": "true",
+    { "key": "ctrl+alt+a", "command": "runCommands",
+                              "when": "true",
       "args": {
         "commands": [
             "scrollLeft",
@@ -405,16 +405,16 @@
             "scrollLeft",
             "scrollLeft"]
       }},
-    { "key": "ctrl+alt+shift+s", "command": "editorScroll",
-                                    "when": "true",
+    { "key": "ctrl+alt+s", "command": "editorScroll",
+                              "when": "true",
       "args": {
         "to": "down",
-        "value": 6,
+        "value": 4,
         "by": "line",
         "revealCursor": false
       }},
-    { "key": "ctrl+alt+shift+d", "command": "runCommands",
-                                    "when": "true",
+    { "key": "ctrl+alt+d", "command": "runCommands",
+                              "when": "true",
       "args": {
         "commands": [
             "scrollRight",
@@ -660,18 +660,6 @@
     },
     // TODO: Find out if this can work w/o the above enabled.
     { "key": "shift+alt+x", "command": "codelens.showLensesInCurrentLine" },
-
-    {
-      "key": "ctrl+alt+x", "command": "settings.cycle",
-      "args": {
-          "id": "toggle_inlay_hints",
-          "overrideWorkspaceSettings": false,
-          "values": [
-              { "editor.inlayHints.enabled": "offUnlessPressed" },
-              { "editor.inlayHints.enabled": "on" }
-          ]
-      }
-  },
 
 
     /// Format On Type Toggle
