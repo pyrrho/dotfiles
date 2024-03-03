@@ -15,10 +15,9 @@
 	br = branch
 	lb = branch -vv --sort -committerdate        # List local branches, most recently edited first
 	lba = branch -vv --sort -committerdate --all # List all   branches, most recently edited first
-	# Consider removing; force myself to use switch/restore?
 	co = checkout
-	nb = switch -b                               # Create a new local branch iff that branch doesn't already exit
-	nbf = switch -B                              # Create a new local branch even if that branch already exists
+	nb = switch -c                               # Create a new local branch iff that branch doesn't already exit
+	nbf = switch -C                              # Create a new local branch even if that branch already exists
 	tr = switch --track                          # Track an existing, remote branch
 	cp = cherry-pick
 	fwl = push --force-with-lease
