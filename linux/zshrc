@@ -77,6 +77,7 @@ plugins=(
     copyfile
     copypath
     encode64
+    fzf
     genpass
     qrcode
     copybuffer
@@ -90,8 +91,10 @@ plugins=(
     rust
     nvm
     zig-shell-completions
+    zoxide
 )
 zstyle ':omz:plugins:nvm' lazy yes
+ZOXIDE_CMD_OVERRIDE="z"
 
 ## Interesting plugins
 
