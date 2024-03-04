@@ -537,7 +537,7 @@
     { "key": "ctrl+g",         "command": "-workbench.action.gotoLine" },
 
     { "key": "shift+alt+f12",  "command": "-references-view.findReferences" },
-    { "key": "ctrl+shift+f12", "command": "-editor.action.peekImplementation", },
+    { "key": "ctrl+shift+f12", "command": "-editor.action.peekImplementation" },
 
 
     /// Show File in Explorer
