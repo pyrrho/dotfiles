@@ -236,9 +236,12 @@
     /// Normalize Block Comments
     /// ------------------------
     { "key": "ctrl+shift+/", "command": "editor.action.blockComment",
-                                "when": "editorTextFocus && !editorReadonly" },
-    { "key": "cmd+/",        "command": "editor.action.blockComment",
+                                "when": "isWindows && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+shift+/", "command": "editor.action.blockComment",
+                                "when": "isLinux && editorTextFocus && !editorReadonly" },
+    { "key": "cmd+shift+/",  "command": "editor.action.blockComment",
                                 "when": "isMac && editorTextFocus && !editorReadonly" },
+
     // Unbind unused commands.
     // Note that Windows is the odd one out here.
     { "key": "ctrl+shift+a", "command": "-editor.action.blockComment",
@@ -250,9 +253,26 @@
 
     /// Cursor Navigation
     /// -----------------
-    { "key": "ctrl+-",        "command": "workbench.action.navigateBack" },
-    { "key": "ctrl+shift+-",  "command": "workbench.action.navigateForward" },
-    { "key": "ctrl+alt+-",    "command": "workbench.action.navigateToLastEditLocation" },
+    { "key": "ctrl+-",        "command": "workbench.action.navigateBack",
+                                 "when": "canNavigateBack && isWindows" },
+    { "key": "ctrl+shift+-",  "command": "workbench.action.navigateForward",
+                                 "when": "canNavigateForward && isWindows" },
+    { "key": "ctrl+alt+-",    "command": "workbench.action.navigateToLastEditLocation",
+                                 "when": "canNavigateToLastEditLocation && isWindows" },
+
+    { "key": "ctrl+-",        "command": "workbench.action.navigateBack",
+                                 "when": "canNavigateBack && isLinux" },
+    { "key": "ctrl+shift+-",  "command": "workbench.action.navigateForward",
+                                 "when": "canNavigateForward && isLinux" },
+    { "key": "ctrl+alt+-",    "command": "workbench.action.navigateToLastEditLocation",
+                                 "when": "canNavigateToLastEditLocation && isLinux" },
+
+    { "key": "cmd+-",        "command": "workbench.action.navigateBack",
+                                 "when": "canNavigateBack && isMac" },
+    { "key": "cmd+shift+-",   "command": "workbench.action.navigateForward",
+                                 "when": "canNavigateForward && isMac" },
+    { "key": "cmd+ctrl+-",    "command": "workbench.action.navigateToLastEditLocation",
+                                 "when": "canNavigateToLastEditLocation && isMac" },
 
     // Unbind unused commands.
     { "key": "alt+left",      "command": "-workbench.action.navigateBack",
@@ -269,6 +289,8 @@
     { "key": "ctrl+k ctrl+q", "command": "-workbench.action.navigateToLastEditLocation",
                                  "when": "isLinux" },
 
+    { "key": "ctrl+-",        "command": "-workbench.action.navigateBack",
+                                 "when": "isMac" },
     { "key": "cmd+k cmd+q",   "command": "-workbench.action.navigateToLastEditLocation",
                                  "when": "isMac" },
 
