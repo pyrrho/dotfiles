@@ -73,28 +73,28 @@ ZSH_THEME="mortalscumbag"
 plugins=(
     aliases
     colored-man-pages
-    emoji
+    copybuffer
     copyfile
     copypath
+    ctrl-z-z
+    emoji
     encode64
     fzf
     genpass
-    qrcode
-    copybuffer
-    fancy-ctrl-z
-    sudo
     git
     git-lfs
     isodate
     npm
+    nvm
+    qrcode
     ripgrep
     rust
-    nvm
+    sudo
     zig-shell-completions
     zoxide
 )
 zstyle ':omz:plugins:nvm' lazy yes
-ZOXIDE_CMD_OVERRIDE="z"
+ZOXIDE_CMD_OVERRIDE="cd"
 
 ## Interesting plugins
 
@@ -121,7 +121,7 @@ ZOXIDE_CMD_OVERRIDE="z"
 
 ### Keybindings
 # - copybuffer: `Ctrl+O` to copy the current command buffer to the system clipboard.
-# - fancy-ctrl-z: `Ctrl+Z` to background a process and `Ctrl+Z` to foreground it.
+# - ctrl-z-z: `Ctrl+Z` to background a process and `Ctrl+Z` to foreground it.
 # - tehfuck: `Esc+Esc` to run `fuck`.
 # - sudo: `Esc+Esc` to prepend `sudo` to the last run command.
 # - man: `Esc + man` to prepend `man` before the last run command.
@@ -202,14 +202,13 @@ source $ZSH/oh-my-zsh.sh
 if [ -d "$HOME/.cargo/bin" ] ; then
     export PATH="$PATH:$HOME/.cargo/bin"
 
-
     # Rustc and Cargo use this environment variable to enable "nightly-like"
     # behavior on stable/beta compilers. Some people in the rust-lang project
     # get very grumpy if you use this escape hatch and pitch all kinds of ways
     # to make life harder for you.
     # See https://github.com/rust-lang/cargo/issues/7088 and linked issues.
     export RUSTC_BOOTSTRAP="1"
-    
+
     # This lets you instruct cargo that it's running from a local compile, actually.
     # Same story as above, except for Cargo it's so it can force the channel in its
     # unit tests to confirm the "rules for thee but not for me" features work as
@@ -227,8 +226,12 @@ fi
 if [ -d "$HOME/.zig" ]; then
     export PATH="$PATH:$HOME/.zig"
 fi
+# Add the vscode zls to PATH
+# TODO: I can't remember why I have to do this...
 if [ -d "${HOME}/Library/Application Support/Code/User/globalStorage/ziglang.vscode-zig/zig_install" ]; then
     export PATH="${PATH}:${HOME}/Library/Application Support/Code/User/globalStorage/ziglang.vscode-zig/zig_install"
+elif [ -d "${HOME}/.config/Code/User/globalStorage/ziglang.vscode-zig/zls_install" ]; then
+    export PATH="${PATH}:${HOME}/.config/Code/User/globalStorage/ziglang.vscode-zig/zls_install"
 fi
 
 # Help Bevy and lldb play nice in VSCode.
