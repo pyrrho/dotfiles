@@ -1071,5 +1071,16 @@
     { "key": "ctrl+alt+enter",   "command": "-workbench.action.chat.runInTerminal",
                                     "when": "hasChatProvider && inChat" },
     { "key": "ctrl+enter",       "command": "-github.copilot.generate",
-                                    "when": "editorTextFocus && github.copilot.activated && !inInteractiveInput && !interactiveEditorFocused" }
+                                    "when": "editorTextFocus && github.copilot.activated && !inInteractiveInput && !interactiveEditorFocused" },
+
+    /// Settings and Keybindings (JSON)
+    /// -------------------------------
+    /// TODO: Do I need to throw some OSX in here?
+    { "key": "ctrl+,",              "command": "workbench.action.openSettingsJson" },
+    { "key": "ctrl+shift+,",        "command": "workbench.action.openSettings" },
+    { "key": "ctrl+k ctrl+s",       "command": "workbench.action.openGlobalKeybindingsFile" },
+    { "key": "ctrl+k ctrl+shift+s", "command": "workbench.action.openGlobalKeybindings" },
+
+    { "key": "ctrl+k ctrl+s",       "command": "-workbench.action.openGlobalKeybindings" },
+    { "key": "ctrl+,",              "command": "-workbench.action.openSettings" }
 ]
