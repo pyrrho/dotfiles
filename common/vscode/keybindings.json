@@ -848,6 +848,22 @@
         }
     },
 
+    /// Relative Line Numbers Toggle
+    /// ----------------------------
+    /// Requires the 'Settings Cycler' extension:
+    ///     code --install-extension hoovercj.vscode-settings-cycler
+    {
+        "key": "ctrl+k ctrl+shift+l", "command": "settings.cycle",
+        "args": {
+            "id": "toggle_relative_line_numbers",
+            "overrideWorkspaceSettings": false,
+            "values": [
+                { "editor.lineNumbers": "relative" },
+                { "editor.lineNumbers": "on" }
+            ]
+        }
+    },
+
     /// Clipboard Ring Overrides
     /// ------------------------
     /// Requires the 'Multiple clipboards for VSCode' extension
