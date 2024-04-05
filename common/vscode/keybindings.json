@@ -1082,5 +1082,20 @@
     { "key": "ctrl+k ctrl+shift+s", "command": "workbench.action.openGlobalKeybindings" },
 
     { "key": "ctrl+k ctrl+s",       "command": "-workbench.action.openGlobalKeybindings" },
-    { "key": "ctrl+,",              "command": "-workbench.action.openSettings" }
+    { "key": "ctrl+,",              "command": "-workbench.action.openSettings" },
+
+    /// Code Folding and Group Locking
+    /// ------------------------------
+    /// This is just a rebind of editor.unfold => editor.toggleFold and
+    /// editor.toggleFold => toggleEditorGroupLock.
+    // TODO: Confirm this is correct for windows/osx
+    { "key": "ctrl+k ctrl+l", "command": "workbench.action.toggleEditorGroupLock",
+                                 "when": "editorFocus" },
+    { "key": "ctrl+shift+]",  "command": "editor.toggleFold",
+                                 "when": "editorTextFocus && foldingEnabled" },
+
+    { "key": "ctrl+k ctrl+l", "command": "-editor.toggleFold",
+                                 "when": "editorTextFocus && foldingEnabled" },
+    { "key": "ctrl+shift+]",  "command": "-editor.unfold",
+                                 "when": "editorTextFocus && foldingEnabled" }
 ]
