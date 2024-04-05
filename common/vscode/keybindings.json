@@ -49,9 +49,9 @@
     { "key": "alt+delete",           "command": "deleteWordPartRight",
                                         "when": "isWindows && textInputFocus && !editorReadonly" },
 
-    { "key": "ctrl+shift+cmd+right", "command": "editor.action.smartSelect.expand",
+    { "key": "ctrl+alt+shift+right", "command": "editor.action.smartSelect.expand",
                                         "when": "isWindows && editorTextFocus" },
-    { "key": "ctrl+shift+cmd+left",  "command": "editor.action.smartSelect.shrink",
+    { "key": "ctrl+alt+shift+left",  "command": "editor.action.smartSelect.shrink",
                                         "when": "isWindows && editorTextFocus" },
 
     // Linux
@@ -83,9 +83,9 @@
     { "key": "alt+delete",           "command": "deleteWordPartRight",
                                         "when": "isLinux && textInputFocus && !editorReadonly" },
 
-    { "key": "ctrl+shift+cmd+right", "command": "editor.action.smartSelect.expand",
+    { "key": "ctrl+alt+shift+right", "command": "editor.action.smartSelect.expand",
                                         "when": "isLinux && editorTextFocus" },
-    { "key": "ctrl+shift+cmd+left",  "command": "editor.action.smartSelect.shrink",
+    { "key": "ctrl+alt+shift+left",  "command": "editor.action.smartSelect.shrink",
                                         "when": "isLinux && editorTextFocus" },
 
     // Mac
@@ -117,6 +117,7 @@
     { "key": "ctrl+delete",          "command": "deleteWordPartRight",
                                         "when": "isMac && textInputFocus && !editorReadonly" },
 
+    // TODO: Figure out of this is the right default for OSX...
     //{ "key": "ctrl+shift+cmd+right", "command": "editor.action.smartSelect.expand",
     //                                    "when": "isMac && editorTextFocus" },
     //{ "key": "ctrl+shift+cmd+left",  "command": "editor.action.smartSelect.shrink",
