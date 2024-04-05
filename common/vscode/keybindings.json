@@ -202,8 +202,8 @@
                                     "when": "suggestWidgetVisible && suggestWidgetMultipleSuggestions && textInputFocus" },
 
     // TODO: ???? 
-    { "key": "ctrl+/",           "command": "toggleExplainMode",
-                                    "when": "suggestWidgetVisible" },
+    // { "key": "ctrl+/",           "command": "toggleExplainMode",
+    //                                 "when": "suggestWidgetVisible" },
     // { "key": "ctrl+shift+space",   "command": "editor.action.triggerParameterHints",
     //                                 "when": "editorHasSignatureHelpProvider && editorTextFocus" },
 
@@ -422,9 +422,9 @@
     { "key": "shift+cmd+=",   "command": "-workbench.action.zoomIn",
                                  "when": "isMac" },
 
-    // Something seems to be up with unbinding the Cursor Navigation set. Some of the conditional
-    // unbinds are not being respected, and there seems to be some inconsistencies in and in-between
-    // the windows and linux default sets.
+    // Something seems to be up with unbinding the Cursor Navigation set. Some
+    // of the conditional unbinds are not being respected, and there seems to be
+    // some inconsistencies in and in-between the windows and linux default sets
     { "key": "ctrl+alt+-",           "command": "-workbench.action.navigateBack" },
     { "key": "ctrl+shift+-",         "command": "-workbench.action.navigateForward" },
     { "key": "ctrl+numpad_add",      "command": "-workbench.action.zoomIn" },
@@ -471,6 +471,8 @@
 
     /// Keyboard window motions
     /// -----------------------
+    /// This doesn't seem to work when large sections of code are folded...
+    /// Gonna have to look into that. Might need to make a damn extension?
     { "key": "alt+ctrl+shift+w", "command": "editorScroll",
                                     "when": "true",
       "args": {
@@ -742,8 +744,8 @@
     { "key": "ctrl+shift+m", "command": "-editor.action.toggleTabFocusMode",
                                 "when": "isMac"  },
 
-    /// Word Wrap Cycle
-    /// ---------------
+    /// Word Wrap Toggle
+    /// ----------------
     /// Requires the 'Settings Cycler' extension:
     ///     code --install-extension hoovercj.vscode-settings-cycler
     {
@@ -759,7 +761,6 @@
         }
     },
 
-    // Unbind overloaded keybindings.
     // Unbind unused commands.
     // Used by all three.
     { "key": "alt+z", "command": "-editor.action.toggleWordWrap" },
@@ -784,7 +785,7 @@
     { "key": "shift+alt+x", "command": "codelens.showLensesInCurrentLine" },
 
 
-    /// Format On Type Toggle
+    /// Format On Type Toggle (and friends)
     /// ---------------------
     /// Requires the 'Settings Cycler' extension:
     ///     code --install-extension hoovercj.vscode-settings-cycler
@@ -800,8 +801,8 @@
         }
     },
 
-    /// Inlay Hints
-    /// -----------
+    /// Inlay Hints Toggle
+    /// ------------------
     /// Requires the 'Settings Cycler' extension:
     ///     code --install-extension hoovercj.vscode-settings-cycler
     {
@@ -905,7 +906,6 @@
                                        "when": "isMac && !editorFocus" },
     { "key": "shift+alt+cmd+c",     "command": "copyRelativeFilePath",
                                        "when": "isMac && !editorFocus" },
-
 
     /// Git Lens Overrides
     /// ------------------
