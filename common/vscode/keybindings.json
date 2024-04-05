@@ -163,15 +163,60 @@
     { "key": "ctrl+alt+delete",      "command": "-deleteWordPartRight",
                                         "when": "isMac && textInputFocus && !editorReadonly" },
 
+
     /// Navigate Tabs Spatially (not LRU)
     /// ---------------------------------
-    { "key": "ctrl+tab",        "command": "workbench.action.nextEditor" },
-    { "key": "ctrl+shift+tab",  "command": "workbench.action.previousEditor" },
-    { "key": "ctrl+pagedown",   "command": "workbench.action.nextEditor" },
-    { "key": "ctrl+pageup",     "command": "workbench.action.previousEditor" },
+    // TODO: Confirm this is correct for win/osx
+    { "key": "ctrl+tab",              "command": "workbench.action.nextEditorInGroup",
+                                         "when": "!inQuickOpen"},
+    { "key": "ctrl+shift+tab",        "command": "workbench.action.previousEditorInGroup",
+                                         "when": "!inQuickOpen"},
+    { "key": "ctrl+k ctrl+tab",       "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
+                                         "when": "!activeEditorGroupEmpty" },
+    { "key": "ctrl+k ctrl+shift+tab", "command": "workbench.action.quickOpenLeastRecentlyUsedEditorInGroup",
+                                         "when": "!activeEditorGroupEmpty" },
+    { "key": "ctrl+tab",              "command": "workbench.action.quickOpenNavigateNextInEditorPicker",
+                                         "when": "inEditorsPicker && inQuickOpen" },
+    { "key": "ctrl+shift+tab",        "command": "workbench.action.quickOpenNavigatePreviousInEditorPicker",
+                                         "when": "inEditorsPicker && inQuickOpen" },
 
-    { "key": "ctrl+tab",        "command": "-workbench.action.quickOpenLeastRecentlyUsedEditorInGroup" },
-    { "key": "ctrl+shift+tab",  "command": "-workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup" },
+    { "key": "ctrl+tab",              "command": "-workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup" },
+    { "key": "ctrl+shift+tab",        "command": "-workbench.action.quickOpenLeastRecentlyUsedEditorInGroup" },
+    { "key": "ctrl+pagedown",         "command": "-workbench.action.nextEditor" },
+    { "key": "ctrl+pageup",           "command": "-workbench.action.previousEditor" },
+    { "key": "ctrl+k ctrl+pagedown",  "command": "-workbench.action.nextEditorInGroup" },
+    { "key": "ctrl+k ctrl+pageup",    "command": "-workbench.action.previousEditorInGroup" },
+
+    /// Normalize Editor and Tab Group Movement
+    /// ---------------------------------------
+    { "key": "ctrl+alt+up",       "command": "workbench.action.focusAboveGroup" },
+    { "key": "ctrl+alt+down",     "command": "workbench.action.focusBelowGroup" },
+    { "key": "ctrl+alt+left",     "command": "workbench.action.focusLeftGroup" },
+    { "key": "ctrl+alt+right",    "command": "workbench.action.focusRightGroup" },
+    { "key": "ctrl+k ctrl+up",    "command": "workbench.action.moveEditorToAboveGroup" },
+    { "key": "ctrl+k ctrl+down",  "command": "workbench.action.moveEditorToBelowGroup" },
+    { "key": "ctrl+k ctrl+left",  "command": "workbench.action.moveEditorToLeftGroup" },
+    { "key": "ctrl+k ctrl+right", "command": "workbench.action.moveEditorToRightGroup" },
+    { "key": "ctrl+k up",         "command": "workbench.action.moveActiveEditorGroupUp" },
+    { "key": "ctrl+k down",       "command": "workbench.action.moveActiveEditorGroupDown" },
+    { "key": "ctrl+k left",       "command": "workbench.action.moveActiveEditorGroupLeft" },
+    { "key": "ctrl+k right",      "command": "workbench.action.moveActiveEditorGroupRight" },
+
+    /// Unbind the default keybindings for moving tabs between groups.
+    { "key": "ctrl+k up",           "command": "-workbench.action.moveActiveEditorGroupUp" },
+    { "key": "ctrl+k down",         "command": "-workbench.action.moveActiveEditorGroupDown" },
+    { "key": "ctrl+k left",         "command": "-workbench.action.moveActiveEditorGroupLeft" },
+    { "key": "ctrl+k right",        "command": "-workbench.action.moveActiveEditorGroupRight" },
+    { "key": "ctrl+alt+right",      "command": "-workbench.action.moveEditorToNextGroup" },
+    { "key": "ctrl+alt+left",       "command": "-workbench.action.moveEditorToPreviousGroup" },
+    { "key": "ctrl+shift+pageup",   "command": "-workbench.action.moveEditorLeftInGroup" },
+    { "key": "ctrl+shift+pagedown", "command": "-workbench.action.moveEditorRightInGroup" },
+    { "key": "ctrl+k ctrl+up",      "command": "-workbench.action.focusAboveGroup" },
+    { "key": "ctrl+k ctrl+down",    "command": "-workbench.action.focusBelowGroup" },
+    { "key": "ctrl+k ctrl+left",    "command": "-workbench.action.focusLeftGroup" },
+    { "key": "ctrl+k ctrl+right",   "command": "-workbench.action.focusRightGroup" },
+    { "key": "shift+alt+1",         "command": "-workbench.action.moveEditorToFirstGroup" },
+    { "key": "shift+alt+9",         "command": "-workbench.action.moveEditorToLastGroup" },
 
 
     /// Normalize the Suggest Widget (and friends)
@@ -1097,5 +1142,8 @@
     { "key": "ctrl+k ctrl+l", "command": "-editor.toggleFold",
                                  "when": "editorTextFocus && foldingEnabled" },
     { "key": "ctrl+shift+]",  "command": "-editor.unfold",
-                                 "when": "editorTextFocus && foldingEnabled" }
+                                 "when": "editorTextFocus && foldingEnabled" },
+
+    // Placeholder to make GUI edits easier to handle
+    {}
 ]
