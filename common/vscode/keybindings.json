@@ -607,6 +607,11 @@
     { "key": "alt+enter",    "command": "editor.action.selectAllMatches",
                                 "when": "isLinux && editorFocus && findWidgetVisible" },
 
+    // Move focus from the search input box to the search results
+    // Default binding is ctrl+down, which I'll keep.
+    { "key": "tab", "command": "search.focus.nextInputBox",
+                       "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
+
     // Finding References
     { "key": "shift+alt+f12",  "command": "editor.action.peekImplementation",
                                   "when": "editorHasReferenceProvider" },
