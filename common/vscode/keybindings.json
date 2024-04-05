@@ -824,6 +824,14 @@
         }
     },
 
+    // TODO: Confirm these are correct for windows/osx
+    { "key": "ctrl+k ctrl+f",       "command": "editor.action.formatDocument",
+                                       "when": "IsLinux && editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor" },
+    { "key": "ctrl+k ctrl+shift+f", "command": "editor.action.formatSelection",
+                                       "when": "IsLinux && editorHasDocumentSelectionFormattingProvider && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+k ctrl+f",       "command": "-editor.action.formatSelection",
+                                       "when": "IsLinux && editorHasDocumentSelectionFormattingProvider && editorTextFocus && !editorReadonly" },
+
     /// Inlay Hints Toggle
     /// ------------------
     /// Requires the 'Settings Cycler' extension:
