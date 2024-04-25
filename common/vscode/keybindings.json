@@ -638,72 +638,187 @@
             "scrollRight"]
       }},
 
-    /// Searching Helpers and Hotkeys
-    /// -----------------------------
-    { "key": "ctrl+alt+g",   "command": "editor.action.selectHighlights",
-                                "when": "isWindows && editorFocus" },
-    { "key": "ctrl+alt+g",   "command": "addCursorsAtSearchResults",
-                                "when": "isWindows && fileMatchOrMatchFocus && searchViewletVisible" },
-    { "key": "ctrl+alt+g",   "command": "selectAllSearchEditorMatches",
-                                "when": "isWindows && inSearchEditor" },
-    { "key": "ctrl+g",       "command": "editor.action.nextMatchFindAction",
-                                "when": "isWindows && editorFocus && findWidgetVisible" },
-    { "key": "ctrl+shift+g", "command": "editor.action.previousMatchFindAction",
-                                "when": "isWindows && editorFocus && findWidgetVisible" },
-    { "key": "ctrl+g",       "command": "editor.action.nextSelectionMatchFindAction",
-                                "when": "isWindows && editorFocus && !findWidgetVisible" },
-    { "key": "ctrl+shift+g", "command": "editor.action.previousSelectionMatchFindAction",
-                                "when": "isWindows && editorFocus && !findWidgetVisible" },
-    { "key": "alt+enter",    "command": "editor.action.selectAllMatches",
-                                "when": "isWindows && editorFocus && findWidgetVisible" },
+    /// Modify Find Widget (ctrl+f) behavior
+    /// ------------------------------------
+    /* cSpell:disable */
+    //
+    // | State      || ctl+f    | ctrl+g   | ctrl+alt+g | enter | tab | esc |
+    // | ---------- || -------  | -------- | ---------- | ----- | --- | --- |
+    // | WC, EF, NT || O F P    | O E PS R |  E PA      |       |     |     |
+    // | WC, EF, ST || O F P    | O E P  R |  E PA      |       |     |     |
+    // | WO, WF     ||   F NS R |   E NS R |  E  A      | E S   | E S | C E |
+    // | WO, EF, NT || O F P    |   E NS R |  E  A      |       |     | C E |
+    // | WO, EF, ST || O F P    |   E NS R |  E  A      |       |     | C E |
+    //
+    // States:
+    // - WO -- Widget is open
+    // - WC -- Widget is open
+    // - WF -- Widget is focused
+    // - EF -- Editor is focused
+    // - ST -- There is some selected text
+    // - NT -- There is no selected text
+    //
+    // Actions:
+    // - O -- Open the find widget
+    // - C -- Close the find widget
+    // - F -- Focus (or leave focus on) the find widget
+    // - E -- Focus (or leave focus on) the editor
+    // - P -- Populate the query with the current selection, or the symbol under
+    //        the cursor
+    // - S -- Select the current instance of the query
+    // - N -- Move the cursor to the next instance of the query
+    // - A -- Select all highlights
+    //        - If there is an active query, this is all instances of the query
+    //        - If there is no active query, this is all instances of the
+    //          current selection or symbol under the cursor
+    // - R -- Reversed when shift is held
+    /* cSpell:enable */
 
-    { "key": "ctrl+alt+g",   "command": "editor.action.selectHighlights",
-                                "when": "isLinux && editorFocus" },
-    { "key": "ctrl+alt+g",   "command": "addCursorsAtSearchResults",
-                                "when": "isLinux && fileMatchOrMatchFocus && searchViewletVisible" },
-    { "key": "ctrl+alt+g",   "command": "selectAllSearchEditorMatches",
-                                "when": "isLinux && inSearchEditor" },
-    { "key": "ctrl+g",       "command": "editor.action.nextMatchFindAction",
-                                "when": "isLinux && editorFocus && findWidgetVisible" },
-    { "key": "ctrl+shift+g", "command": "editor.action.previousMatchFindAction",
-                                "when": "isLinux && editorFocus && findWidgetVisible" },
-    { "key": "ctrl+g",       "command": "editor.action.nextSelectionMatchFindAction",
-                                "when": "isLinux && editorFocus && !findWidgetVisible" },
-    { "key": "ctrl+shift+g", "command": "editor.action.previousSelectionMatchFindAction",
-                                "when": "isLinux && editorFocus && !findWidgetVisible" },
-    { "key": "alt+enter",    "command": "editor.action.selectAllMatches",
-                                "when": "isLinux && editorFocus && findWidgetVisible" },
-
-    // Move focus from the search input box to the search results
-    // Default binding is ctrl+down, which I'll keep.
-    { "key": "tab", "command": "search.focus.nextInputBox",
-                       "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
-
-    // Finding References
-    { "key": "shift+alt+f12",  "command": "editor.action.peekImplementation",
-                                  "when": "editorHasReferenceProvider" },
-    { "key": "ctrl+shift+f12", "command": "references-view.findReferences",
-                                  "when": "editorHasImplementationProvider && editorTextFocus && !inReferenceSearchEditor && !isInEmbeddedEditor" },
-
-    { "key": "ctrl+cmd+g",   "command": "editor.action.selectHighlights",
-                                "when": "isMac && editorFocus" },
-    { "key": "ctrl+cmd+g",   "command": "addCursorsAtSearchResults",
-                                "when": "isMac && fileMatchOrMatchFocus && searchViewletVisible" },
-    { "key": "ctrl+cmd+g",   "command": "selectAllSearchEditorMatches",
-                                "when": "isMac && inSearchEditor" },
-    { "key": "cmd+g",        "command": "editor.action.nextMatchFindAction",
-                                "when": "isMac && editorFocus && findWidgetVisible" },
-    { "key": "shift+cmd+g",  "command": "editor.action.previousMatchFindAction",
-                                "when": "isMac && editorFocus && findWidgetVisible" },
-    { "key": "cmd+g",        "command": "editor.action.nextSelectionMatchFindAction",
-                                "when": "isMac && editorFocus && !findWidgetVisible" },
-    { "key": "shift+cmd+g",  "command": "editor.action.previousSelectionMatchFindAction",
-                                "when": "isMac && editorFocus && !findWidgetVisible" },
-
-    // Unbind overloaded keybindings.
+    // To start, we have to unbind some default find actions. These can't be
+    // done platform-conditionally, so we have to shotgun these changes.
+    { "key": "ctrl+f",       "command": "-actions.find",
+                                "when": "editorFocus || editorIsOpen" },
+    { "key": "cmd+f",        "command": "-actions.find",
+                                "when": "editorFocus || editorIsOpen" },
+    { "key": "enter",        "command": "-editor.action.nextMatchFindAction",
+                                "when": "editorFocus && findInputFocussed" },
+    { "key": "shift+enter",  "command": "-editor.action.previousMatchFindAction",
+                                "when": "editorFocus && findInputFocussed" },
+    // While we're at it, unbind overloaded keybindings, too
+    { "key": "ctrl+g",       "command": "-workbench.action.gotoLine" },
     { "key": "ctrl+shift+g", "command": "-workbench.view.scm" },
 
+
+    // Windows
+    { "key": "ctrl+f",       "command": "actions.find",
+                                "when": "isWindows && (editorFocus || editorIsOpen) && !findInputFocussed" },
+    { "key": "ctrl+g",       "command": "runCommands",
+                  "args": { "commands": ["editor.action.addSelectionToNextFindMatch", "actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isWindows && (editorFocus || editorIsOpen) && !findWidgetVisible && !editorHasSelection" },
+    { "key": "ctrl+g",       "command": "runCommands",
+                  "args": { "commands": ["actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isWindows && (editorFocus || editorIsOpen) && !findWidgetVisible && editorHasSelection" },
+    { "key": "ctrl+shift+g", "command": "runCommands",
+                  "args": { "commands": ["editor.action.addSelectionToNextFindMatch", "actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isWindows && (editorFocus || editorIsOpen) && !findWidgetVisible && !editorHasSelection" },
+    { "key": "ctrl+shift+g", "command": "runCommands",
+                  "args": { "commands": ["actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isWindows && (editorFocus || editorIsOpen) && !findWidgetVisible && editorHasSelection" },
+    { "key": "ctrl+f",       "command": "editor.action.nextMatchFindAction",
+                                "when": "isWindows && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "ctrl+shift+f", "command": "editor.action.previousMatchFindAction",
+                                "when": "isWindows && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "ctrl+g",       "command": "runCommands",
+                  "args": { "commands": ["editor.action.nextMatchFindAction", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isWindows && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "ctrl+shift+g", "command": "runCommands",
+                  "args": { "commands": ["editor.action.previousMatchFindAction", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isWindows && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "ctrl+g",       "command": "editor.action.nextMatchFindAction",
+                                "when": "isWindows && (editorFocus || editorIsOpen)&& !findInputFocussed && findWidgetVisible" },
+    { "key": "ctrl+shift+g", "command": "editor.action.previousMatchFindAction",
+                                "when": "isWindows && (editorFocus || editorIsOpen)&& !findInputFocussed && findWidgetVisible" },
+    { "key": "ctrl+alt+g",   "command": "editor.action.selectHighlights",
+                                "when": "isWindows && (editorFocus || editorIsOpen) && !findInputFocussed" },
+    { "key": "ctrl+alt+g",   "command": "editor.action.selectAllMatches",
+                                "when": "isWindows && (editorFocus || editorIsOpen) && findInputFocussed" },
+
+    // Linux
+    { "key": "ctrl+f",       "command": "actions.find",
+                                "when": "isLinux && (editorFocus || editorIsOpen) && !findInputFocussed" },
+    { "key": "ctrl+g",       "command": "runCommands",
+                  "args": { "commands": ["editor.action.addSelectionToNextFindMatch", "actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible && !editorHasSelection" },
+    { "key": "ctrl+g",       "command": "runCommands",
+                  "args": { "commands": ["actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible && editorHasSelection" },
+    { "key": "ctrl+shift+g", "command": "runCommands",
+                  "args": { "commands": ["editor.action.addSelectionToNextFindMatch", "actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible && !editorHasSelection" },
+    { "key": "ctrl+shift+g", "command": "runCommands",
+                  "args": { "commands": ["actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible && editorHasSelection" },
+    { "key": "ctrl+f",       "command": "editor.action.nextMatchFindAction",
+                                "when": "isLinux && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "ctrl+shift+f", "command": "editor.action.previousMatchFindAction",
+                                "when": "isLinux && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "ctrl+g",       "command": "runCommands",
+                  "args": { "commands": ["editor.action.nextMatchFindAction", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isLinux && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "ctrl+shift+g", "command": "runCommands",
+                  "args": { "commands": ["editor.action.previousMatchFindAction", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isLinux && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "ctrl+g",       "command": "editor.action.nextMatchFindAction",
+                                "when": "isLinux && (editorFocus || editorIsOpen)&& !findInputFocussed && findWidgetVisible" },
+    { "key": "ctrl+shift+g", "command": "editor.action.previousMatchFindAction",
+                                "when": "isLinux && (editorFocus || editorIsOpen)&& !findInputFocussed && findWidgetVisible" },
+    { "key": "ctrl+alt+g",   "command": "editor.action.selectHighlights",
+                                "when": "isLinux && (editorFocus || editorIsOpen) && !findInputFocussed" },
+    { "key": "ctrl+alt+g",   "command": "editor.action.selectAllMatches",
+                                "when": "isLinux && (editorFocus || editorIsOpen) && findInputFocussed" },
+
+    // Mac
+    { "key": "cmd+f",        "command": "actions.find",
+                                "when": "isMac && (editorFocus || editorIsOpen) && !findInputFocussed" },
+    { "key": "cmd+g",        "command": "runCommands",
+                  "args": { "commands": ["editor.action.addSelectionToNextFindMatch", "actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isMac && (editorFocus || editorIsOpen) && !findWidgetVisible && !editorHasSelection" },
+    { "key": "cmd+g",        "command": "runCommands",
+                  "args": { "commands": ["actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isMac && (editorFocus || editorIsOpen) && !findWidgetVisible && editorHasSelection" },
+    { "key": "shift+cmd+g",  "command": "runCommands",
+                  "args": { "commands": ["editor.action.addSelectionToNextFindMatch", "actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isMac && (editorFocus || editorIsOpen) && !findWidgetVisible && !editorHasSelection" },
+    { "key": "shift+cmd+g",  "command": "runCommands",
+                  "args": { "commands": ["actions.find", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isMac && (editorFocus || editorIsOpen) && !findWidgetVisible && editorHasSelection" },
+    { "key": "cmd+f",        "command": "editor.action.nextMatchFindAction",
+                                "when": "isMac && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "shift+cmd+f",  "command": "editor.action.previousMatchFindAction",
+                                "when": "isMac && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "cmd+g",        "command": "runCommands",
+                  "args": { "commands": ["editor.action.nextMatchFindAction", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isMac && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "shift+cmd+g",  "command": "runCommands",
+                  "args": { "commands": ["editor.action.previousMatchFindAction", "workbench.action.focusActiveEditorGroup"] },
+                                "when": "isMac && (editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "cmd+g",        "command": "editor.action.nextMatchFindAction",
+                                "when": "isMac && (editorFocus || editorIsOpen)&& !findInputFocussed && findWidgetVisible" },
+    { "key": "shift+cmd+g",  "command": "editor.action.previousMatchFindAction",
+                                "when": "isMac && (editorFocus || editorIsOpen)&& !findInputFocussed && findWidgetVisible" },
+    { "key": "ctrl+cmd+g",   "command": "editor.action.selectHighlights",
+                                "when": "isMac && (editorFocus || editorIsOpen) && !findInputFocussed" },
+    { "key": "ctrl+cmd+g",   "command": "editor.action.selectAllMatches",
+                                "when": "isMac && (editorFocus || editorIsOpen) && findInputFocussed" },
+
+    // Move focus from the find widget input to the active editor
+    { "key": "tab",   "command": "workbench.action.focusActiveEditorGroup",
+                         "when": "(editorFocus || editorIsOpen) && findInputFocussed" },
+    { "key": "enter", "command": "workbench.action.focusActiveEditorGroup",
+                         "when": "(editorFocus || editorIsOpen) && findInputFocussed" },
+
+
+    /// Modify Search Viewlet (ctrl+shift+f) behavior
+    /// ---------------------------------------------
+
+    // Move focus from the search input box to the search results
+    // Default binding is ctrl+down, which is masked by my relative motion hotkeys.
+    { "key": "tab",       "command": "search.focus.nextInputBox",
+                             "when": "inputBoxFocus && searchViewletVisible" },
+    // TODO: Figure out what inSearchEditor && inputBoxFocus is about? afaikt,
+    //       this rule does nothing?
+    { "key": "tab",       "command": "search.focus.nextInputBox",
+                             "when": "inSearchEditor && inputBoxFocus" },
+
+    // Unbid the default ctrl+down action
+    { "key": "ctrl+down", "command": "-search.focus.nextInputBox",
+                             "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
+
     // Unbind unused commands.
+    // TODO: This was done to avoid conflicts with the sublime `splitIntoLines`.
+    //       I don't think these actually need to be unbound, though, since we
+    //       can guard `splitIntoLines` based on `editorHasSelection` and these
+    //       based on something to do with the search viewlet
     { "key": "ctrl+shift+l", "command": "-editor.action.selectHighlights",
                                 "when": "isWindows && editorFocus" },
     { "key": "ctrl+shift+l", "command": "-addCursorsAtSearchResults",
@@ -725,8 +840,13 @@
     { "key": "shift+cmd+l",  "command": "-selectAllSearchEditorMatches",
                                 "when": "isMac && inSearchEditor" },
 
-    // Used by all three.
-    { "key": "ctrl+g",         "command": "-workbench.action.gotoLine" },
+
+    /// Finding References/Implementations
+    /// ----------------------------------
+    { "key": "shift+alt+f12",  "command": "editor.action.peekImplementation",
+                                  "when": "editorHasReferenceProvider" },
+    { "key": "ctrl+shift+f12", "command": "references-view.findReferences",
+                                  "when": "editorHasImplementationProvider && editorTextFocus && !inReferenceSearchEditor && !isInEmbeddedEditor" },
 
     { "key": "shift+alt+f12",  "command": "-references-view.findReferences" },
     { "key": "ctrl+shift+f12", "command": "-editor.action.peekImplementation" },
