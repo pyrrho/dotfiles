@@ -296,6 +296,26 @@
     { "key": "cmd+/",            "command": "-toggleExplainMode",
                                     "when": "isMac && suggestWidgetVisible" },
 
+    /// Flip Next Problem behavior
+    /// --------------------------
+    // I want F8 to stay in the current file, and F8+Shift to go to any.
+    { "key": "f8",           "command": "editor.action.marker.next",
+                                "when": "editorFocus" },
+    { "key": "shift+f8",     "command": "editor.action.marker.prev",
+                                "when": "editorFocus" },
+    { "key": "alt+f8",       "command": "editor.action.marker.nextInFiles",
+                                "when": "editorFocus" },
+    { "key": "shift+alt+f8", "command": "editor.action.marker.prevInFiles",
+                                "when": "editorFocus" },
+
+    { "key": "f8",           "command": "-editor.action.marker.nextInFiles",
+                                "when": "editorFocus" },
+    { "key": "shift+f8",     "command": "-editor.action.marker.prevInFiles",
+                                "when": "editorFocus" },
+    { "key": "alt+f8",       "command": "-editor.action.marker.next",
+                                "when": "editorFocus" },
+    { "key": "shift+alt+f8", "command": "-editor.action.marker.prev",
+                                "when": "editorFocus" },
 
     /// Normalize Cursor Inserts
     /// ------------------------
