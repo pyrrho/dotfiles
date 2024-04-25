@@ -754,6 +754,8 @@
                                  "when": "isWindows && editorTextFocus && !editorReadonly" },
     { "key": "ctrl+' ctrl+k", "command": "extension.changeCase.constant",
                                  "when": "isWindows && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+z", "command": "extension.changeCase.kebab",
+                                 "when": "isWindows && editorTextFocus && !editorReadonly" },
 
     { "key": "ctrl+' ctrl+u", "command": "extension.changeCase.upper",
                                  "when": "isLinux && editorTextFocus && !editorReadonly" },
@@ -769,6 +771,8 @@
                                  "when": "isLinux && editorTextFocus && !editorReadonly" },
     { "key": "ctrl+' ctrl+k", "command": "extension.changeCase.constant",
                                  "when": "isLinux && editorTextFocus && !editorReadonly" },
+    { "key": "ctrl+' ctrl+z", "command": "extension.changeCase.kebab",
+                                 "when": "isLinux && editorTextFocus && !editorReadonly" },
 
     { "key": "cmd+' cmd+u",   "command": "extension.changeCase.upper",
                                  "when": "isMac && editorTextFocus && !editorReadonly" },
@@ -783,6 +787,8 @@
     { "key": "cmd+' cmd+c",   "command": "extension.changeCase.camel",
                                  "when": "isMac && editorTextFocus && !editorReadonly" },
     { "key": "cmd+' cmd+k",   "command": "extension.changeCase.constant",
+                                 "when": "isMac && editorTextFocus && !editorReadonly" },
+    { "key": "cmd+' cmd+z",   "command": "extension.changeCase.kebab",
                                  "when": "isMac && editorTextFocus && !editorReadonly" },
 
 
