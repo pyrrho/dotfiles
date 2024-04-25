@@ -247,6 +247,8 @@ fi
 # Source my chirps and squawks
 source ${HOME}/repos/dotfiles/common/chirp/source.sh
 
+alias _ls_path="echo $PATH | tr ':' '\n'"
+
 alias rf="rm -rf"
 alias ll="ls -lAh"
 alias la="ls -lah"
@@ -268,6 +270,10 @@ function diffly {
 
 function unquote {
     sed "s/^\([\"']\)\(.*\)\1\$/\2/g"
+}
+
+function seg {
+    awk '{ print $'"$1"' }'
 }
 
 alias py="python"
