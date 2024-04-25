@@ -1048,6 +1048,23 @@
         }
     },
 
+    /// CSpell Diagnostic Level Toggle
+    /// ------------------------------
+    /// Requires the 'Settings Cycler' and 'Code Spell Checker' extensions:
+    ///     code --install-extension hoovercj.vscode-settings-cycler
+    ///     code --install-extension streetsidesoftware.code-spell-checker
+    {
+        "key": "ctrl+f8", "command": "settings.cycle",
+        "args": {
+            "id": "toggle_cspell_diagnostic_level",
+            "overrideWorkspaceSettings": false,
+            "values": [
+                { "cSpell.diagnosticLevel": "Hint" },
+                { "cSpell.diagnosticLevel": "Information" }
+            ]
+        }
+    },
+
     /// Clipboard Ring Overrides
     /// ------------------------
     /// Requires the 'Multiple clipboards for VSCode' extension
