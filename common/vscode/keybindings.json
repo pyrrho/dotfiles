@@ -841,17 +841,6 @@
                                 "when": "isMac && inSearchEditor" },
 
 
-    /// Finding References/Implementations
-    /// ----------------------------------
-    { "key": "shift+alt+f12",  "command": "editor.action.peekImplementation",
-                                  "when": "editorHasReferenceProvider" },
-    { "key": "ctrl+shift+f12", "command": "references-view.findReferences",
-                                  "when": "editorHasImplementationProvider && editorTextFocus && !inReferenceSearchEditor && !isInEmbeddedEditor" },
-
-    { "key": "shift+alt+f12",  "command": "-references-view.findReferences" },
-    { "key": "ctrl+shift+f12", "command": "-editor.action.peekImplementation" },
-
-
     /// Show File in Explorer
     /// ---------------------
     { "key": "ctrl+alt+\\", "command": "workbench.files.action.showActiveFileInExplorer" },
