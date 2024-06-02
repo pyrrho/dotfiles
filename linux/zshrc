@@ -79,6 +79,7 @@ plugins=(
     ctrl-z-z
     emoji
     encode64
+    forgit
     fzf
     genpass
     git
@@ -90,11 +91,18 @@ plugins=(
     ripgrep
     rust
     sudo
+    taskwarrior
     zig-shell-completions
     zoxide
 )
 zstyle ':omz:plugins:nvm' lazy yes
 ZOXIDE_CMD_OVERRIDE="cd"
+
+# Turn forgit into a git extension s.t. oh-my-zsh alises don't clash
+if [ -d "$ZSH/custom/plugins/forgit/bin" ] ; then
+    export PATH="$PATH:$ZSH/custom/plugins/forgit/bin"
+    export fpath=($ZSH/custom/plugins/forgit/completions $fpath)
+fi
 
 ## Interesting plugins
 
@@ -152,6 +160,9 @@ ZOXIDE_CMD_OVERRIDE="cd"
 # - zig-shell-completions: Completions for the `zig` CLI
 #       https://github.com/ziglang/shell-completions
 #       git clone https://github.com/ziglang/shell-completions $ZSH/custom/plugins/zig-shell-completions
+# - forgit: A different interactive system for git
+#       https://github.com/wfxr/forgit?tab=readme-ov-file
+#       git clone https://github.com/wfxr/forgit.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
 
 source $ZSH/oh-my-zsh.sh
 
@@ -246,6 +257,12 @@ fi
 
 # Source my chirps and squawks
 source ${HOME}/repos/dotfiles/common/chirp/source.sh
+
+# Shortcut into the LI repo
+alias lir="cd ${HOME}/li/repo"
+# Add LI binaries to PATH
+alias _src_li_dbg="export PATH=\"${PATH}:${HOME}/li/repo/target/debug\""
+alias _src_li_rel="export PATH=\"${PATH}:${HOME}/li/repo/target/release\""
 
 alias _ls_path="echo $PATH | tr ':' '\n'"
 
