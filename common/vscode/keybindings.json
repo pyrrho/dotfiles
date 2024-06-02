@@ -166,22 +166,51 @@
 
     /// Navigate Tabs Spatially (not LRU)
     /// ---------------------------------
-    // TODO: Confirm this is correct for win/osx
-    { "key": "ctrl+tab",              "command": "workbench.action.nextEditorInGroup",
-                                         "when": "!inQuickOpen"},
-    { "key": "ctrl+shift+tab",        "command": "workbench.action.previousEditorInGroup",
-                                         "when": "!inQuickOpen"},
-    { "key": "ctrl+k ctrl+tab",       "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
-                                         "when": "!activeEditorGroupEmpty" },
-    { "key": "ctrl+k ctrl+shift+tab", "command": "workbench.action.quickOpenLeastRecentlyUsedEditorInGroup",
-                                         "when": "!activeEditorGroupEmpty" },
+    // // Spatial, per-group tab navigation.
+    // { "key": "ctrl+pagedown",         "command": "workbench.action.nextEditorInGroup" },
+    // { "key": "ctrl+pageup",           "command": "workbench.action.previousEditorInGroup" },
+    // // Drop-down, LRU, per-group tab navigation.
+    // { "key": "ctrl+tab",              "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
+    //                                      "when": "!activeEditorGroupEmpty && !inQuickOpen && !inEditorsPicker" },
+    // { "key": "ctrl+shift+tab",        "command": "workbench.action.quickOpenLeastRecentlyUsedEditorInGroup",
+    //                                      "when": "!activeEditorGroupEmpty && !inQuickOpen && !inEditorsPicker" },
+    // { "key": "ctrl+tab",              "command": "workbench.action.quickOpenNavigateNextInEditorPicker",
+    //                                      "when": "inEditorsPicker && inQuickOpen" },
+    // { "key": "ctrl+shift+tab",        "command": "workbench.action.quickOpenNavigatePreviousInEditorPicker",
+    //                                      "when": "inEditorsPicker && inQuickOpen" },
+
+    // Spatial, per-group tab navigation.
+    { "key": "ctrl+tab",              "command": "workbench.action.nextEditorInGroup" },
+    { "key": "ctrl+shift+tab",        "command": "workbench.action.previousEditorInGroup" },
+    // Drop-down, LRU, per-group tab navigation.
     { "key": "ctrl+pageup",           "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
                                          "when": "!activeEditorGroupEmpty && !inQuickOpen && !inEditorsPicker" },
+    // { "key": "ctrl+shift+tab",        "command": "workbench.action.quickOpenLeastRecentlyUsedEditorInGroup",
+    //                                      "when": "!activeEditorGroupEmpty && !inQuickOpen && !inEditorsPicker" },
     { "key": "ctrl+tab",              "command": "workbench.action.quickOpenNavigateNextInEditorPicker",
+                                         "when": "inEditorsPicker && inQuickOpen" },
+    { "key": "ctrl+pageup",           "command": "workbench.action.quickOpenNavigateNextInEditorPicker",
                                          "when": "inEditorsPicker && inQuickOpen" },
     { "key": "ctrl+shift+tab",        "command": "workbench.action.quickOpenNavigatePreviousInEditorPicker",
                                          "when": "inEditorsPicker && inQuickOpen" },
 
+    // // TODO: Delete?
+    // { "key": "ctrl+tab",              "command": "workbench.action.nextEditorInGroup",
+    //                                      "when": "!inQuickOpen"},
+    // { "key": "ctrl+shift+tab",        "command": "workbench.action.previousEditorInGroup",
+    //                                      "when": "!inQuickOpen"},
+    // { "key": "ctrl+k ctrl+tab",       "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
+    //                                      "when": "!activeEditorGroupEmpty" },
+    // { "key": "ctrl+k ctrl+shift+tab", "command": "workbench.action.quickOpenLeastRecentlyUsedEditorInGroup",
+    //                                      "when": "!activeEditorGroupEmpty" },
+    // { "key": "ctrl+pageup",           "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
+    //                                      "when": "!activeEditorGroupEmpty && !inQuickOpen && !inEditorsPicker" },
+    // { "key": "ctrl+tab",              "command": "workbench.action.quickOpenNavigateNextInEditorPicker",
+    //                                      "when": "inEditorsPicker && inQuickOpen" },
+    // { "key": "ctrl+shift+tab",        "command": "workbench.action.quickOpenNavigatePreviousInEditorPicker",
+    //                                      "when": "inEditorsPicker && inQuickOpen" },
+
+    // Unbind overloads
     { "key": "ctrl+tab",              "command": "-workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup" },
     { "key": "ctrl+shift+tab",        "command": "-workbench.action.quickOpenLeastRecentlyUsedEditorInGroup" },
     { "key": "ctrl+pagedown",         "command": "-workbench.action.nextEditor" },
@@ -682,10 +711,10 @@
                                 "when": "editorFocus || editorIsOpen" },
     { "key": "cmd+f",        "command": "-actions.find",
                                 "when": "editorFocus || editorIsOpen" },
-    { "key": "enter",        "command": "-editor.action.nextMatchFindAction",
-                                "when": "editorFocus && findInputFocussed" },
-    { "key": "shift+enter",  "command": "-editor.action.previousMatchFindAction",
-                                "when": "editorFocus && findInputFocussed" },
+    // { "key": "enter",        "command": "-editor.action.nextMatchFindAction",
+    //                             "when": "editorFocus && findInputFocussed" },
+    // { "key": "shift+enter",  "command": "-editor.action.previousMatchFindAction",
+    //                             "when": "editorFocus && findInputFocussed" },
     // While we're at it, unbind overloaded keybindings, too
     { "key": "ctrl+g",       "command": "-workbench.action.gotoLine" },
     { "key": "ctrl+shift+g", "command": "-workbench.view.scm" },
@@ -796,8 +825,8 @@
     // Move focus from the find widget input to the active editor
     { "key": "tab",   "command": "workbench.action.focusActiveEditorGroup",
                          "when": "(editorFocus || editorIsOpen) && findInputFocussed" },
-    { "key": "enter", "command": "workbench.action.focusActiveEditorGroup",
-                         "when": "(editorFocus || editorIsOpen) && findInputFocussed" },
+    // { "key": "enter", "command": "workbench.action.focusActiveEditorGroup",
+    //                      "when": "(editorFocus || editorIsOpen) && findInputFocussed" },
 
 
     /// Modify Search Viewlet (ctrl+shift+f) behavior
@@ -959,11 +988,11 @@
         "key": "alt+z", "command": "settings.cycle",
         "args": {
             "id": "toggle_word_wrap",
-            "overrideWorkspaceSettings": false,
+            "overrideWorkspaceSettings": true,
             "values": [
-                { "editor.wordWrap": "off",     "[markdown]": { "editor.wordWrap": "off"     } },
-                { "editor.wordWrap": "on",      "[markdown]": { "editor.wordWrap": "on"      } },
-                { "editor.wordWrap": "bounded", "[markdown]": { "editor.wordWrap": "bounded" } }
+                { "editor.wordWrap": "off",     "[markdown]": { "editor.tabSize": 2, "editor.wordWrap": "off"     } },
+                { "editor.wordWrap": "on",      "[markdown]": { "editor.tabSize": 2, "editor.wordWrap": "on"      } },
+                { "editor.wordWrap": "bounded", "[markdown]": { "editor.tabSize": 2, "editor.wordWrap": "bounded" } }
             ]
         }
     },
