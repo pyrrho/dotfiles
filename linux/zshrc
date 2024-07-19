@@ -308,3 +308,210 @@ else:
     print(time.strftime("%Y/%m/%d %H:%M:%S %Z", time.localtime($1)))
 EOF
 }
+
+# Git Worktrees
+# but my way
+#
+# tl;dr - a few commands for making the `git worktree` command set more fun.
+#
+# - `gwl` -- `[g]it [w]orktree [l]ist`
+#   List active worktrees
+# - `gwt` -- `[g]it [w]orktree [t]ake`
+#   Either `cd` to the worktree containing the given branch, or create a new
+#   worktree for the given branch. If that branch exists. And then `cd` to it.
+#   NB. Tab completion works with this command. I haven't figured out how to
+#       group completions, but existing worktrees will be sorted before
+#       unlinked branches that could be targeted for creation. And unlinked
+#       branches will be sorted in order of most recently updated.
+# - `gwrm` -- `[g]it [w]orktree [r]e[m]ove`
+#   Delete the worktree containing the given branch.
+#   NB. Tab completion works with this command.
+#   NB. idk what happens if you try to delete the main worktree. Worth trying?
+# - `gwnb` -- `[g]it [w]orktree [n]ew [b]ranch`
+#   Create a new worktree containing a new branch
+#
+#
+# A NOTE ON DIRECTORY LAYOUTS
+# Because I never want to think about where my worktrees live, `gwt` can be used
+# to either cd into existing worktrees, or to create new worktrees for existing
+# branches. `gwnb` can be used to create a new branch and a new worktree at the
+# same time. It would be better for that to be `gwt -b ...` but I didn't want to
+# deal with cli options.
+#
+# Worktrees managed by these commands will be creted in sister directory of the
+# main repository; `__<repo>_worktrees/<branch>`, where <repo> is the base
+# directory of the main repository, and <branch> is the branch being linked. See
+# A NOTE ON FINDING THE WORKTREE ROOT to see how to consistently find the
+# worktree root.
+#
+#
+# A NOTE ON FINDING THE WORKTREE ROOT
+# Executing `git rev-parse --git-common-dir` returns one of two things;
+# - When executed in the main worktree (a `git clone`d repo) it will return a
+#   relative path to the .git directory of the current repository.
+# - When executed in a linked worktree (a `git worktree add`d repo) it will
+#   return an absolute path to the main worktree's .git directory.
+#
+# In either case, we can `realpath $(...)` the output of that commad to get an
+# absolute path. Then we can nest a pair of `dirname` calls to strip the .git
+# directory and the main worktree directory. And then we have a root.
+
+# Unset git worktree ailases porvided by the ohmyzsh git plugin
+unalias gwt
+unalias gwta
+unalias gwtls
+unalias gwtmv
+unalias gwtrm
+
+# Functions!
+
+function gwl {
+    git rev-parse 2>& /dev/null
+    if [ $? -ne 0 ]; then
+        echo "ERROR: it looks like you're not in a git repo?"
+        return $?
+    fi
+    git worktree list
+}
+
+function gwt {
+    git rev-parse 2>& /dev/null
+    if [ $? -ne 0 ]; then
+        echo "ERROR: it looks like you're not in a git repo?"
+        return $?
+    fi
+    if [ $# -ne 1 ]; then
+        echo "ERROR: \`gwt\` requires exactuly 1 argument"
+        return 1
+    fi
+    while read -r wt; do
+        IFS=' ' read -r wt_path wt_sha wt_br <<< "${wt}"
+        wt_br=$(echo ${wt_br} | tr -d '[]');
+        if [ "$1" = "${wt_br}" ]; then
+            cd ${wt_path}
+            return
+        fi
+    done <<< $(git worktree list)
+    wt_root=$(__gw_get_worktrees_root)
+    git worktree add ${wt_root}/$1 $1
+    if [ $? -eq 0 ]; then
+        cd ${wt_root}/$1
+    fi
+}
+function _gwt_completion {
+    git rev-parse 2>& /dev/null
+    if [ $? -ne 0 ]; then
+        return $?
+    fi
+
+    local -a options
+
+    worktree_branches=$(
+        # List all active worktree branches
+        git worktree list |
+        # But only the short branchname
+        xargs -I {} sh -c 'echo {} | awk "{print \$3}" | tr -d "[]"'
+    )
+    all_branches=$(
+        git branch --sort -committerdate --all |
+        # Stripping the worktree active in this dir
+        rg -v '\*' |
+        # Stripping other active worktrees
+        rg -v '\+' |
+        # Stripping alias'ing refs (e.g. `origin/HEAD`)
+        rg -v " -> " |
+        # Stripping e.g. remotes/origin/ s.t. we're left with just the branch names
+        xargs -I {} sh -c "echo {} | perl -pe 's;remotes/\w+/;;'"
+    )
+    choices=$(
+        # Cat the existing branches with all possible branches
+        echo "${worktree_branches}\n${all_branches}" |
+        # Listing unique entries while maintaining order (thanks S.O.)
+        awk '!seen[$0]++'
+    )
+
+    options=($(echo ${choices}))
+    _describe -1V 'arguments' options
+}
+compdef _gwt_completion gwt
+
+function gwrm {
+    git rev-parse 2>& /dev/null
+    if [ $? -ne 0 ]; then
+        echo "ERROR: it looks like you're not in a git repo?"
+        return $?
+    fi
+    if [ $# -ne 1 ]; then
+        echo "ERROR: \`gwrm\` requires exactuly 1 argument"
+        return 1
+    fi
+    worktree_count=$(git worktree list | wc -l)
+    if [ $worktree_count -eq 1 ]; then
+        echo "ERROR: do you really want to delete the last active worktree?"
+        return 1
+    fi
+    while read -r wt; do
+        IFS=' ' read -r wt_path wt_sha wt_br <<< "${wt}"
+        wt_br=$(echo ${wt_br} | tr -d '[]');
+        if [ "$1" = "${wt_br}" ]; then
+            # If we're within the worktree we're looking to remove, move to the
+            # first worktree listed in `git worktree list` before doing the rm.
+            if [[ "$(pwd)" == "${wt_root}"* ]]; then
+                cd $(git worktree list | head -1 | cut -d ' ' -f 1)
+            fi
+            git worktree remove ${wt_path}
+
+            return 0
+        fi
+    done <<< $(git worktree list)
+}
+function _gwrm_completion {
+    git rev-parse 2>& /dev/null
+    if [ $? -ne 0 ]; then
+        return $?
+    fi
+
+    local -a options
+    options=($(git worktree list | xargs -I {} sh -c 'echo {} | awk "{print \$3}" | tr -d "[]"'))
+
+    _describe -V 'arguments' options
+}
+compdef _gwrm_completion gwrm
+
+function gwnb {
+    git rev-parse 2>& /dev/null
+    if [ $? -ne 0 ]; then
+        echo "ERROR: it looks like you're not in a git repo?"
+        return $?
+    fi
+    if [ $# -ne 1 ] && [ $# -ne 2 ]; then
+        echo "ERROR: \`gwnb\` requires exactly 1 or 2 arguments"
+        return 1
+    fi
+
+    wt_root=$(__gw_get_worktrees_root)
+    git worktree add -b $1 ${wt_root}/$1 $2
+    if [ $? -eq 0 ]; then
+        cd ${wt_root}/$1
+    fi
+}
+
+function __gw_get_worktrees_root {
+    git rev-parse 2>& /dev/null
+    if [ $? -ne 0 ]; then
+        echo "ERROR: it looks like you're not in a git repo?"
+        return $?
+    fi
+
+    main_repo_path=$(dirname $(realpath $(git rev-parse --git-common-dir)))
+    repo_root_path=$(dirname ${main_repo_path})
+    main_repo_name=$(basename ${main_repo_path})
+
+    worktrees_path="${repo_root_path}/__${main_repo_name}_worktrees"
+
+    if [ ! -d ${worktrees_path} ]; then
+        mkdir -p ${worktrees_path}
+    fi
+
+    echo "${worktrees_path}"
+}
