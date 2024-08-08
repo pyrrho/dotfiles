@@ -79,6 +79,7 @@ plugins=(
     ctrl-z-z
     emoji
     encode64
+    forgit
     fzf
     genpass
     git
@@ -87,14 +88,19 @@ plugins=(
     npm
     nvm
     qrcode
-    ripgrep
     rust
     sudo
+    taskwarrior
     zig-shell-completions
-    zoxide
 )
 zstyle ':omz:plugins:nvm' lazy yes
 ZOXIDE_CMD_OVERRIDE="cd"
+
+# Turn forgit into a git extension s.t. oh-my-zsh alises don't clash
+if [ -d "$ZSH/custom/plugins/forgit/bin" ] ; then
+    export PATH="$PATH:$ZSH/custom/plugins/forgit/bin"
+    export fpath=($ZSH/custom/plugins/forgit/completions $fpath)
+fi
 
 ## Interesting plugins
 
@@ -135,7 +141,6 @@ ZOXIDE_CMD_OVERRIDE="cd"
 # - dnote: Completions for `dnote`; terminal-based note taker.
 # - gh: Completions for the GitHub CLI.
 # - httpie: Completions for `http`; a modern terminal-based HTTP client.
-# - ripgrep: Completions for ripgrep.
 # - rust: Completions for `rustc`, `rustup`, and `cargo` .
 # - taskwarrior: Completions for TaskWarrior's `task`; terminal-based TODO list.
 # - watson: Completions for `watson`; terminal-based time-tracking.
@@ -152,6 +157,9 @@ ZOXIDE_CMD_OVERRIDE="cd"
 # - zig-shell-completions: Completions for the `zig` CLI
 #       https://github.com/ziglang/shell-completions
 #       git clone https://github.com/ziglang/shell-completions $ZSH/custom/plugins/zig-shell-completions
+# - forgit: A different interactive system for git
+#       https://github.com/wfxr/forgit?tab=readme-ov-file
+#       git clone https://github.com/wfxr/forgit.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
 
 source $ZSH/oh-my-zsh.sh
 
@@ -247,12 +255,19 @@ fi
 # Source my chirps and squawks
 source ${HOME}/repos/dotfiles/common/chirp/source.sh
 
+# Shortcut into the LI repo
+alias 0="cd ${HOME}/li/__repo_worktrees/main"
+# Add LI binaries to PATH
+alias _src_li_dbg="export PATH=\"${PATH}:${HOME}/li/repo/target/debug\""
+alias _src_li_rel="export PATH=\"${PATH}:${HOME}/li/repo/target/release\""
+
 alias _ls_path="echo $PATH | tr ':' '\n'"
 
 alias rf="rm -rf"
 alias ll="ls -lAh"
 alias la="ls -lah"
 alias l1="ls -1"
+alias cpr="cp -r"
 
 alias xcc="xclip -r -selection clipboard"
 
@@ -327,6 +342,8 @@ EOF
 #   Delete the worktree containing the given branch.
 #   NB. Tab completion works with this command.
 #   NB. idk what happens if you try to delete the main worktree. Worth trying?
+# - `gwrf` -- `[g]it [w]orktree [r]emove [f]orcefully`
+#   Like `gwrm` but forceful
 # - `gwnb` -- `[g]it [w]orktree [n]ew [b]ranch`
 #   Create a new worktree containing a new branch
 #
@@ -374,6 +391,7 @@ function gwl {
     git worktree list
 }
 
+alias gcd=gwt
 function gwt {
     git rev-parse 2>& /dev/null
     if [ $? -ne 0 ]; then
@@ -456,10 +474,43 @@ function gwrm {
         if [ "$1" = "${wt_br}" ]; then
             # If we're within the worktree we're looking to remove, move to the
             # first worktree listed in `git worktree list` before doing the rm.
-            if [[ "$(pwd)" == "${wt_root}"* ]]; then
+            if [[ "$(pwd)" == "${wt_root}/${wt_path}"* ]]; then
                 cd $(git worktree list | head -1 | cut -d ' ' -f 1)
             fi
             git worktree remove ${wt_path}
+            git br -D ${wt_br}
+
+            return 0
+        fi
+    done <<< $(git worktree list)
+}
+
+function gwrf {
+    git rev-parse 2>& /dev/null
+    if [ $? -ne 0 ]; then
+        echo "ERROR: it looks like you're not in a git repo?"
+        return $?
+    fi
+    if [ $# -ne 1 ]; then
+        echo "ERROR: \`gwrm\` requires exactuly 1 argument"
+        return 1
+    fi
+    worktree_count=$(git worktree list | wc -l)
+    if [ $worktree_count -eq 1 ]; then
+        echo "ERROR: do you really want to delete the last active worktree?"
+        return 1
+    fi
+    while read -r wt; do
+        IFS=' ' read -r wt_path wt_sha wt_br <<< "${wt}"
+        wt_br=$(echo ${wt_br} | tr -d '[]');
+        if [ "$1" = "${wt_br}" ]; then
+            # If we're within the worktree we're looking to remove, move to the
+            # first worktree listed in `git worktree list` before doing the rm.
+            if [[ "$(pwd)" == "${wt_root}"* ]]; then
+                cd $(git worktree list | head -1 | cut -d ' ' -f 1)
+            fi
+            git worktree remove ${wt_path} --force
+            git br -D ${wt_br}
 
             return 0
         fi
@@ -477,6 +528,7 @@ function _gwrm_completion {
     _describe -V 'arguments' options
 }
 compdef _gwrm_completion gwrm
+compdef _gwrm_completion gwrf
 
 function gwnb {
     git rev-parse 2>& /dev/null
@@ -515,3 +567,24 @@ function __gw_get_worktrees_root {
 
     echo "${worktrees_path}"
 }
+
+
+# # List all branches, remote and otherwise
+# all_branches=$(
+#     git branch --sort -committerdate --all |
+#     # Swapping '*' (the worktree in this dir) with '+' (active worktrees).
+#     # Done to avoid expansion issues later.
+#     tr '*' '+' |
+#     # Stripping alias'ing refs (e.g. `origin/HEAD`)
+#     rg -v " -> " |
+#     # Stripping e.g. remotes/origin/ s.t. we're left with just the branch names
+#     xargs -I {} sh -c "echo {} | perl -pe 's;remotes/\w+/;;'" |
+#     # Listing unique entries while maintaining order (thanks S.O.)
+#     awk '!seen[$0]++'
+#     )
+# # List all branches that currently have a worktree
+# active_branches=$(echo $all_branches | rg "^\+" | tr -d '+ ')
+# # Remove the latter from the former
+# for b in $(echo $active_branches); do
+#     all_branches=$(echo $all_branches | rg -v $b)
+# done
