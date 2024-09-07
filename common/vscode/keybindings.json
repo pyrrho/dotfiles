@@ -1353,6 +1353,11 @@
     { "key": "ctrl+shift+]",  "command": "-editor.unfold",
                                  "when": "editorTextFocus && foldingEnabled" },
 
+
+    /// Show textmate token and scope information
+    /// -----------------------------------------
+    { "key": "ctrl+alt+shift+0", "command": "editor.action.inspectTMScopes" },
+
     // Placeholder to make GUI edits easier to handle
     {}
 ]
