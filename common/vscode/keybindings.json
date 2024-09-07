@@ -510,6 +510,16 @@
     { "key": "ctrl+shift+=",         "command": "-workbench.action.zoomIn" },
     { "key": "ctrl+-",               "command": "-workbench.action.zoomOut" },
 
+    /// Go-To Bracket Rebind
+    /// --------------------
+    { "key": "alt+\\",               "command": "editor.action.jumpToBracket",
+                                        "when": "editorTextFocus"},
+    { "key": "alt+shift+\\",         "command": "editor.action.selectToBracket",
+                                        "when": "editorTextFocus"},
+
+    { "key": "ctrl+alt+\\",          "command": "-editor.action.jumpToBracket",
+                                        "when": "editorTextFocus"},
+
     /// Vim-ish Go-to-Line
     /// ------------------
     // `ctrl+;` feels better, but it's being used by the test API, which I want
