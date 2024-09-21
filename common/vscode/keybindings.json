@@ -1121,6 +1121,22 @@
         }
     },
 
+    /// Semantic Occurrences Highlighting
+    /// ---------------------------------
+    /// Requires the 'Settings Cycler' extensions:
+    ///     code --install-extension hoovercj.vscode-settings-cycler
+    {
+        "key": "shift+alt+s", "command": "settings.cycle",
+        "args": {
+            "id": "toggle_occurrences_highlight",
+            "overrideWorkspaceSettings": false,
+            "values": [
+                { "editor.occurrencesHighlight": "off" },
+                { "editor.occurrencesHighlight": "singleFile" }
+            ]
+        }
+    },
+
     /// Clipboard Ring Overrides
     /// ------------------------
     /// Requires the 'Multiple clipboards for VSCode' extension
