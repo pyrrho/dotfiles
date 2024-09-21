@@ -192,6 +192,8 @@ source $ZSH/oh-my-zsh.sh
 
 export LI_API_KEY_PATH="${HOME}/li/api.key"
 export DISCORD_OAUTH_SECRET_PATH="${HOME}/li/discord-oauth"
+# `x rp forkliftd -- bootstrap-signing-key`
+export CONFIG_FORKLIFT_RPC_PACKAGE_VERIFICATION_KEY_BASE64_URLSAFE="..."
 export SIGNING_KEY_PATH="${HOME}/li/test_forklift_signing_key"
 
 # # Add the dotnet-install.sh'd sdks to the PATH ...
