@@ -210,6 +210,15 @@ export SIGNING_KEY_PATH="${HOME}/li/test_forklift_signing_key"
 # [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 # [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+# Set up pnpm
+if [ -d "/home/dpb/.local/share/pnpm" ]; then
+    export PNPM_HOME="/home/dpb/.local/share/pnpm"
+    case ":$PATH:" in
+    *":$PNPM_HOME:"*) ;;
+    *) export PATH="$PNPM_HOME:$PATH" ;;
+    esac
+fi
+
 # Set up rust
 if [ -d "$HOME/.cargo/bin" ] ; then
     export PATH="$PATH:$HOME/.cargo/bin"
