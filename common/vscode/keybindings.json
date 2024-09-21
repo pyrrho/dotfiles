@@ -514,6 +514,9 @@
     /// --------------------
     { "key": "alt+\\",               "command": "editor.action.jumpToBracket",
                                         "when": "editorTextFocus"},
+    // This is to make the keybinding consistent across my ErgoDox layers.
+    { "key": "alt+=",                "command": "editor.action.jumpToBracket",
+                                        "when": "editorTextFocus"},
     { "key": "alt+shift+\\",         "command": "editor.action.selectToBracket",
                                         "when": "editorTextFocus"},
 
