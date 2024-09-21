@@ -1,0 +1,650 @@
+/* Little Moon
+ * =============================================================================
+ * My own... My precious...
+ */
+
+ .little_moon {
+  // This palette is an expansion of the Selenized Light and Selenized Dark
+  // color scheme with enough new lighter and darker variations to make for a
+  // nicely layered UI. The original designations often don't line up with the
+  // palette identifiers because either I needed to slot a variant in between an
+  // `.XY_0` and `.XY_1` pair, or because an `XY_0` -> `.XY_1` shift made the
+  // variant darker rather than lighter.
+  // The conventions used below are as follows.
+  // - Base colors aren't numbered; `bg`, `fg`, etc..
+  // - Identifier in comments that start with `.` are original Selenized
+  //   identifiers; e.g. `.bg_0` has been mapped to `bg`.
+  // - Variations with a single `_#` are light-shifts, double `__#` are dark
+  //   shifts. So `bg__2` is darker than `bg` is darker than `bg_2`.
+  //
+  // Note that the original Selenized Light color set includes no light-shifts.
+  // `.light.bg_0` -> `.light.bg_2` is a dark shift (I represent this as
+  // `light.bg` -> `light.bg__2`), as is `.light.red` -> `.light.br_red`
+  // (`light.red` -> `light.red__1` in my scheme).
+  .palette {
+    .light {
+      //                                 CIE L*a*b*
+      //                                 ----------
+      .bg__4      { color: #928872; } // 57   0  13                [19]
+      .bg__3      { color: #c5baa4; } // 76   0  13                 [6]
+      .bg__2      { color: #d6cbb4; } // 82   0  13 -- orig: .bg_2  (9)
+      .bg__1      { color: #f0e4cc; } // 91   0  13 -- orig: .bg_1  (5)
+      .bg         { color: #fef3da; } // 96   0  13 -- orig: .bg_0  [2]
+      .bg_1       { color: #fff8e0; } // 98   0  13                 [2]
+      .bg_2       { color: #fffee6; } // 100  0  13
+
+      // `.bg_{color}`s: `{color}`s shifted to the luminance of a bg.
+      // Proportionally add some fraction of the Δ from `.{color}`L to `100`L.
+      //     ΔL.max = 100 - L
+      //     ΔL     = L + (ΔL.max * f)
+      // Choose the fraction that shifts `.red`L to `.bg_2`L (remember, `.bg_2`
+      // is _darker_ than `.bg`).
+      //     f = Δ(.bg__2, red) / Δred.L.max = (82 - 46) / (100 - 46) = .667
+      .bg_red     { color: #ff9181; } // 82  66  42
+      .bg_green   { color: #aae660; } // 85 -40  58
+      .bg_yellow  { color: #ffd048; } // 86   6  71
+      .bg_blue    { color: #60d2ff; } // 82   0 -60
+      .bg_magenta { color: #ffa5f1; } // 84  58 -16
+      .bg_cyan    { color: #5deddd; } // 86 -42  -4
+      .bg_orange  { color: #ffb271; } // 84  39  52
+      .bg_violet  { color: #ddbeff; } // 83  32 -47
+
+      .fg__2      { color: #384c52; } // 31  -6  -6 -- orig: .fg_1  [6] (11)
+      .fg__1      { color: #465a60; } // 37  -6  -6                 [5]
+      .fg         { color: #52666d; } // 42  -6  -6 -- orig: .fg_0 [15] (20 to .dim_0)
+      .fg_1       { color: #778c93; } // 57  -6  -6                [15]
+      .fg_2       { color: #9fb4bb; } // 72  -6  -6
+
+      .dim        { color: #8f9894; } // 62  -4   1 -- orig: .dim_0
+
+      .red        { color: #d4212b; } // 46  66  42 -- orig: .red
+      .green      { color: #539100; } // 54 -40  58 -- orig: .green
+      .yellow     { color: #b38800; } // 59   6  71 -- orig: .yellow
+      .blue       { color: #0073d2; } // 46   0 -60 -- orig: .blue
+      .magenta    { color: #cb4c99; } // 52  58 -16 -- orig: .magenta
+      .cyan       { color: #009c8f; } // 57 -42  -4 -- orig: .cyan
+      .orange     { color: #c75d20; } // 52  39  52 -- orig: .orange
+      .violet     { color: #7d64c5; } // 49  32 -47 -- orig: .violet
+
+      // Selenized Light's `.br_{color}`s are actually a dark-shift, so we need
+      // to come up with light variants. In fact, Selenized Light doesn't
+      // include a light-shift from base to any variant, so we're going to have
+      // to borrow from Selenized Dark for that.
+      // Proportionally add some fraction of the Δ from `.{color}`L to `100`L.
+      //     ΔL.max = 100 - L
+      //     ΔL     = L + (ΔL.max * f)
+      // Choose the fraction that shifts Selenized Darks's `.bg_0`L to`.bg_2`L.
+      //     f = Δ(.bg_2, .bg_0) / Δbg_0.L.max = (36 - 23) / (100 - 23) = .169
+      .red_1      { color: #f1413f; } // 55  66  42
+      .green_1    { color: #69a61f; } // 62 -40  58
+      .yellow_1   { color: #c89a00; } // 66   6  71
+      .blue_1     { color: #008aec; } // 55   0 -60
+      .magenta_1  { color: #e362ae; } // 60  58 -16
+      .cyan_1     { color: #00afa1; } // 64 -42  -4
+      .orange_1   { color: #e07234; } // 60  39  52
+      .violet_1   { color: #967bde; } // 58  32 -47
+
+      // As above, Selenized Light's `br_{color}`s are dark-shifts, and in fact,
+      // they're a comically small dark shift; a uniform `-2L` from the base
+      // colors. I'd like to come up with something a little... more.
+      .red__1     { color: #ce1726; } // 44  66  42 -- orig: .br_red
+      .green__1   { color: #4e8b00; } // 52 -40  58 -- orig: .br_green
+      .yellow__1  { color: #ad8300; } // 57   6  71 -- orig: .br_yellow
+      .blue__1    { color: #006ecd; } // 44   0 -60 -- orig: .br_blue
+      .magenta__1 { color: #c54694; } // 50  58 -16 -- orig: .br_magenta
+      .cyan__1    { color: #009689; } // 55 -42  -4 -- orig: .br_cyan
+      .orange__1  { color: #c1581b; } // 50  39  52 -- orig: .br_orange
+      .violet__1  { color: #785fbf; } // 47  32 -47 -- orig: .br_violet
+
+      // Proportionally remove some fraction of Δ from `.{color}`L to `100`L
+      // (which is a long-winded way of saying, 'decrease .{color}`L').
+      //     ΔL = L - (L * f)
+      // Choose the fraction that shifts `.fg_0` to `.fg_1`.
+      //     f = (42 - 31) / 42 = .262
+      .red__1     { color: #ae0011; } // 34  66  42
+      .green__1   { color: #2b6c00; } // 40 -40  58
+      .yellow__1  { color: #876200; } // 44   6  71
+      .blue__1    { color: #0056b1; } // 34   0 -60
+      .magenta__1 { color: #a22175; } // 38  58 -16
+      .cyan__1    { color: #007469; } // 42 -42  -4
+      .orange__1  { color: #9c3a00; } // 38  39  52
+      .violet__1  { color: #5a45a1; } // 36  32 -470
+
+      // Proportionally remove some fraction of Δ from `.{color}`L to `100`L
+      // (which is a long-winded way of saying, 'decrease .{color}`L').
+      //     ΔL = L - (L * f)
+      // Choose the fraction that shifts `fg` to `fg__1`.
+      //     f = (42 - 37) / 42 = .119
+      .red__1     { color: #c40120; } // 41  66  42
+      .green__1   { color: #438100; } // 48 -40  58
+      .yellow__1  { color: #9e7600; } // 52   6  71
+      .blue__1    { color: #0067c4; } // 41   0 -60
+      .magenta__1 { color: #b93b89; } // 46  58 -16
+      .cyan__1    { color: #00897d; } // 50 -42  -4
+      .orange__1  { color: #b54e0f; } // 46  39  52
+      .violet__1  { color: #6d56b4; } // 43  32 -47
+    }
+    .dark {
+      //                                 CIE L*a*b*
+      //                                 ----------
+      .bg__4      { color: #001923; } // 6  -12 -12               [4]
+      .bg__3      { color: #00202b; } // 10 -12 -12               [5]
+      .bg__2      { color: #002b36; } // 15 -12 -12               [5]
+      .bg__1      { color: #003641; } // 20 -12 -12               [3]
+      .bg         { color: #053d48; } // 23 -12 -12 -- orig: bg_0 (5)
+      .bg_1       { color: #0e4956; } // 28 -13 -13 -- orig: bg_1 (8)
+      .bg_2       { color: #275b69; } // 36 -13 -13 -- orig: bg_2 [6]
+      .bg_3       { color: #376a78; } // 42 -13 -13               [6]
+      .bg_4       { color: #467987; } // 48 -13 -13
+
+      .bg_red     { color: #6d0000; } // 14  63  40 // delta from .red to .bg__2
+      .bg_green   { color: #063100; } // 16 -38  55
+      .bg_yellow  { color: #442400; } // 17   6  68
+      .bg_blue    { color: #002b76; } // 14   0 -57
+      .bg_magenta { color: #5f003c; } // 15  55 -15
+      .bg_cyan    { color: #00362f; } // 17 -40  -4
+      .bg_orange  { color: #5a0000; } // 15  37  50
+      .bg_violet  { color: #1f1867; } // 15  30 -45
+
+      .bg_red     { color: #820000; } // 21  63  40 // .fg-relative scaled delta from .fg to .bg__2
+      .bg_green   { color: #043600; } // 18 -38  55
+      .bg_yellow  { color: #3f1e00; } // 14   6  68
+      .bg_blue    { color: #003989; } // 21   0 -57
+      .bg_magenta { color: #6a0045; } // 19  55 -15
+      .bg_cyan    { color: #00312b; } // 15 -40  -4
+      .bg_orange  { color: #640700; } // 19  37  50
+      .bg_violet  { color: #2e2274; } // 20  30 -45
+
+      // Proportionally remove some fraction of Δ from `.{color}`L to `100`L
+      // (which is a long-winded way of saying, 'decrease .{color}`L').
+      //     ΔL = L - (L * f)
+      // Choose the fraction that shifts `.fg_0` to `.bg_0`.
+      //     f = (96 - 42) / 96 = .562
+      .bg_red     { color: #910000; } // 26  63  40 // delta from .fg_0 to .bg_0
+      .bg_green   { color: #135300; } // 30 -38  55
+      .bg_yellow  { color: #694800; } // 33   6  68
+      .bg_blue    { color: #004496; } // 26   0 -57
+      .bg_magenta { color: #86015d; } // 29  55 -15
+      .bg_cyan    { color: #005a51; } // 32 -40  -4
+      .bg_orange  { color: #7f2500; } // 29  37  50
+      .bg_violet  { color: #443488; } // 28  30 -45
+
+      .dim        { color: #718b90; } // 56  -8  -6 -- orig: .dim_0      (19 to .fg_0)
+
+      .fg__2      { color: #606d6e; } // 45  -6  -6                 [15]
+      .fg__1      { color: #859394; } // 60  -6  -6                 [15]
+      .fg         { color: #adbcbc; } // 75  -5  -2 -- orig: .fg_0   [4] (10)
+      .fg_1       { color: #b8c7c7; } // 79  -5  -2                  [6]
+      .fg_2       { color: #c8d7d8; } // 85  -5  -2 -- orig: .fg_1
+
+      .red        { color: #fd564e; } // 60  63  40 -- orig: red
+      .green      { color: #80b83c; } // 69 -38  55 -- orig: green
+      .yellow     { color: #e3b230; } // 75   6  68 -- orig: yellow
+      .blue       { color: #0096f5; } // 60   0 -57 -- orig: blue
+      .magenta    { color: #f176bd; } // 66  55 -15 -- orig: magenta
+      .cyan       { color: #39c7b9; } // 73 -40  -4 -- orig: cyan
+      .orange     { color: #f38649; } // 67  37  50 -- orig: orange
+      .violet     { color: #a58cec; } // 64  30 -45 -- orig: violet
+
+      .red_1      { color: #ff675d; } // 66  63  40 -- orig: br_red
+      .green_1    { color: #8ec649; } // 74 -38  55 -- orig: br_green
+      .yellow_1   { color: #f2bf3f; } // 80   6  68 -- orig: br_yellow
+      .blue_1     { color: #21a6ff; } // 66   0 -57 -- orig: br_blue
+      .magenta_1  { color: #ff87cd; } // 72  55 -15 -- orig: br_magenta
+      .cyan_1     { color: #4bd5c7; } // 78 -40  -4 -- orig: br_cyan
+      .orange_1   { color: #ff9356; } // 72  37  50 -- orig: br_orange
+      .violet_1   { color: #b399fa; } // 69  30 -45 -- orig: br_violet
+
+      // Proportionally remove some fraction of Δ from `.{color}`L to `100`L
+      // (which is a long-winded way of saying, 'decrease .{color}`L').
+      //     ΔL = L - (L * f)
+      // Which fraction are we going to choose?
+      //     f = (42 - 31) / 42 = .262 -- light `.fg_0` to `.fg_1`.
+      .red__1     { color: #ca2229; } // 44  63  40
+      .green__1   { color: #4f8800; } // 51 -38  55
+      .yellow__1  { color: #a77e00; } // 55   6  68
+      .blue__1    { color: #006ec7; } // 44   0 -57
+      .magenta__1 { color: #bf488f; } // 49  55 -15
+      .cyan__1    { color: #009387; } // 54 -40  -4
+      .orange__1  { color: #bb571d; } // 49  37  50
+      .violet__1  { color: #7761bc; } // 47  30 -45
+
+      //     f = (42 - 37) / 42 = .119 -- light `fg` to `fg__1`
+
+      //     f = (28 - 23) / 28 = .179 -- dark `.bg_0` to `.bg_1`
+      .red__1     { color: #da3435; } // 49  63  40
+      .green__1   { color: #5f9818; } // 57 -38  55
+      .yellow__1  { color: #bc8f00; } // 62   6  68
+      .blue__1    { color: #007ad5; } // 49   0 -57
+      .magenta__1 { color: #cd559c; } // 54  55 -15
+      .cyan__1    { color: #00a396; } // 60 -40  -4
+      .orange__1  { color: #ce672c; } // 55  37  50
+      .violet__1  { color: #8770cc; } // 53  30 -45
+    }
+  }
+
+  .terminal {
+    .dark {
+      .background         { color: #053d48; } /* .dark.bg_0       */
+      .foreground         { color: #adbcbc; } /* .dark.fg_0       */
+
+      .cursor             { color: #f38649; } /* .????            */
+
+      ._00_black          { color: #0e4956; } /* .dark.bg_1       */
+      ._01_red            { color: #fd564e; } /* .dark.red        */
+      ._02_green          { color: #80b83c; } /* .dark.green      */
+      ._03_yellow         { color: #e3b230; } /* .dark.yellow     */
+      ._04_blue           { color: #0096f5; } /* .dark.blue       */
+      ._05_magenta        { color: #f176bd; } /* .dark.magenta    */
+      ._06_cyan           { color: #39c7b9; } /* .dark.cyan       */
+      ._07_white          { color: #718b90; } /* .dark.dim_0      */
+
+      ._08_bright_black   { color: #275b69; } /* .dark.bg_2       */
+      ._09_bright_red     { color: #ff675d; } /* .dark.br_red     */
+      ._10_bright_green   { color: #8ec649; } /* .dark.br_green   */
+      ._11_bright_yellow  { color: #f2bf3f; } /* .dark.br_yellow  */
+      ._12_bright_blue    { color: #21a6ff; } /* .dark.br_blue    */
+      ._13_bright_magenta { color: #ff87cd; } /* .dark.br_magenta */
+      ._14_bright_cyan    { color: #4bd5c7; } /* .dark.br_cyan    */
+      ._15_bright_white   { color: #c8d7d8; } /* .dark.fg_1       */
+    }
+    .light {
+      .background         { color: #fef3da; } /* .light.bg_0       */
+      .foreground         { color: #52666d; } /* .light.fg_0       */
+
+      .cursor             { color: #f38649; } /* .????             */
+
+      ._00_black          { color: #f0e4cc; } /* .light.bg_1       */
+      ._01_red            { color: #d4212b; } /* .light.red        */
+      ._02_green          { color: #539100; } /* .light.green      */
+      ._03_yellow         { color: #b38800; } /* .light.yellow     */
+      ._04_blue           { color: #0073d2; } /* .light.blue       */
+      ._05_magenta        { color: #cb4c99; } /* .light.magenta    */
+      ._06_cyan           { color: #009c8f; } /* .light.cyan       */
+      ._07_white          { color: #8f9894; } /* .light.dim_0      */
+
+      ._08_bright_black   { color: #d6cbb4; } /* .light.bg_2       */
+      ._09_bright_red     { color: #ce1726; } /* .light.br_red     */
+      ._10_bright_green   { color: #4e8b00; } /* .light.br_green   */
+      ._11_bright_yellow  { color: #ad8300; } /* .light.br_yellow  */
+      ._12_bright_blue    { color: #006ecd; } /* .light.br_blue    */
+      ._13_bright_magenta { color: #c54694; } /* .light.br_magenta */
+      ._14_bright_cyan    { color: #009689; } /* .light.br_cyan    */
+      ._15_bright_white   { color: #384c52; } /* .light.fg_1       */
+    }
+  }
+}
+
+
+
+
+/* Solarized
+ * =============================================================================
+ * Well, a modified solarized.
+
+SOLARIZED  HEX      16/8  TERMCOL    XTERM/HEX    L*A*B       RGB          HSB
+---------  -------  ----  ---------  -----------  ----------  -----------  -----------
+base03     #002b36   8/4  brblack    234 #1c1c1c  15 -12 -12    0  43  54  193 100  21
+base02     #073642   0/4  black      235 #262626  20 -12 -12    7  54  66  192  90  26
+base01     #586e75  10/7  brgreen    240 #585858  45 -07 -07   88 110 117  194  25  46
+base00     #657b83  11/7  bryellow   241 #626262  50 -07 -07  101 123 131  195  23  51
+base0      #839496  12/6  brblue     244 #808080  60 -06 -03  131 148 150  186  13  59
+base1      #93a1a1  14/4  brcyan     245 #8a8a8a  65 -05 -02  147 161 161  180   9  63
+base2      #eee8d5   7/7  white      254 #e4e4e4  92 -00  10  238 232 213   44  11  93
+base3      #fdf6e3  15/7  brwhite    230 #ffffd7  97  00  10  253 246 227   44  10  99
+yellow     #b58900   3/3  yellow     136 #af8700  60  10  65  181 137   0   45 100  71
+orange     #cb4b16   9/3  brred      166 #d75f00  50  50  55  203  75  22   18  89  80
+red        #dc322f   1/1  red        160 #d70000  50  65  45  220  50  47    1  79  86
+magenta    #d33682   5/5  magenta    125 #af005f  50  65 -05  211  54 130  331  74  83
+violet     #6c71c4  13/5  brmagenta   61 #5f5faf  50  15 -45  108 113 196  237  45  77
+blue       #268bd2   4/4  blue        33 #0087ff  55 -10 -45   38 139 210  205  82  82
+cyan       #2aa198   6/6  cyan        37 #00afaf  60 -35 -05   42 161 152  175  74  63
+green      #859900   2/2  green       64 #5f8700  60 -20  65  133 153   0   68 100  60
+ */
+
+.solarized {
+  .palette {
+                                   /* | dark          | light         | */
+                                   /* | ----          | -----         | */
+    .base03  { color: #002b36; } /* | bg            |               | */
+    .base02  { color: #073642; } /* | bg highlights |               | */
+    .base01  { color: #586e75; } /* | secondary     | emphasized    | */
+    .base00  { color: #657b83; } /* |               | primary       | */
+    .base0   { color: #839496; } /* | primary       |               | */
+    .base1   { color: #93a1a1; } /* | emphasized    | secondary     | */
+    .base2   { color: #eee8d5; } /* |               | bg highlights | */
+    .base3   { color: #fdf6e3; } /* |               | bg            | */
+
+    .blue    { color: #268bd2; }
+    .cyan    { color: #2aa198; }
+    .green   { color: #859900; }
+    .magenta { color: #d33682; }
+    .orange  { color: #cb4b16; }
+    .red     { color: #dc322f; }
+    .violet  { color: #6c71c4; }
+    .yellow  { color: #b58900; }
+
+    .bright_green  { color: #c8e600; } /* colorhexa.com/859900, Monochromatic Color Scheme +3 */
+    .bright_yellow { color: #ffc202; } /* colorhexa.com/b58900, Monochromatic Color Scheme +3 */
+    .bright_blue   { color: #62ade3; } /* colorhexa.com/268bd2, Monochromatic Color Scheme +3 */
+    .bright_cyan   { color: #48cfc5; } /* colorhexa.com/2aa198, Monochromatic Color Scheme +3 */
+  }
+
+  .terminal {
+    .dark {
+      .background         { color: #002b36; } /* .base03                     */
+      .foreground         { color: #839496; } /* .base0                      */
+      .cursor             { color: #657b83; } /* .base00                     */
+    }
+    .light {
+      .background         { color: #fdf6e3; } /* .base3                      */
+      .foreground         { color: #657b83; } /* .base00                     */
+      .cursor             { color: #839496; } /* .base0                      */
+    }
+    .common {
+      ._00_black          { color: #073642; } /* .base02 -- dark highlights  */
+      ._01_red            { color: #dc322f; } /* .red                        */
+      ._02_green          { color: #859900; } /* .green                      */
+      ._03_yellow         { color: #b58900; } /* .yellow                     */
+      ._04_blue           { color: #268bd2; } /* .blue                       */
+      ._05_magenta        { color: #d33682; } /* .magenta                    */
+      ._06_cyan           { color: #2aa198; } /* .cyan                       */
+      ._07_white          { color: #eee8d5; } /* .base2  -- light highlights */
+      ._08_bright_black   { color: #586e75; } /* .base01 -- dark secondary   */
+      ._09_bright_red     { color: #cb4b16; } /* .orange                     */
+      ._10_bright_green   { color: #c8e600; } /* .bright_green               */
+      ._11_bright_yellow  { color: #ffc202; } /* .bright_yellow              */
+      ._12_bright_blue    { color: #62ade3; } /* .bright_blue                */
+      ._13_bright_magenta { color: #6c71c4; } /* .violet                     */
+      ._14_bright_cyan    { color: #48cfc5; } /* .bright_cyan                */
+      ._15_bright_white   { color: #93a1a1; } /* .base1  -- light secondary  */
+    }
+  }
+
+  /* Solarized Terminal Defaults
+   * ---------------------------
+   * Spoiler alert; they're not great
+   */
+
+  .default_terminal {
+    .dark {
+      .background         { color: #002b36; } /* .base03                         */
+      .foreground         { color: #839496; } /* .base0                          */
+      .cursor             { color: #657b83; } /* .base00                         */
+    }
+    .light {
+      .background         { color: #fdf6e3; } /* .base3                          */
+      .foreground         { color: #657b83; } /* .base00                         */
+      .cursor             { color: #839496; } /* .base0                          */
+    }
+    .common {
+      ._00_black          { color: #073642; } /* .base02 -- dark highlights      */
+      ._01_red            { color: #dc322f; } /* .red                            */
+      ._02_green          { color: #859900; } /* .green                          */
+      ._03_yellow         { color: #b58900; } /* .yellow                         */
+      ._04_blue           { color: #268bd2; } /* .blue                           */
+      ._05_magenta        { color: #d33682; } /* .magenta                        */
+      ._06_cyan           { color: #2aa198; } /* .cyan                           */
+      ._07_white          { color: #eee8d5; } /* .base2  -- light highlights     */
+      ._08_bright_black   { color: #002b36; } /* .base03 !! same as dark bg      */
+      ._09_bright_red     { color: #cb4b16; } /* .orange                         */
+      ._10_bright_green   { color: #586e75; } /* .base01                         */
+      ._11_bright_yellow  { color: #657b83; } /* .base00 !! same as dark cursor  */
+      ._12_bright_blue    { color: #839496; } /* .base0  !! same as light cursor */
+      ._13_bright_magenta { color: #6c71c4; } /* .violet                         */
+      ._14_bright_cyan    { color: #93a1a1; } /* .base1                          */
+      ._15_bright_white   { color: #fdf6e3; } /* .base3  !! same as light fg     */
+    }
+  }
+}
+
+
+
+
+/* Selenized
+ * =============================================================================
+
+### Dark
+
+Color        CIE L*a*b*   HEX
+----------   ----------   -------
+bg_0         23 -12 -12   #053d48
+bg_1         28 -13 -13   #0e4956
+bg_2         36 -13 -13   #275b69
+dim_0        56  -8  -6   #718b90
+fg_0         75  -5  -2   #adbcbc
+fg_1         85  -5  -2   #c8d7d8
+
+red          60  63  40   #fd564e
+green        69 -38  55   #80b83c
+yellow       75   6  68   #e3b230
+blue         60   0 -57   #0096f5
+magenta      66  55 -15   #f176bd
+cyan         73 -40  -4   #39c7b9
+orange       67  37  50   #f38649
+violet       64  30 -45   #a58cec
+
+br_red       66  63  40   #ff675d
+br_green     74 -38  55   #8ec649
+br_yellow    80   6  68   #f2bf3f
+br_blue      66   0 -57   #21a6ff
+br_magenta   72  55 -15   #ff87cd
+br_cyan      78 -40  -4   #4bd5c7
+br_orange    72  37  50   #ff9356
+br_violet    69  30 -45   #b399fa
+
+### Light
+
+Color        CIE L*a*b*  HEX
+----------   ----------  -------
+bg_0         96   0  13  #fef3da
+bg_1         91   0  13  #f0e4cc
+bg_2         82   0  13  #d6cbb4
+dim_0        62  -4   1  #8f9894
+fg_0         42  -6  -6  #52666d
+fg_1         31  -6  -6  #384c52
+
+red          46  66  42  #d4212b
+green        54 -40  58  #539100
+yellow       59   6  71  #b38800
+blue         46   0 -60  #0073d2
+magenta      52  58 -16  #cb4c99
+cyan         57 -42  -4  #009c8f
+orange       52  39  52  #c75d20
+violet       49  32 -47  #7d64c5
+
+br_red       44  66  42  #ce1726
+br_green     52 -40  58  #4e8b00
+br_yellow    57   6  71  #ad8300
+br_blue      44   0 -60  #006ecd
+br_magenta   50  58 -16  #c54694
+br_cyan      55 -42  -4  #009689
+br_orange    50  39  52  #c1581b
+br_violet    47  32 -47  #785fbf
+*/
+
+.selenized {
+  .palette {
+    .dark {
+      .bg_0       { color: #053d48; }
+      .bg_1       { color: #0e4956; }
+      .bg_2       { color: #275b69; }
+      .dim_0      { color: #718b90; }
+      .fg_0       { color: #adbcbc; }
+      .fg_1       { color: #c8d7d8; }
+
+      .red        { color: #fd564e; }
+      .green      { color: #80b83c; }
+      .yellow     { color: #e3b230; }
+      .blue       { color: #0096f5; }
+      .magenta    { color: #f176bd; }
+      .cyan       { color: #39c7b9; }
+      .orange     { color: #f38649; }
+      .violet     { color: #a58cec; }
+
+      .br_red     { color: #ff675d; }
+      .br_green   { color: #8ec649; }
+      .br_yellow  { color: #f2bf3f; }
+      .br_blue    { color: #21a6ff; }
+      .br_magenta { color: #ff87cd; }
+      .br_cyan    { color: #4bd5c7; }
+      .br_orange  { color: #ff9356; }
+      .br_violet  { color: #b399fa; }
+    }
+
+    .light {
+      .bg_0       { color: #fef3da; }
+      .bg_1       { color: #f0e4cc; }
+      .bg_2       { color: #d6cbb4; }
+      .dim_0      { color: #8f9894; }
+      .fg_0       { color: #52666d; }
+      .fg_1       { color: #384c52; }
+
+      .red        { color: #d4212b; }
+      .green      { color: #539100; }
+      .yellow     { color: #b38800; }
+      .blue       { color: #0073d2; }
+      .magenta    { color: #cb4c99; }
+      .cyan       { color: #009c8f; }
+      .orange     { color: #c75d20; }
+      .violet     { color: #7d64c5; }
+
+      .br_red     { color: #ce1726; }
+      .br_green   { color: #4e8b00; }
+      .br_yellow  { color: #ad8300; }
+      .br_blue    { color: #006ecd; }
+      .br_magenta { color: #c54694; }
+      .br_cyan    { color: #009689; }
+      .br_orange  { color: #c1581b; }
+      .br_violet  { color: #785fbf; }
+    }
+
+    .grayscale {
+      .gray_9 { color: #032930; } // darker that dark
+      .gray_8 { color: #053d48; } // dark bg_0
+      .gray_7 { color: #0e4956; } // dark bg_1
+      .gray_6 { color: #275b69; } // dark bg_2
+      .gray_5 { color: #718b90; } // dark dim_0
+      .gray_4 { color: #8f9894; } // light dim_0
+      .gray_3 { color: #d6cbb4; } // light bg_2
+      .gray_2 { color: #f0e4cc; } // light bg_1
+      .gray_1 { color: #fef3da; } // light bg_0
+      .gray_0 { color: #fffbf3; } // lighter than light
+    }
+  }
+
+  .terminal {
+    .dark {
+      .background         { color: #053d48; } /* .dark.bg_0       */
+      .foreground         { color: #f38649; } /* .???             */
+
+      .cursor             { color: #adbcbc; } /* .dark.fg_0       */
+
+      ._00_black          { color: #0e4956; } /* .dark.bg_1       */
+      ._01_red            { color: #fd564e; } /* .dark.red        */
+      ._02_green          { color: #80b83c; } /* .dark.green      */
+      ._03_yellow         { color: #e3b230; } /* .dark.yellow     */
+      ._04_blue           { color: #0096f5; } /* .dark.blue       */
+      ._05_magenta        { color: #f176bd; } /* .dark.magenta    */
+      ._06_cyan           { color: #39c7b9; } /* .dark.cyan       */
+      ._07_white          { color: #718b90; } /* .dark.dim_0      */
+
+      ._08_bright_black   { color: #275b69; } /* .dark.bg_2       */
+      ._09_bright_red     { color: #ff675d; } /* .dark.br_red     */
+      ._10_bright_green   { color: #8ec649; } /* .dark.br_green   */
+      ._11_bright_yellow  { color: #f2bf3f; } /* .dark.br_yellow  */
+      ._12_bright_blue    { color: #21a6ff; } /* .dark.br_blue    */
+      ._13_bright_magenta { color: #ff87cd; } /* .dark.br_magenta */
+      ._14_bright_cyan    { color: #4bd5c7; } /* .dark.br_cyan    */
+      ._15_bright_white   { color: #c8d7d8; } /* .dark.fg_1       */
+    }
+    .light {
+      .background         { color: #fef3da; } /* .light.bg_0       */
+      .foreground         { color: #f38649; } /* .????             */
+
+      .cursor             { color: #52666d; } /* .light.fg_0       */
+
+      ._00_black          { color: #f0e4cc; } /* .light.bg_1       */
+      ._01_red            { color: #d4212b; } /* .light.red        */
+      ._02_green          { color: #539100; } /* .light.green      */
+      ._03_yellow         { color: #b38800; } /* .light.yellow     */
+      ._04_blue           { color: #0073d2; } /* .light.blue       */
+      ._05_magenta        { color: #cb4c99; } /* .light.magenta    */
+      ._06_cyan           { color: #009c8f; } /* .light.cyan       */
+      ._07_white          { color: #8f9894; } /* .light.dim_0      */
+
+      ._08_bright_black   { color: #d6cbb4; } /* .light.bg_2       */
+      ._09_bright_red     { color: #ce1726; } /* .light.br_red     */
+      ._10_bright_green   { color: #4e8b00; } /* .light.br_green   */
+      ._11_bright_yellow  { color: #ad8300; } /* .light.br_yellow  */
+      ._12_bright_blue    { color: #006ecd; } /* .light.br_blue    */
+      ._13_bright_magenta { color: #c54694; } /* .light.br_magenta */
+      ._14_bright_cyan    { color: #009689; } /* .light.br_cyan    */
+      ._15_bright_white   { color: #384c52; } /* .light.fg_1       */
+    }
+  }
+}
+
+
+
+
+/* Gatito
+ * =============================================================================
+ * My old standby
+ */
+.gatito {
+  // From the vscode color theme JSON
+  .transparent       { color: #ffffff00; }
+  .white             { color: #ffffff; }
+
+  .backgroundLight0  { color: #3d4f3b; } // novel
+  .backgroundLight1  { color: #333d3d; } // old   - "backgroundLight"
+  .backgroundLight2  { color: #30373a; } // novel
+  .background        { color: #242b2e; } // old   - "background"
+  .backgroundDark1   { color: #171c1c; } // old   - "backgroundDark"
+
+  .foreground        { color: #d4d4d4; }
+  .foreground1       { color: #808080; } // old   - "foregroundDark"
+  .foreground2       { color: #545454; } // novel
+
+  .black1            { color: #d8dee9; }
+  .red0              { color: #e6767b; } // novel -- red lighten 17%
+  .red               { color: #e15a60; }
+  .red1              { color: #a94348; } // novel -- CMYK: red + 22K
+  .red2              { color: #5e2629; } // novel -- CMYK: red + 51K
+  .orange            { color: #f99157; } // novel
+  .orange1           { color: #ab7967; } // novel
+  .green             { color: #99c794; }
+  .yellow            { color: #fac863; }
+  .blue              { color: #6699cc; }
+  .blue1             { color: #5986b3; } // novel -- CMYK: blue + 10K
+  .magenta           { color: #c594c5; }
+  .magenta1          { color: #bb82bb; } // novel -- magenta darken 8%
+  .cyan              { color: #5fb3b3; }
+
+  .br_red            { color: #f44747; } // novel -- not really on theme?
+  .br_orange         { color: #cd9731; } // novel -- not really on theme?
+  .br_blue           { color: #6796e6; } // novel -- not really on theme?
+  .br_violet         { color: #b267e6; } // novel -- not really on theme?
+
+  .original {
+    // From the documentation
+    .transparent     { color: #FFFFFF00; }
+
+    .background      { color: #242B2E; }
+    .backgroundDark  { color: #171C1C; }
+    .backgroundLight { color: #333D3D; }
+
+    .foreground      { color: #D4D4D4; }
+    .foregroundDark  { color: #808080; }
+
+    .black           { color: #D4D4D4; }
+    .red             { color: #E15A60; }
+    .green           { color: #99C794; }
+    .yellow          { color: #FAC863; }
+    .blue            { color: #6699CC; }
+    .magenta         { color: #C594C5; }
+    .cyan            { color: #5FB3B3; }
+    .white           { color: #D4D4D4; }
+  }
+}
