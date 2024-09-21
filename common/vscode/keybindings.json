@@ -1354,9 +1354,18 @@
                                  "when": "editorTextFocus && foldingEnabled" },
 
 
-    /// Show textmate token and scope information
+    /// Developer tool shit
     /// -----------------------------------------
-    { "key": "ctrl+alt+shift+0", "command": "editor.action.inspectTMScopes" },
+    { "key": "ctrl+alt+shift+0",        "command": "workbench.action.toggleDevTools" },
+    { "key": "ctrl+alt+shift+9",        "command": "editor.action.inspectTMScopes" },
+    { "key": "ctrl+k ctrl+alt+shift+9", "command": "editor.action.startDebugTextMate" },
+
+    { "key": "ctrl+shift+i",            "command": "-workbench.action.toggleDevTools",
+                                           "when": "isDevelopment" },
+    { "key": "ctrl+shift+c",            "command": "-multiclip.copyMerge",
+                                           "when": "editorTextFocus" },
+    { "key": "ctrl+shift+c",            "command": "-workbench.action.terminal.openNativeConsole",
+                                           "when": "!terminalFocus" },
 
     // Placeholder to make GUI edits easier to handle
     {}
