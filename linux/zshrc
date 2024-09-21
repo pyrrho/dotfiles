@@ -329,6 +329,19 @@ else:
 EOF
 }
 
+function reup_little_moon {
+    local __RULM_IN_DIR=0
+    if [ `pwd` = "${HOME}/repos/vscode-little-moon" ]; then
+        __RULM_IN_DIR=1
+    fi
+    if [ ${__RULM_IN_DIR} -eq 0 ]; then pushd ${HOME}/repos/vscode-little-moon; fi
+    pnpm dlx @11ty/eleventy && \
+        vsce package && \
+        code --uninstall-extension pyrrho-little-moon-themes-0.0.1.vsix && \
+        code --install-extension pyrrho-little-moon-themes-0.0.1.vsix
+    if [ ${__RULM_IN_DIR} -eq 0 ]; then popd; fi
+}
+
 # Git Worktrees
 # but my way
 #
@@ -745,6 +758,26 @@ function __gw_get_worktrees_root {
 # for b in $(echo $active_branches); do
 #     all_branches=$(echo $all_branches | rg -v $b)
 # done
+
+function set_theme_drewlarized_light {
+    dconf write /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/background-color         "'rgb(253, 246, 227)'"
+    dconf write /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/foreground-color         "'rgb(101, 123, 131)'"
+    dconf write /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/cursor-background-color  "'rgb(131, 148, 150)'"
+
+    dconf write /com/github/amezin/ddterm/background-color        "'rgb(253, 246, 227)'"
+    dconf write /com/github/amezin/ddterm/foreground-color        "'rgb(101, 123, 131)'"
+    dconf write /com/github/amezin/ddterm/cursor-background-color "'rgb(131, 148, 150)'"
+}
+function set_theme_drewlarized_dark {
+    dconf write /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/background-color         "'rgb(0, 43, 54)'"
+    dconf write /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/foreground-color         "'rgb(131, 148, 150)'"
+    dconf write /org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/cursor-background-color  "'rgb(101, 123, 131)'"
+
+    dconf write /com/github/amezin/ddterm/background-color        "'rgb(0, 43, 54)'"
+    dconf write /com/github/amezin/ddterm/foreground-color        "'rgb(131, 148, 150)'"
+    dconf write /com/github/amezin/ddterm/cursor-background-color "'rgb(101, 123, 131)'"
+}
+
 function lab_to_rgb {
     curl 'https://www.colorhexa.com/color.php' \
         -X POST \
