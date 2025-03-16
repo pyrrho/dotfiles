@@ -1,0 +1,812 @@
+// prettier-ignore
+[
+  // NOTES:
+  // This used to be a union'd keybinding set for osx, nix, and windows. It's...
+  // a burden to maintain all three of those w/o active editors in each, so this
+  // file is only a linux config. Maybe someday I'll bring back the union'd set,
+  // but today it not that day.
+  //
+  // VSCode parses `cmd`, `meta`, and `win` interchangeably. All three refer to
+  // the current OS's specific meta key; "Super" on linux, "Windows" on Windows,
+  // and "Cmd" on OSX. Because OSX (rightly?) chose to make heavy use of Cmd in
+  // user applications, I don't consider it reasonable to fully unify OSX with
+  // the other platforms.
+
+  /// Unbind Some Defaults I... _Disagree_ With
+  /// =========================================
+
+  // Bizzaro OSX navigation
+  { "key": "ctrl+f", "command": "-cursorRight" },
+  { "key": "ctrl+b", "command": "-cursorLeft" },
+  { "key": "ctrl+p", "command": "-cursorUp" },
+  { "key": "ctrl+n", "command": "-cursorDown" },
+
+  // More `p` and `n` stuff?
+  { "key": "ctrl+p",     "command": "-showPrevParameterHint" },
+  { "key": "ctrl+p",     "command": "-selectPrevSuggestion" },
+  { "key": "ctrl+p",     "command": "-list.focusUp" },
+  { "key": "ctrl+alt+p", "command": "-list.focusAnyUp" },
+  { "key": "ctrl+p",     "command": "-workbench.action.quickOpenSelectPrevious" },
+  { "key": "ctrl+p",     "command": "-selectPreviousCodeAction" },
+  { "key": "ctrl+n",     "command": "-showNextParameterHint" },
+  { "key": "ctrl+n",     "command": "-selectNextSuggestion" },
+  { "key": "ctrl+n",     "command": "-list.focusDown" },
+  { "key": "ctrl+alt+n", "command": "-list.focusAnyDown" },
+  { "key": "ctrl+n",     "command": "-workbench.action.quickOpenSelectNext" },
+  { "key": "ctrl+n",     "command": "-selectNextCodeAction" },
+
+  // Less bizzaro navigation, but I still don't want it
+  { "key": "ctrl+e",       "command": "-cursorLineEnd" },
+  { "key": "ctrl+shift+e", "command": "-cursorLineEndSelect" },
+  { "key": "ctrl+a",       "command": "-cursorLineStart" },
+  { "key": "ctrl+shift+a", "command": "-cursorLineStartSelect" },
+
+  // Workspace zooms
+  { "key": "cmd+numpad_add",      "command": "-workbench.action.zoomIn" },
+  { "key": "cmd+numpad_subtract", "command": "-workbench.action.zoomOut" },
+  { "key": "cmd+-",               "command": "-workbench.action.zoomOut" },
+  { "key": "cmd+=",               "command": "-workbench.action.zoomIn" },
+  { "key": "shift+cmd+-",         "command": "-workbench.action.zoomOut" },
+  { "key": "shift+cmd+=",         "command": "-workbench.action.zoomIn" },
+
+  // Only one version of smart select, please
+  { "key": "ctrl+shift+right", "command": "-editor.action.smartSelect.expand" },
+  { "key": "ctrl+shift+left",  "command": "-editor.action.smartSelect.shrink" },
+
+  // Tab-focus mode is _so bad_
+  { "key": "ctrl+shift+m", "command": "-editor.action.toggleTabFocusMode" },
+
+  // I have never used the Copy Lines action
+  { "key": "shift+alt+up",   "command": "-editor.action.copyLinesUpAction" },
+  { "key": "shift+alt+down", "command": "-editor.action.copyLinesDownAction" },
+
+  // `breadcrumbs.focus` is less good than `breadcrumbs.focusAndSelect`
+  { "key": "shift+cmd+;", "command": "-breadcrumbs.focus" },
+
+  // vim-ish ctrl+a and ctrl+z are overloaded with breadcrumb commands.
+  // That is hilarious.
+  { "key": "shift+cmd+.", "command": "-editor.action.inPlaceReplace.down" },
+  { "key": "shift+cmd+,", "command": "-editor.action.inPlaceReplace.up" },
+
+  // Outdent on shift+tab has always been funny to me. In a bad way.
+  { "key": "shift+tab",        "command": "-outdent" },
+
+  /// Free Up ctrl+k For Chords
+  { "key": "ctrl+k", "command": "-deleteAllRight" },
+
+
+  /// Tweak Command Palette Extras
+  /// ============================
+  { "key": "shift+cmd+e",  "command": "workbench.action.showAllSymbols" },
+  { "key": "shift+cmd+e",  "command": "-workbench.view.explorer" },
+
+  /// Duplicate Cmd Pallet Bindings
+  /// =============================
+  { "key": "ctrl+p",       "command": "workbench.action.quickOpen" },
+  { "key": "ctrl+shift+p", "command": "workbench.action.showCommands" },
+  { "key": "ctrl+shift+e", "command": "workbench.action.showAllSymbols" },
+
+
+  /// Delete Helpers
+  /// ==============
+  // 'cuz I rm'd the one above
+  { "key": "ctrl+k ctrl+k", "command": "deleteAllRight",
+                               "when": "textInputFocus && !editorReadonly" },
+  { "key": "ctrl+shift+k",  "command": "editor.action.deleteLines",
+                               "when": "textInputFocus && !editorReadonly" },
+
+  /// Unbinds
+  // TODO: Re-export these
+  { "key": "cmd+k cmd+k",   "command": "-editor.action.selectFromAnchorToCursor",
+                               "when": "isMac && editorTextFocus && selectionAnchorSet" },
+  { "key": "cmd+k cmd+b",   "command": "-editor.action.setSelectionAnchor",
+                               "when": "isMac && editorTextFocus" },
+
+
+  /// Normalize Word and Sub-word navigation
+  /// ======================================
+  // NB. OSX uses "alt" ("option") for whole word navigation, and the other two
+  //     OSs use "ctrl". Because this is an idiomatic difference, I'm not going
+  //     to try to unify it.
+  // NB. For Mac, these will get eaten if you don't disable the Mission
+  //     Control hotkeys, which... Those hotkeys are reasonable if you don't
+  //     have a Mac trackpad. Maybe want to reconsider this.
+  { "key": "ctrl+right",           "command": "cursorWordPartRight",
+                                      "when": "isMac && textInputFocus" },
+  { "key": "ctrl+shift+right",     "command": "cursorWordPartRightSelect",
+                                      "when": "isMac && textInputFocus" },
+  { "key": "ctrl+left",            "command": "cursorWordPartStartLeft",
+                                      "when": "isMac && textInputFocus" },
+  { "key": "ctrl+shift+left",      "command": "cursorWordPartStartLeftSelect",
+                                      "when": "isMac && textInputFocus" },
+
+  { "key": "ctrl+backspace",       "command": "deleteWordPartLeft",
+                                      "when": "textInputFocus && !editorReadonly" },
+  { "key": "ctrl+delete",          "command": "deleteWordPartRight",
+                                      "when": "textInputFocus && !editorReadonly" },
+
+  /// Unbinds
+  // NB. These bindings still work b/c they're now unused.
+  { "key": "ctrl+shift+alt+right",    "command": "-cursorWordPartRightSelect" },
+  { "key": "ctrl+shift+alt+left",     "command": "-cursorWordPartLeftSelect" },
+
+
+  /// Normalize Cursor Inserts
+  /// ========================
+  // Each platform got its own defaults for... reasons?
+  // Choose *nix to be the standard.
+
+  /// Standard Inserts
+  { "key": "ctrl+shift+up",           "command": "editor.action.insertCursorAbove",
+                                         "when": "editorTextFocus" },
+  { "key": "ctrl+shift+down",         "command": "editor.action.insertCursorBelow",
+                                         "when": "editorTextFocus" },
+
+  /// Unbinds
+  { "key": "alt+cmd+up",              "command": "-editor.action.insertCursorAbove", "when": "editorTextFocus" },
+  { "key": "alt+cmd+down",            "command": "-editor.action.insertCursorBelow", "when": "editorTextFocus" },
+
+
+  /// Column Selection Mode
+  { "key": "ctrl+shift+alt+up",       "command": "cursorColumnSelectUp",
+                                         "when": "textInputFocus" },
+  { "key": "ctrl+shift+alt+down",     "command": "cursorColumnSelectDown",
+                                         "when": "textInputFocus" },
+  { "key": "ctrl+shift+alt+pageup",   "command": "cursorColumnSelectPageUp",
+                                         "when": "textInputFocus" },
+  { "key": "ctrl+shift+alt+pagedown", "command": "cursorColumnSelectPageDown",
+                                         "when": "textInputFocus" },
+  { "key": "ctrl+shift+alt+left",     "command": "cursorColumnSelectLeft",
+                                         "when": "editorColumnSelection && textInputFocus" },
+  { "key": "ctrl+shift+alt+right",    "command": "cursorColumnSelectRight",
+                                         "when": "editorColumnSelection && textInputFocus" },
+
+  { "key": "ctrl+shift+alt+right",    "command": "cursorWordPartRightSelect",
+                                         "when": "textInputFocus && !editorColumnSelection" },
+  { "key": "ctrl+shift+alt+left",     "command": "cursorWordPartLeftSelect",
+                                         "when": "textInputFocus && !editorColumnSelection" },
+
+  /// Unbinds
+  { "key": "shift+alt+cmd+down",      "command": "-cursorColumnSelectDown",          "when": "textInputFocus" },
+  { "key": "shift+alt+cmd+left",      "command": "-cursorColumnSelectLeft",          "when": "textInputFocus" },
+  { "key": "shift+alt+cmd+pagedown",  "command": "-cursorColumnSelectPageDown",      "when": "textInputFocus" },
+  { "key": "shift+alt+cmd+pageup",    "command": "-cursorColumnSelectPageUp",        "when": "textInputFocus" },
+  { "key": "shift+alt+cmd+right",     "command": "-cursorColumnSelectRight",         "when": "textInputFocus" },
+  { "key": "shift+alt+cmd+up",        "command": "-cursorColumnSelectUp",            "when": "textInputFocus" },
+
+  { "key": "shift+down",              "command": "-cursorColumnSelectDown",          "when": "editorColumnSelection && textInputFocus" },
+  { "key": "shift+left",              "command": "-cursorColumnSelectLeft",          "when": "editorColumnSelection && textInputFocus" },
+  { "key": "shift+pagedown",          "command": "-cursorColumnSelectPageDown",      "when": "editorColumnSelection && textInputFocus" },
+  { "key": "shift+pageup",            "command": "-cursorColumnSelectPageUp",        "when": "editorColumnSelection && textInputFocus" },
+  { "key": "shift+right",             "command": "-cursorColumnSelectRight",         "when": "editorColumnSelection && textInputFocus" },
+  { "key": "shift+up",                "command": "-cursorColumnSelectUp",            "when": "editorColumnSelection && textInputFocus" },
+
+
+  /// Navigate Tabs Spatially (not LRU)
+  /// =================================
+  { "key": "ctrl+tab",              "command": "workbench.action.nextEditorInGroup",
+                                       "when": "!inQuickOpen"},
+  { "key": "ctrl+shift+tab",        "command": "workbench.action.previousEditorInGroup",
+                                       "when": "!inQuickOpen"},
+
+  /// Quick open LRU interface
+  // NB. These are not going to unify across OSes b/c each uses tab differently.
+  // NB. I've not been able to make arrow key navigation work for the quick open
+  //     b/c it selects as soon as you release `ctrl`, which is generally a good
+  //     thing, but messes with arrow input.
+  { "key": "ctrl+k ctrl+tab",       "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
+                                       "when": "!activeEditorGroupEmpty" },
+  { "key": "ctrl+k ctrl+shift+tab", "command": "workbench.action.quickOpenLeastRecentlyUsedEditorInGroup",
+                                       "when": "!activeEditorGroupEmpty" },
+  { "key": "ctrl+pageup",           "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
+                                       "when": "!activeEditorGroupEmpty && !inQuickOpen && !inEditorsPicker" },
+  { "key": "ctrl+tab",              "command": "workbench.action.quickOpenNavigateNextInEditorPicker",
+                                       "when": "inEditorsPicker && inQuickOpen" },
+  { "key": "ctrl+shift+tab",        "command": "workbench.action.quickOpenNavigatePreviousInEditorPicker",
+                                       "when": "inEditorsPicker && inQuickOpen" },
+
+  /// Unbinds
+  { "key": "ctrl+tab",              "command": "-workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup" },
+  { "key": "ctrl+shift+tab",        "command": "-workbench.action.quickOpenLeastRecentlyUsedEditorInGroup" },
+  { "key": "ctrl+pagedown",         "command": "-scrollLineDown" },
+  { "key": "ctrl+pageup",           "command": "-scrollLineUp" },
+  { "key": "ctrl+1",                "command": "-workbench.action.openEditorAtIndex1" },
+  { "key": "ctrl+2",                "command": "-workbench.action.openEditorAtIndex2" },
+  { "key": "ctrl+3",                "command": "-workbench.action.openEditorAtIndex3" },
+  { "key": "ctrl+4",                "command": "-workbench.action.openEditorAtIndex4" },
+  { "key": "ctrl+5",                "command": "-workbench.action.openEditorAtIndex5" },
+  { "key": "ctrl+6",                "command": "-workbench.action.openEditorAtIndex6" },
+  { "key": "ctrl+7",                "command": "-workbench.action.openEditorAtIndex7" },
+  { "key": "ctrl+8",                "command": "-workbench.action.openEditorAtIndex8" },
+  { "key": "ctrl+9",                "command": "-workbench.action.openEditorAtIndex9" },
+
+
+  /// Normalize Editor and Tab Group Movement
+  /// =======================================
+  // move focus
+  { "key": "alt+cmd+up",            "command": "workbench.action.focusAboveGroup" },
+  { "key": "alt+cmd+down",          "command": "workbench.action.focusBelowGroup" },
+  { "key": "alt+cmd+left",          "command": "workbench.action.focusLeftGroup" },
+  { "key": "alt+cmd+right",         "command": "workbench.action.focusRightGroup" },
+  // move editor
+  { "key": "cmd+k cmd+up",          "command": "workbench.action.moveEditorToAboveGroup" },
+  { "key": "cmd+k cmd+down",        "command": "workbench.action.moveEditorToBelowGroup" },
+  { "key": "cmd+k cmd+left",        "command": "workbench.action.moveEditorToLeftGroup" },
+  { "key": "cmd+k cmd+right",       "command": "workbench.action.moveEditorToRightGroup" },
+  // split editor into
+  { "key": "cmd+k shift+cmd+up",    "command": "workbench.action.splitEditorToAboveGroup" },
+  { "key": "cmd+k shift+cmd+down",  "command": "workbench.action.splitEditorToBelowGroup" },
+  { "key": "cmd+k shift+cmd+left",  "command": "workbench.action.splitEditorToLeftGroup" },
+  { "key": "cmd+k shift+cmd+right", "command": "workbench.action.splitEditorToRightGroup" },
+  // move editor group
+  { "key": "cmd+k up",              "command": "workbench.action.moveActiveEditorGroupUp" },
+  { "key": "cmd+k down",            "command": "workbench.action.moveActiveEditorGroupDown" },
+  { "key": "cmd+k left",            "command": "workbench.action.moveActiveEditorGroupLeft" },
+  { "key": "cmd+k right",           "command": "workbench.action.moveActiveEditorGroupRight" },
+  // split into new group w/ default behavior
+  { "key": "cmd+k cmd+\\",          "command": "workbench.action.splitEditor" },
+  { "key": "cmd+k cmd+shift+\\",    "command": "workbench.action.splitEditorOrthogonal" },
+
+  // proportion toggles
+//{ "key": "cmd+k cmd+m", "command": "workbench.action.toggleMaximizeEditorGroup",
+//                           "when": "editorPartMaximizedEditorGroup || editorPartMultipleEditorGroups" },
+  { "key": "cmd+k cmd+n", "command": "workbench.action.toggleEditorWidths",
+                             "when": "editorPartMaximizedEditorGroup || editorPartMultipleEditorGroups" },
+
+  /// Unbinds
+  /// -------
+  // Why are there so many commands on this one binding!?
+  { "key": "cmd+\\",             "command": "-workbench.action.splitEditor" },
+  { "key": "cmd+k shift+cmd+\\", "command": "-workbench.action.splitEditorInGroup" },
+  { "key": "cmd+k cmd+\\",       "command": "-workbench.action.splitEditorDown" },
+  { "key": "cmd+k cmd+\\",       "command": "-workbench.action.splitEditorLeft" },
+  { "key": "cmd+k cmd+\\",       "command": "-workbench.action.splitEditorOrthogonal" },
+  { "key": "cmd+k cmd+\\",       "command": "-workbench.action.splitEditorRight" },
+  { "key": "cmd+k cmd+\\",       "command": "-workbench.action.splitEditorUp" },
+
+  // Unbind the default keybindings for moving tabs between groups.
+  { "key": "cmd+k up",              "command": "-workbench.action.moveActiveEditorGroupUp" },
+  { "key": "cmd+k down",            "command": "-workbench.action.moveActiveEditorGroupDown" },
+  { "key": "cmd+k left",            "command": "-workbench.action.moveActiveEditorGroupLeft" },
+  { "key": "cmd+k right",           "command": "-workbench.action.moveActiveEditorGroupRight" },
+  { "key": "ctrl+cmd+right",        "command": "-workbench.action.moveEditorToNextGroup" },
+  { "key": "ctrl+cmd+left",         "command": "-workbench.action.moveEditorToPreviousGroup" },
+  { "key": "cmd+k shift+cmd+left",  "command": "-workbench.action.moveEditorLeftInGroup" },
+  { "key": "cmd+k shift+cmd+right", "command": "-workbench.action.moveEditorRightInGroup" },
+  { "key": "cmd+k cmd+up",          "command": "-workbench.action.focusAboveGroup" },
+  { "key": "cmd+k cmd+down",        "command": "-workbench.action.focusBelowGroup" },
+  { "key": "cmd+k cmd+left",        "command": "-workbench.action.focusLeftGroup" },
+  { "key": "cmd+k cmd+right",       "command": "-workbench.action.focusRightGroup" },
+  { "key": "ctrl+cmd+1",            "command": "-workbench.action.moveEditorToFirstGroup" },
+  { "key": "ctrl+cmd+9",            "command": "-workbench.action.moveEditorToLastGroup" },
+
+  // overloaded
+  { "key": "cmd+k cmd+n", "command": "-git.unstageSelectedRanges" },
+
+
+  /// Normalize the Suggest Widget (and friends)
+  /// ==========================================
+  /// These assume some non-default -- and _much_ less intrusive -- suggest widget behaviors.
+  ///
+  ///     "editor.suggest.selectionMode": "never",
+  ///     "editor.inlineSuggest.suppressSuggestions": true,
+  ///     "editor.inlineSuggest.showToolbar": "never",
+  ///     "editor.acceptSuggestionOnCommitCharacter": false,
+
+  // Show suggestions
+  { "key": "ctrl+space",     "command": "-editor.action.triggerSuggest" },
+  { "key": "ctrl+space",     "command": "-focusSuggestion" },
+
+  { "key": "cmd+;",          "command": "editor.action.triggerSuggest",
+                                "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible" },
+  { "key": "cmd+;",          "command": "focusSuggestion",
+                                "when": "!suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
+  // Is there some way to un-focus a suggestion + the suggestion widget?
+  { "key": "ctrl+alt+space", "command": "-toggleSuggestionFocus" },
+  //{ "key": "cmd+shift+;",  "command": "toggleSuggestionFocus",
+  //                            "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
+
+  // Manually trigger inline suggestions? This can be staggered with `inlineSuggest.trigger` if
+  //  `!suggestWidgetVisible`, and then `triggerSuggest` if `inlineSuggestionVisible`.
+  // Is that more fun?
+  //
+  //{ "key": "cmd+;",        "command": "editor.action.inlineSuggest.trigger",
+  //                            "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !inlineSuggestionVisible && !suggestWidgetVisible" },
+
+  // Toggle the sidebar that contains additional information about the focused symbol
+  { "key": "ctrl+space",       "command": "-toggleSuggestionDetails" },
+  { "key": "cmd+;",        "command": "toggleSuggestionDetails",
+                              "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
+
+  // The parameter hint widget is a different pane than the suggestion widget
+  { "key": "shift+cmd+space",  "command": "-editor.action.triggerParameterHints" },
+
+  { "key": "cmd+shift+;",  "command": "editor.action.triggerParameterHints",
+                              "when": "editorHasSignatureHelpProvider && editorTextFocus" },
+  { "key": "cmd+shift+;",  "command": "closeParameterHints",
+                              "when": "editorFocus && parameterHintsVisible" },
+
+  // Lawl use indent/detent to cycle inline hints
+  { "key": "alt+]",            "command": "-editor.action.inlineSuggest.showNext" },
+  { "key": "alt+[",            "command": "-editor.action.inlineSuggest.showPrevious" },
+
+  { "key": "cmd+]",        "command": "editor.action.inlineSuggest.showNext",
+                              "when": "inlineSuggestionVisible && !editorReadonly" },
+  { "key": "cmd+[",        "command": "editor.action.inlineSuggest.showPrevious",
+                              "when": "inlineSuggestionVisible && !editorReadonly" },
+
+  // Inline suggestion accept behavior.
+  // Rebinds were required to account for the suggest widget not getting a focused suggestion upon
+  // entry (it doesn't open in the suggestWidgetHasFocusedSuggestion state). Specifically, in the "when" clauses,
+  // `suggestWidgetVisible` was replaced with `suggestWidgetHasFocusedSuggestion`
+  { "key": "tab",          "command": "-editor.action.inlineSuggest.commit" },
+  { "key": "tab",          "command": "editor.action.inlineSuggest.commit",
+                              "when": "inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion || inlineSuggestionHasIndentationLessThanTabSize && inlineEditIsVisible && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion || cursorAtInlineEdit && inlineEditIsVisible && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion || cursorAtInlineEdit && inlineEditIsVisible && inlineSuggestionVisible && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion"
+                              //       inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible                                                && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+                              //    || inlineSuggestionHasIndentationLessThanTabSize && inlineEditIsVisible && inlineSuggestionVisible                         && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+                              //    || cursorAtInlineEdit                            && inlineEditIsVisible                            && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+                              //    || cursorAtInlineEdit                            && inlineEditIsVisible && inlineSuggestionVisible && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+  },
+  { "key": "cmd+enter",    "command": "-editor.action.inlineSuggest.commit" },
+  { "key": "cmd+enter",    "command": "editor.action.inlineSuggest.commit",
+                              "when": "editorTextFocus && inlineEditIsVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion || editorTextFocus && inlineEditIsVisible && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion"
+                              //       editorTextFocus && inlineEditIsVisible                            && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+                              //    || editorTextFocus && inlineEditIsVisible && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+  },
+  { "key": "tab",          "command": "-editor.action.inlineSuggest.jump" },
+  { "key": "tab",          "command": "editor.action.inlineSuggest.jump",
+                              "when": "inlineEditIsVisible && !cursorAtInlineEdit && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion" },
+
+  { "key": "cmd+right",    "command": "-editor.action.inlineSuggest.acceptNextWord" },
+
+  // WTF is an AlternativeSelectedSuggestion?
+  // { "key": "shift+tab",    "command": "acceptAlternativeSelectedSuggestion",
+  //                             "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
+  // { "key": "shift+enter",  "command": "acceptAlternativeSelectedSuggestion",
+  //                             "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
+
+  // Only give the suggest widget up/down input if it already has focus
+  { "key": "cmd+pagedown",  "command": "-selectNextPageSuggestion" },
+  { "key": "pagedown",      "command": "-selectNextPageSuggestion" },
+  { "key": "cmd+down",      "command": "-selectNextSuggestion" },
+  { "key": "down",          "command": "-selectNextSuggestion" },
+  { "key": "cmd+pageup",    "command": "-selectPrevPageSuggestion" },
+  { "key": "pageup",        "command": "-selectPrevPageSuggestion" },
+  { "key": "cmd+up",        "command": "-selectPrevSuggestion" },
+  { "key": "up",            "command": "-selectPrevSuggestion" },
+
+  { "key": "cmd+pagedown",  "command": "selectNextPageSuggestion",
+                               "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "pagedown",      "command": "selectNextPageSuggestion",
+                               "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "cmd+down",      "command": "selectNextSuggestion",
+                               "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "down",          "command": "selectNextSuggestion",
+                               "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "cmd+pageup",    "command": "selectPrevPageSuggestion",
+                               "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "pageup",        "command": "selectPrevPageSuggestion",
+                               "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "cmd+up",        "command": "selectPrevSuggestion",
+                               "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "up",            "command": "selectPrevSuggestion",
+                               "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+
+
+  /// Open the View Problem Widget with a Keypress
+  /// ============================================
+  /// These are the red and yellow squiggles. Usually you get at this by clicking on the lightbulb,
+  /// but the lightbulb sucks. Turn it off and use your keyboard.
+  ///
+  ///     "editor.lightbulb.enabled": "off",
+  { "key": "ctrl+alt+.", "command": "editor.debug.action.showDebugHover",
+                            "when": "editorTextFocus && inDebugMode" },
+  { "key": "ctrl+alt+.", "command": "editor.action.showHover",
+                            "when": "editorTextFocus" },
+  { "key": "ctrl+alt+.", "command": "workbench.action.terminal.focusHover",
+                            "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalIsOpen || terminalFocus && terminalProcessSupported || terminalHasBeenCreated && terminalTabsFocus || terminalIsOpen && terminalTabsFocus || terminalProcessSupported && terminalTabsFocus" },
+  { "key": "ctrl+alt+.", "command": "workbench.action.showTreeHover",
+                            "when": "customTreeView && listFocus && !inputFocus && !treestickyScrollFocused" },
+  // TODO: "alt+cmd+." for these?
+
+
+  /// Some Sublime Keybindings
+  /// ========================
+  // Requires the Sublime Commands extension:
+  //     code --install-extension zarel.sublime-commands
+  //
+  // This is only required for splitIntoLines, and a transpose implementation that works on
+  // selections, rather than individual characters.
+
+  { "key": "ctrl+t",       "command": "extension.transpose",
+                              "when": "isMac && textInputFocus && !editorReadonly" },
+  { "key": "shift+cmd+l",  "command": "extension.splitIntoLines",
+                              "when": "isMac && editorTextFocus"},
+
+  { "key": "ctrl+t",       "command": "-editor.action.transposeLetters" },
+  { "key": "shift+cmd+l",  "command": "-editor.action.selectHighlights" },
+
+
+  /// Normalize Block Comments
+  /// ========================
+  { "key": "cmd+shift+/",  "command": "editor.action.blockComment",
+                              "when": "editorTextFocus && !editorReadonly" },
+  { "key": "shift+alt+a",  "command": "-editor.action.blockComment" },
+
+
+  /// Flip Next Problem Behavior
+  /// ==========================
+  // I want F8 to stay in the current file, and F8+Shift to go to any.
+  { "key": "f8",           "command": "editor.action.marker.next",
+                              "when": "editorFocus" },
+  { "key": "shift+f8",     "command": "editor.action.marker.prev",
+                              "when": "editorFocus" },
+  { "key": "alt+f8",       "command": "editor.action.marker.nextInFiles",
+                              "when": "editorFocus" },
+  { "key": "shift+alt+f8", "command": "editor.action.marker.prevInFiles",
+                              "when": "editorFocus" },
+
+  { "key": "f8",           "command": "-editor.action.marker.nextInFiles",
+                              "when": "editorFocus" },
+  { "key": "shift+f8",     "command": "-editor.action.marker.prevInFiles",
+                              "when": "editorFocus" },
+  { "key": "alt+f8",       "command": "-editor.action.marker.next",
+                              "when": "editorFocus" },
+  { "key": "shift+alt+f8", "command": "-editor.action.marker.prev",
+                              "when": "editorFocus" },
+
+
+  /// Vim-ish Go-to-Line
+  /// ==================
+  // `ctrl+;` feels better, but it's being used by the test API, which I want
+  // access to.
+  { "key": "ctrl+cmd+;", "command": "workbench.action.gotoLine" },
+  { "key": "ctrl+g",     "command": "-workbench.action.gotoLine" },
+
+  
+  /// Vim-ish Relative Go-to-Line
+  /// ===========================
+  /// Requires pyrrho.vscode-relative-motion
+  ///     git clone https://github.com/pyrrho/vscode-relative-motion.git
+  ///     cd vscode-relative-motion
+  ///     npm install
+  ///     npm install -g @vscode/vsce
+  ///     vsce package
+  ///     code --install-extension vscode-relative-motion-*.vsix
+  { "key": "ctrl+up",    "command": "vscode-relative-motion.up",
+                            "when": "editorFocus" },
+  { "key": "ctrl+down",  "command": "vscode-relative-motion.down",
+                            "when": "editorFocus" },
+
+  { "key": "alt+k",      "command": "-vscode-relative-motion.up" },
+  { "key": "alt+j",      "command": "-vscode-relative-motion.down" },
+
+
+  /// Keyboard window motions
+  /// =======================
+  // This doesn't seem to work when large sections of code are folded...
+  // Gonna have to look into that. Might need to make a damn extension?
+  // TODO: WASD motion for macs?
+  //       Why am I not using arrows for *nix?
+  { "key": "ctrl+cmd+up",    "command": "editorScroll",
+                                "when": "true",
+    "args": {
+      "to": "up",
+      "value": 4,
+      "by": "line",
+      "revealCursor": false
+    }},
+  { "key": "ctrl+cmd+left",  "command": "runCommands",
+                                "when": "true",
+    "args": {
+      "commands": [
+          "scrollLeft", "scrollLeft", "scrollLeft", "scrollLeft", "scrollLeft",
+          "scrollLeft", "scrollLeft", "scrollLeft", "scrollLeft", "scrollLeft"]
+    }},
+  { "key": "ctrl+cmd+down",  "command": "editorScroll",
+                                "when": "true",
+    "args": {
+      "to": "down",
+      "value": 4,
+      "by": "line",
+      "revealCursor": false
+    }},
+  { "key": "ctrl+cmd+right", "command": "runCommands",
+                                "when": "true",
+    "args": {
+      "commands": [
+          "scrollRight", "scrollRight", "scrollRight", "scrollRight", "scrollRight",
+          "scrollRight", "scrollRight", "scrollRight", "scrollRight", "scrollRight"]
+    }},
+
+
+  /// Modify Find Widget (ctrl+f) behavior
+  /// ====================================
+  // Search windows:
+  // - Find Widget
+  //     The little in-editor dude
+  //     `cmd+f`
+  // - Search Viewlet
+  //     The sidebar view
+  //     `shift+cmd+f` (when the Find Widget is not focued)
+  // - Search Editor
+  //     The entire edior is a search pane
+  //     `cmd+enter` (when the search viewlet has focus and results)
+  //
+  // States I care about;
+  // - Whether or not the Find Widget is visible
+  //     `editorFocus && [!]findWidgetVisible`
+  // - Whether or not the Find Widget is focused
+  //     `findWidgetVisible && [!]findInputFocussed`
+  // - Whether or not the edior has selected text
+  //     `editorHasSelection`
+  { "key": "cmd+f",             "command": "-actions.find" },
+  { "key": "shift+cmd+f",       "command": "-workbench.action.findInFiles" },
+  { "key": "cmd+g",             "command": "-editor.action.nextMatchFindAction", },
+  { "key": "shift+cmd+g",       "command": "-editor.action.previousMatchFindAction", },
+
+  { "key": "cmd+f",             "command": "actions.find",
+                                   "when": "(editorFocus || editorIsOpen) && !findInputFocussed" },
+  { "key": "cmd+f",             "command": "runCommands",
+                     "args": { "commands": [ "editor.action.nextMatchFindAction",
+                                             "editor.action.selectAll"
+                                           ] },
+                                   "when": "editorFocus && findWidgetVisible && findInputFocussed" },
+  { "key": "cmd+shift+f",       "command": "runCommands",
+                     "args": { "commands": [ "editor.action.previousMatchFindAction",
+                                             "editor.action.selectAll"
+                                           ] },
+                                   "when": "editorFocus && findWidgetVisible && findInputFocussed" },
+  { "key": "cmd+g",             "command": "workbench.action.focusActiveEditorGroup",
+                                   "when": "editorFocus && findWidgetVisible && findInputFocussed && editorHasSelection" },
+  { "key": "shift+cmd+g",       "command": "workbench.action.focusActiveEditorGroup",
+                                   "when": "editorFocus && findWidgetVisible && findInputFocussed && editorHasSelection" },
+  { "key": "cmd+g",             "command": "runCommands",
+                     "args": { "commands": [ "editor.action.previousMatchFindAction",
+                                             "editor.action.nextMatchFindAction",
+                                             "workbench.action.focusActiveEditorGroup",
+                                           ] },
+                                   "when": "editorFocus && findWidgetVisible && findInputFocussed && !editorHasSelection" },
+  { "key": "shift+cmd+g",       "command": "runCommands",
+                     "args": { "commands": [ "editor.action.previousMatchFindAction",
+                                             "workbench.action.focusActiveEditorGroup",
+                                           ] },
+                                   "when": "editorFocus && findWidgetVisible && findInputFocussed && !editorHasSelection" },
+  { "key": "cmd+g",             "command": "editor.action.nextSelectionMatchFindAction",
+                                   "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection" },
+  { "key": "shift+cmd+g",       "command": "editor.action.previousSelectionMatchFindAction",
+                                   "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection" },
+
+  { "key": "cmd+g",             "command": "runCommands",
+                     "args": { "commands": [ "editor.action.addSelectionToNextFindMatch",
+                                             "actions.find",
+                                             "workbench.action.focusActiveEditorGroup",
+                                           ] },
+                                   "when": "(editorFocus && !findWidgetVisible && !editorHasSelection) || (editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection)" },
+  { "key": "shift+cmd+g",       "command": "runCommands",
+                     "args": { "commands": [ "editor.action.addSelectionToNextFindMatch",
+                                             "actions.find",
+                                             "workbench.action.focusActiveEditorGroup",
+                                           ] },
+                                   "when": "(editorFocus && !findWidgetVisible && !editorHasSelection) || (editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection)" },
+  { "key": "cmd+g",             "command": "actions.findWithSelection",
+                                   "when": "editorFocus && !findWidgetVisible && editorHasSelection" },
+  { "key": "shift+cmd+g",       "command": "actions.findWithSelection",
+                                   "when": "editorFocus && !findWidgetVisible && editorHasSelection" },
+
+  { "key": "alt+cmd+g",         "command": "editor.action.selectHighlights",
+                                   "when": "editorFocus && !findInputFocussed" },
+  { "key": "alt+cmd+g",         "command": "editor.action.selectAllMatches",
+                                   "when": "editorFocus && findInputFocussed" },
+
+  { "key": "cmd+enter",         "command": "workbench.action.focusActiveEditorGroup",
+                                   "when": "editorFocus && findInputFocussed" },
+  { "key": "tab",               "command": "workbench.action.focusActiveEditorGroup",
+                                   "when": "editorFocus && findInputFocussed" },
+
+  /// Modify Search Viewlet (ctrl+shift+f) behavior
+  /// =============================================
+  { "key": "shift+cmd+f", "command": "workbench.action.findInFiles",
+                             "when": "!findInputFocussed" },
+  { "key": "alt+cmd+g",   "command": "addCursorsAtSearchResults",
+                             "when": "fileMatchOrMatchFocus && searchViewletVisible" },
+
+  // Move focus from the search input box to the search results
+  // Default binding is ctrl+down, which is masked by my relative motion hotkeys.
+  // TODO: These rules are split on there "where"; the original rule wasn't.
+  //       Figure out what the `inSearchEditor && inputBoxFocus` is about? afaikt,
+  //       that rule does nothing?
+  { "key": "tab",         "command": "search.focus.nextInputBox",
+                             "when": "searchViewletVisible && inputBoxFocus" },
+  { "key": "tab",         "command": "search.focus.nextInputBox",
+                             "when": "inSearchEditor && inputBoxFocus" },
+
+
+  /// Show File in Explorer
+  /// =====================
+  { "key": "ctrl+cmd+\\", "command": "workbench.files.action.showActiveFileInExplorer" },
+
+  /// Change-Case Chords
+  /// ==================
+  /// Requires the 'change-case' extension (one of many, actually...):
+  ///     code --install-extension wmaurer.change-case
+  { "key": "cmd+' cmd+u",   "command": "extension.changeCase.upper",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "cmd+' cmd+i",   "command": "extension.changeCase.title",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "cmd+' cmd+l",   "command": "extension.changeCase.lower",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "cmd+' cmd+s",   "command": "extension.changeCase.snake",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "cmd+' cmd+p",   "command": "extension.changeCase.pascal",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "cmd+' cmd+c",   "command": "extension.changeCase.camel",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "cmd+' cmd+k",   "command": "extension.changeCase.constant",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "cmd+' cmd+z",   "command": "extension.changeCase.kebab",
+                               "when": "editorTextFocus && !editorReadonly" },
+
+
+  /// Toggle Minimap
+  /// ==============
+  { "key": "cmd+m",         "command": "editor.action.toggleMinimap" },
+
+
+  /// Word Wrap Toggle
+  /// ================
+  /// Requires the 'Settings Cycler' extension:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  {
+      "key": "alt+z", "command": "settings.cycle",
+      "args": {
+          "id": "toggle_word_wrap",
+          "overrideWorkspaceSettings": false,
+          "values": [
+              { "editor.wordWrap": "off",     "[markdown]": { "editor.wordWrap": "off"     } },
+              { "editor.wordWrap": "on",      "[markdown]": { "editor.wordWrap": "on"      } },
+              { "editor.wordWrap": "bounded", "[markdown]": { "editor.wordWrap": "bounded" } }
+          ]
+      }
+  },
+
+  // Unbind unused commands.
+  // Used by all three.
+  { "key": "alt+z", "command": "-editor.action.toggleWordWrap" },
+
+
+  /// Code Lens Toggles
+  /// =================
+  /// Requires the 'Settings Cycler' extension:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  {
+      "key": "alt+x", "command": "settings.cycle",
+      "args": {
+          "id": "toggle_code_lens",
+          "overrideWorkspaceSettings": false,
+          "values": [
+              { "editor.codeLens": false },
+              { "editor.codeLens": true  }
+          ]
+      }
+  },
+  // TODO: Find out if this can work w/o the above enabled.
+  { "key": "shift+alt+x", "command": "codelens.showLensesInCurrentLine" },
+
+
+  /// Format On Type Toggle (and friends)
+  /// =====================
+  /// Requires the 'Settings Cycler' extension:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  {
+      "key": "cmd+k cmd+z", "command": "settings.cycle",
+      "args": {
+          "id": "toggle_format_on_type",
+          "overrideWorkspaceSettings": false,
+          "values": [
+              { "editor.formatOnType": false },
+              { "editor.formatOnType": true }
+          ]
+      }
+  },
+
+  { "key": "cmd+k cmd+f",       "command": "editor.action.formatDocument",
+                                   "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor" },
+  { "key": "cmd+k cmd+shift+f", "command": "editor.action.formatSelection",
+                                   "when": "editorHasDocumentSelectionFormattingProvider && editorTextFocus && !editorReadonly" },
+
+  { "key": "cmd+k cmd+f",       "command": "-editor.action.formatSelection" },
+
+
+  /// Inlay Hints Toggle
+  /// ==================
+  /// Requires the 'Settings Cycler' extension:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  {
+      "key": "ctrl+alt+x", "command": "settings.cycle",
+      "args": {
+          "id": "toggle_inlay_hints",
+          "overrideWorkspaceSettings": false,
+          "values": [
+              { "editor.inlayHints.enabled": "offUnlessPressed" },
+              { "editor.inlayHints.enabled": "on" }
+          ]
+      }
+  },
+
+
+  /// Relative Line Numbers Toggle
+  /// ============================
+  /// Requires the 'Settings Cycler' extension:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  {
+      "key": "cmd+k shift+cmd+l", "command": "settings.cycle",
+      "args": {
+          "id": "toggle_relative_line_numbers",
+          "overrideWorkspaceSettings": false,
+          "values": [
+              { "editor.lineNumbers": "relative" },
+              { "editor.lineNumbers": "on" }
+          ]
+      }
+  },
+
+
+  /// CSpell Diagnostic Level Toggle
+  /// ==============================
+  /// Requires the 'Settings Cycler' and 'Code Spell Checker' extensions:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  ///     code --install-extension streetsidesoftware.code-spell-checker
+  {
+      "key": "cmd+f8", "command": "settings.cycle",
+      "args": {
+          "id": "toggle_cspell_diagnostic_level",
+          "overrideWorkspaceSettings": false,
+          "values": [
+              { "cSpell.diagnosticLevel": "Hint" },
+              { "cSpell.diagnosticLevel": "Information" }
+          ]
+      }
+  },
+
+
+  /// Semantic Occurrences Highlighting
+  /// =================================
+  /// Requires the 'Settings Cycler' extensions:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  {
+      "key": "shift+alt+s", "command": "settings.cycle",
+      "args": {
+          "id": "toggle_occurrences_highlight",
+          "overrideWorkspaceSettings": false,
+          "values": [
+              { "editor.occurrencesHighlight": "off" },
+              { "editor.occurrencesHighlight": "singleFile" }
+          ]
+      }
+  },
+
+
+  /// Globally Enable Copying File Path
+  /// =================================
+  // Normally you have to be in the tree view (`!editorFocus`, do other
+  /// widgets work?) for these hotkeys to be active. I want them all the time!
+  { "key": "cmd+k cmd+c",         "command": "copyFilePath",
+                                     "when": "isMac" },
+  { "key": "cmd+k shift+cmd+c",   "command": "copyRelativeFilePath",
+                                     "when": "isMac" },
+
+  /// Unbinds
+  // overloaded
+  { "key": "cmd+k cmd+c",         "command": "-editor.action.addCommentLine",
+                                     "when": "isMac && editorTextFocus && !editorReadonly" },
+  // unused
+  { "key": "alt+cmd+c",           "command": "-copyFilePath",
+                                     "when": "isMac && !editorFocus" },
+  { "key": "shift+alt+cmd+c",     "command": "copyRelativeFilePath",
+                                     "when": "isMac && !editorFocus" },
+
+
+  // Placeholder to make GUI edits easier to handle
+  {}
+]

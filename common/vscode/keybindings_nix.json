@@ -1,0 +1,1190 @@
+// prettier-ignore
+[
+  // NOTES:
+  // This used to be a union'd keybinding set for osx, nix, and windows. It's...
+  // a burden to maintain all three of those w/o active editors in each, so this
+  // file is only a linux config. Maybe someday I'll bring back the union'd set,
+  // but today it not that day.
+  //
+  // VSCode parses `cmd`, `meta`, and `win` interchangeably. All three refer to
+  // the current OS's specific meta key; "Super" on linux, "Windows" on Windows,
+  // and "Cmd" on OSX. Because OSX (rightly?) chose to make heavy use of Cmd in
+  // user applications, I don't consider it reasonable to fully unify OSX with
+  // the other platforms.
+
+  // TODOs:
+  // - Fix find behavior
+  // - Figure out if search editors are any good
+  // - Anchors; Set Selection Anchor and friends
+
+
+  /// Unbind Some Defaults I... _Disagree_ With
+  /// =========================================
+
+  // Workspace zooms
+  { "key": "ctrl+numpad_add",      "command": "-workbench.action.zoomIn" },
+  { "key": "ctrl+numpad_subtract", "command": "-workbench.action.zoomOut" },
+  { "key": "ctrl+=",               "command": "-workbench.action.zoomIn" },
+  { "key": "ctrl+shift+=",         "command": "-workbench.action.zoomIn" },
+  { "key": "ctrl+-",               "command": "-workbench.action.zoomOut" },
+
+  // Tab-focus mode is _so bad_
+  { "key": "ctrl+m", "command": "-editor.action.toggleTabFocusMode" },
+
+  // I have never used the Copy Lines action
+  { "key": "ctrl+shift+alt+up",   "command": "-editor.action.copyLinesUpAction" },
+  { "key": "ctrl+shift+alt+down", "command": "-editor.action.copyLinesDownAction" },
+
+  // `breadcrumbs.focus` is less good than `breadcrumbs.focusAndSelect`
+  { "key": "ctrl+shift+;", "command": "-breadcrumbs.focus" },
+
+  // vim-ish ctrl+a and ctrl+z are overloaded with breadcrumb commands.
+  // That is hilarious.
+  { "key": "ctrl+shift+.", "command": "-editor.action.inPlaceReplace.down" },
+  { "key": "ctrl+shift+,", "command": "-editor.action.inPlaceReplace.up" },
+
+  // Outdent on shift+tab has always been funny to me. In a bad way.
+  { "key": "shift+tab",        "command": "-outdent" },
+
+
+  /// Normalize Word and Sub-word navigation
+  /// ======================================
+  // NB. OSX uses "alt" ("option") for whole word navigation, and the other two
+  //     OSs use "ctrl". Because this is an idiomatic difference, I'm not going
+  //     to try to unify it.
+  { "key": "alt+right",            "command": "cursorWordPartRight",
+                                      "when": "textInputFocus" },
+  { "key": "shift+alt+right",      "command": "cursorWordPartRightSelect",
+                                      "when": "textInputFocus" },
+  { "key": "alt+left",             "command": "cursorWordPartStartLeft",
+                                      "when": "textInputFocus" },
+  { "key": "shift+alt+left",       "command": "cursorWordPartStartLeftSelect",
+                                      "when": "textInputFocus" },
+
+  { "key": "alt+backspace",        "command": "deleteWordPartLeft",
+                                      "when": "textInputFocus && !editorReadonly" },
+  { "key": "alt+delete",           "command": "deleteWordPartRight",
+                                      "when": "textInputFocus && !editorReadonly" },
+
+
+  /// Normalize Smart Select
+  /// ======================
+  // Choose the OSX four-key binding to normalize on.
+
+  // Only one version of smart select, please
+  { "key": "ctrl+shift+alt+right", "command": "editor.action.smartSelect.expand",
+                                      "when": "editorTextFocus" },
+  { "key": "ctrl+shift+alt+left",  "command": "editor.action.smartSelect.shrink",
+                                      "when": "editorTextFocus" },
+
+  { "key": "shift+alt+right",      "command": "-editor.action.smartSelect.expand" },
+  { "key": "shift+alt+left",       "command": "-editor.action.smartSelect.shrink" },
+
+
+  /// Navigate Tabs Spatially (not LRU)
+  /// =================================
+  { "key": "ctrl+tab",       "command": "workbench.action.nextEditorInGroup",
+                                "when": "!inQuickOpen" },
+  { "key": "ctrl+shift+tab", "command": "workbench.action.previousEditorInGroup",
+                                "when": "!inQuickOpen" },
+
+  /// Quick open LRU interface
+  // NB. These are not going to unify across OSes b/c each uses tab differently.
+  // NB. I've not been able to make arrow key navigation work for the quick open
+  //     b/c it selects as soon as you release `ctrl`, which is generally a good
+  //     thing, but messes with arrow input.
+  { "key": "ctrl+pageup",    "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
+                                "when": "editorTextFocus &&!activeEditorGroupEmpty && !inQuickOpen && !inEditorsPicker" },
+  { "key": "ctrl+tab",       "command": "workbench.action.quickOpenNavigateNextInEditorPicker",
+                                "when": "inEditorsPicker && inQuickOpen" },
+  { "key": "ctrl+shift+tab", "command": "workbench.action.quickOpenNavigatePreviousInEditorPicker",
+                                "when": "inEditorsPicker && inQuickOpen" },
+
+  /// Unbinds
+  /// -------
+  { "key": "ctrl+tab",             "command": "-workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup" },
+  { "key": "ctrl+shift+tab",       "command": "-workbench.action.quickOpenLeastRecentlyUsedEditorInGroup" },
+  { "key": "ctrl+pagedown",        "command": "-workbench.action.nextEditor" },
+  { "key": "ctrl+pageup",          "command": "-workbench.action.previousEditor" },
+  { "key": "ctrl+k ctrl+pagedown", "command": "-workbench.action.nextEditorInGroup" },
+  { "key": "ctrl+k ctrl+pageup",   "command": "-workbench.action.previousEditorInGroup" },
+  { "key": "alt+1",                "command": "-workbench.action.openEditorAtIndex1" },
+  { "key": "alt+2",                "command": "-workbench.action.openEditorAtIndex2" },
+  { "key": "alt+3",                "command": "-workbench.action.openEditorAtIndex3" },
+  { "key": "alt+4",                "command": "-workbench.action.openEditorAtIndex4" },
+  { "key": "alt+5",                "command": "-workbench.action.openEditorAtIndex5" },
+  { "key": "alt+6",                "command": "-workbench.action.openEditorAtIndex6" },
+  { "key": "alt+7",                "command": "-workbench.action.openEditorAtIndex7" },
+  { "key": "alt+8",                "command": "-workbench.action.openEditorAtIndex8" },
+  { "key": "alt+9",                "command": "-workbench.action.openEditorAtIndex9" },
+
+
+  /// Normalize Editor and Tab Group Movement
+  /// =======================================
+  // move focus
+  { "key": "ctrl+alt+up",             "command": "workbench.action.focusAboveGroup" },
+  { "key": "ctrl+alt+down",           "command": "workbench.action.focusBelowGroup" },
+  { "key": "ctrl+alt+left",           "command": "workbench.action.focusLeftGroup" },
+  { "key": "ctrl+alt+right",          "command": "workbench.action.focusRightGroup" },
+  // move editor
+  { "key": "ctrl+k ctrl+up",          "command": "workbench.action.moveEditorToAboveGroup" },
+  { "key": "ctrl+k ctrl+down",        "command": "workbench.action.moveEditorToBelowGroup" },
+  { "key": "ctrl+k ctrl+left",        "command": "workbench.action.moveEditorToLeftGroup" },
+  { "key": "ctrl+k ctrl+right",       "command": "workbench.action.moveEditorToRightGroup" },
+  // split editor into
+  { "key": "ctrl+k ctrl+shift+up",    "command": "workbench.action.splitEditorToAboveGroup" },
+  { "key": "ctrl+k ctrl+shift+down",  "command": "workbench.action.splitEditorToBelowGroup" },
+  { "key": "ctrl+k ctrl+shift+left",  "command": "workbench.action.splitEditorToLeftGroup" },
+  { "key": "ctrl+k ctrl+shift+right", "command": "workbench.action.splitEditorToRightGroup" },
+  // move editor group
+  { "key": "ctrl+k up",               "command": "workbench.action.moveActiveEditorGroupUp" },
+  { "key": "ctrl+k down",             "command": "workbench.action.moveActiveEditorGroupDown" },
+  { "key": "ctrl+k left",             "command": "workbench.action.moveActiveEditorGroupLeft" },
+  { "key": "ctrl+k right",            "command": "workbench.action.moveActiveEditorGroupRight" },
+  // split into new group w/ default behavior
+  { "key": "ctrl+k ctrl+\\",          "command": "workbench.action.splitEditor" },
+  { "key": "ctrl+k ctrl+shift+\\",    "command": "workbench.action.splitEditorOrthogonal" },
+
+  // proportion toggles
+//{ "key": "ctrl+k ctrl+m", "command": "workbench.action.toggleMaximizeEditorGroup",
+//                             "when": "editorPartMaximizedEditorGroup || editorPartMultipleEditorGroups" },
+  { "key": "ctrl+k ctrl+n", "command": "workbench.action.toggleEditorWidths",
+                               "when": "editorPartMaximizedEditorGroup || editorPartMultipleEditorGroups" },
+
+  /// Unbinds
+  /// -------
+  // Why are there so many commands on this one binding!?
+  { "key": "ctrl+\\",              "command": "-workbench.action.splitEditor" },
+  { "key": "ctrl+k ctrl+shift+\\", "command": "-workbench.action.splitEditorInGroup" },
+  { "key": "ctrl+k ctrl+\\",       "command": "-workbench.action.splitEditorDown" },
+  { "key": "ctrl+k ctrl+\\",       "command": "-workbench.action.splitEditorLeft" },
+  { "key": "ctrl+k ctrl+\\",       "command": "-workbench.action.splitEditorOrthogonal" },
+  { "key": "ctrl+k ctrl+\\",       "command": "-workbench.action.splitEditorRight" },
+  { "key": "ctrl+k ctrl+\\",       "command": "-workbench.action.splitEditorUp" },
+
+  // Unbind the default keybindings for moving tabs between groups.
+  { "key": "ctrl+k up",           "command": "-workbench.action.moveActiveEditorGroupUp" },
+  { "key": "ctrl+k down",         "command": "-workbench.action.moveActiveEditorGroupDown" },
+  { "key": "ctrl+k left",         "command": "-workbench.action.moveActiveEditorGroupLeft" },
+  { "key": "ctrl+k right",        "command": "-workbench.action.moveActiveEditorGroupRight" },
+  { "key": "ctrl+alt+right",      "command": "-workbench.action.moveEditorToNextGroup" },
+  { "key": "ctrl+alt+left",       "command": "-workbench.action.moveEditorToPreviousGroup" },
+  { "key": "ctrl+shift+pageup",   "command": "-workbench.action.moveEditorLeftInGroup" },
+  { "key": "ctrl+shift+pagedown", "command": "-workbench.action.moveEditorRightInGroup" },
+  { "key": "ctrl+k ctrl+up",      "command": "-workbench.action.focusAboveGroup" },
+  { "key": "ctrl+k ctrl+down",    "command": "-workbench.action.focusBelowGroup" },
+  { "key": "ctrl+k ctrl+left",    "command": "-workbench.action.focusLeftGroup" },
+  { "key": "ctrl+k ctrl+right",   "command": "-workbench.action.focusRightGroup" },
+  { "key": "shift+alt+1",         "command": "-workbench.action.moveEditorToFirstGroup" },
+  { "key": "shift+alt+9",         "command": "-workbench.action.moveEditorToLastGroup" },
+
+  // overloaded
+  { "key": "ctrl+k ctrl+n",       "command": "-git.unstageSelectedRanges" },
+
+
+  /// Tweak Command Palette Extras
+  /// ============================
+  { "key": "ctrl+shift+e", "command": "workbench.action.showAllSymbols" },
+  { "key": "ctrl+shift+e", "command": "-workbench.view.explorer" },
+
+
+  /// Rebind Test commands from `ctrl+;` to `alt+;`
+  /// =============================================
+  { "key": "alt+; alt+x",       "command": "testing.cancelRun" },
+  { "key": "alt+; alt+shift+a", "command": "testing.coverageAll" },
+  { "key": "alt+; alt+shift+c", "command": "testing.coverageAtCursor",
+                                   "when": "editorTextFocus" },
+  { "key": "alt+; alt+shift+f", "command": "testing.coverageCurrentFile",
+                                   "when": "editorTextFocus" },
+  { "key": "alt+; alt+shift+l", "command": "testing.coverageLastRun" },
+  { "key": "alt+; alt+a",       "command": "testing.debugAll" },
+  { "key": "alt+; alt+c",       "command": "testing.debugAtCursor",
+                                   "when": "editorTextFocus" },
+  { "key": "alt+; alt+f",       "command": "testing.debugCurrentFile",
+                                   "when": "editorTextFocus" },
+  { "key": "alt+; alt+e",       "command": "testing.debugFailTests" },
+  { "key": "alt+; alt+l",       "command": "testing.debugLastRun" },
+  { "key": "alt+; alt+m",       "command": "testing.openOutputPeek" },
+  { "key": "alt+; e",           "command": "testing.reRunFailTests" },
+  { "key": "alt+; l",           "command": "testing.reRunLastRun" },
+  { "key": "alt+; alt+r",       "command": "testing.refreshTests",
+                                   "when": "testing.canRefresh" },
+  { "key": "alt+; a",           "command": "testing.runAll" },
+  { "key": "alt+; c",           "command": "testing.runAtCursor",
+                                   "when": "editorTextFocus" },
+  { "key": "alt+; f",           "command": "testing.runCurrentFile",
+                                   "when": "editorTextFocus" },
+  { "key": "alt+; alt+o",       "command": "testing.showMostRecentOutput",
+                                   "when": "testing.hasAnyResults" },
+  { "key": "alt+; alt+shift+i", "command": "testing.toggleInlineCoverage" },
+  { "key": "alt+; alt+i",       "command": "testing.toggleInlineTestOutput" },
+
+  /// Unbinds
+  /// -------
+  { "key": "ctrl+; ctrl+x",       "command": "-testing.cancelRun" },
+  { "key": "ctrl+; ctrl+shift+a", "command": "-testing.coverageAll" },
+  { "key": "ctrl+; ctrl+shift+c", "command": "-testing.coverageAtCursor" },
+  { "key": "ctrl+; ctrl+shift+f", "command": "-testing.coverageCurrentFile" },
+  { "key": "ctrl+; ctrl+shift+l", "command": "-testing.coverageLastRun" },
+  { "key": "ctrl+; ctrl+a",       "command": "-testing.debugAll" },
+  { "key": "ctrl+; ctrl+c",       "command": "-testing.debugAtCursor" },
+  { "key": "ctrl+; ctrl+f",       "command": "-testing.debugCurrentFile" },
+  { "key": "ctrl+; ctrl+e",       "command": "-testing.debugFailTests" },
+  { "key": "ctrl+; ctrl+l",       "command": "-testing.debugLastRun" },
+  { "key": "ctrl+; ctrl+m",       "command": "-testing.openOutputPeek" },
+  { "key": "ctrl+; e",            "command": "-testing.reRunFailTests" },
+  { "key": "ctrl+; l",            "command": "-testing.reRunLastRun" },
+  { "key": "ctrl+; ctrl+r",       "command": "-testing.refreshTests" },
+  { "key": "ctrl+; a",            "command": "-testing.runAll" },
+  { "key": "ctrl+; c",            "command": "-testing.runAtCursor" },
+  { "key": "ctrl+; f",            "command": "-testing.runCurrentFile" },
+  { "key": "ctrl+; ctrl+o",       "command": "-testing.showMostRecentOutput" },
+  { "key": "ctrl+; ctrl+shift+i", "command": "-testing.toggleInlineCoverage" },
+  { "key": "ctrl+; ctrl+i",       "command": "-testing.toggleInlineTestOutput" },
+
+
+  /// Normalize the Suggest Widget (and friends)
+  /// ==========================================
+  /// These assume some non-default -- and _much_ less intrusive -- suggest widget behaviors.
+  ///
+  ///     "editor.suggest.selectionMode": "never",
+  ///     "editor.inlineSuggest.suppressSuggestions": true,
+  ///     "editor.inlineSuggest.showToolbar": "never",
+  ///     "editor.acceptSuggestionOnCommitCharacter": false,
+
+  // Show suggestions
+  { "key": "ctrl+space",       "command": "-editor.action.triggerSuggest" },
+  { "key": "ctrl+space",       "command": "-focusSuggestion" },
+
+  { "key": "ctrl+;",           "command": "editor.action.triggerSuggest",
+                                  "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible" },
+  { "key": "ctrl+;",           "command": "focusSuggestion",
+                                  "when": "!suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
+
+  // Is there some way to un-focus a suggestion + the suggestion widget?
+  { "key": "ctrl+alt+space",   "command": "-toggleSuggestionFocus" },
+
+  //{ "key": "ctrl+shift+;",   "command": "toggleSuggestionFocus",
+  //                              "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
+
+  // Manually trigger inline suggestions? This can be staggered with `inlineSuggest.trigger` if
+  //  `!suggestWidgetVisible`, and then `triggerSuggest` if `inlineSuggestionVisible`.
+  // Is that more fun?
+  //
+  //{ "key": "ctrl+;",         "command": "editor.action.inlineSuggest.trigger",
+  //                              "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !inlineSuggestionVisible && !suggestWidgetVisible" },
+
+  // Toggle the sidebar that contains additional information about the focused symbol
+  { "key": "ctrl+space",       "command": "-toggleSuggestionDetails" },
+
+  { "key": "ctrl+;",           "command": "toggleSuggestionDetails",
+                                  "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
+
+  // The parameter hint widget is a different pane than the suggestion widget
+  { "key": "ctrl+shift+space", "command": "-editor.action.triggerParameterHints" },
+
+  { "key": "ctrl+shift+;",     "command": "editor.action.triggerParameterHints",
+                                  "when": "editorHasSignatureHelpProvider && editorTextFocus" },
+  { "key": "ctrl+shift+;",     "command": "closeParameterHints",
+                                  "when": "editorFocus && parameterHintsVisible" },
+
+  // Lawl use indent/detent to cycle inline hints
+  { "key": "alt+]",            "command": "-editor.action.inlineSuggest.showNext" },
+  { "key": "alt+[",            "command": "-editor.action.inlineSuggest.showPrevious" },
+
+  { "key": "ctrl+]",           "command": "editor.action.inlineSuggest.showNext",
+                                  "when": "inlineSuggestionVisible && !editorReadonly" },
+  { "key": "ctrl+[",           "command": "editor.action.inlineSuggest.showPrevious",
+                                  "when": "inlineSuggestionVisible && !editorReadonly" },
+
+  // Inline suggestion accept behavior.
+  // Rebinds were required to account for the suggest widget not getting a focused suggestion upon
+  // entry (it doesn't open in the suggestWidgetHasFocusedSuggestion state). Specifically, in the "when" clauses,
+  // `suggestWidgetVisible` was replaced with `suggestWidgetHasFocusedSuggestion`
+  { "key": "tab",              "command": "-editor.action.inlineSuggest.commit" },
+  { "key": "tab",              "command": "editor.action.inlineSuggest.commit",
+                                  "when": "inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion || inlineSuggestionHasIndentationLessThanTabSize && inlineEditIsVisible && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion || cursorAtInlineEdit && inlineEditIsVisible && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion || cursorAtInlineEdit && inlineEditIsVisible && inlineSuggestionVisible && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion"
+                                  //       inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible                                                && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+                                  //    || inlineSuggestionHasIndentationLessThanTabSize && inlineEditIsVisible && inlineSuggestionVisible                         && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+                                  //    || cursorAtInlineEdit                            && inlineEditIsVisible                            && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+                                  //    || cursorAtInlineEdit                            && inlineEditIsVisible && inlineSuggestionVisible && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+  },
+  { "key": "ctrl+enter",       "command": "-editor.action.inlineSuggest.commit" },
+  { "key": "ctrl+enter",       "command": "editor.action.inlineSuggest.commit",
+                                  "when": "editorTextFocus && inlineEditIsVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion || editorTextFocus && inlineEditIsVisible && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion"
+                                  //       editorTextFocus && inlineEditIsVisible                            && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+                                  //    || editorTextFocus && inlineEditIsVisible && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion
+  },
+  { "key": "tab",              "command": "-editor.action.inlineSuggest.jump" },
+  { "key": "tab",              "command": "editor.action.inlineSuggest.jump",
+                                  "when": "inlineEditIsVisible && !cursorAtInlineEdit && !editor.hasSelection && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetHasFocusedSuggestion" },
+
+  { "key": "ctrl+right",       "command": "-editor.action.inlineSuggest.acceptNextWord" },
+
+  // WTF is an AlternativeSelectedSuggestion?
+  // { "key": "shift+tab",     "command": "acceptAlternativeSelectedSuggestion",
+  //                              "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
+  // { "key": "shift+enter",   "command": "acceptAlternativeSelectedSuggestion",
+  //                              "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
+
+  // Only give the suggest widget up/down input if it already has focus
+  { "key": "ctrl+pagedown",    "command": "-selectNextPageSuggestion" },
+  { "key": "pagedown",         "command": "-selectNextPageSuggestion" },
+  { "key": "ctrl+down",        "command": "-selectNextSuggestion" },
+  { "key": "down",             "command": "-selectNextSuggestion" },
+  { "key": "ctrl+pageup",      "command": "-selectPrevPageSuggestion" },
+  { "key": "pageup",           "command": "-selectPrevPageSuggestion" },
+  { "key": "ctrl+up",          "command": "-selectPrevSuggestion" },
+  { "key": "up",               "command": "-selectPrevSuggestion" },
+
+  { "key": "ctrl+pagedown",    "command": "selectNextPageSuggestion",
+                                  "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "pagedown",         "command": "selectNextPageSuggestion",
+                                  "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "ctrl+down",        "command": "selectNextSuggestion",
+                                  "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "down",             "command": "selectNextSuggestion",
+                                  "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "ctrl+pageup",      "command": "selectPrevPageSuggestion",
+                                  "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "pageup",           "command": "selectPrevPageSuggestion",
+                                  "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "ctrl+up",          "command": "selectPrevSuggestion",
+                                  "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+  { "key": "up",               "command": "selectPrevSuggestion",
+                                  "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && suggestWidgetHasFocusedSuggestion && textInputFocus" },
+
+
+  /// Open the View Problem Widget with a Keypress
+  /// ============================================
+  /// These are the red and yellow squiggles. Usually you get at this by clicking on the lightbulb,
+  /// but the lightbulb sucks. Turn it off and use your keyboard.
+  ///
+  ///     "editor.lightbulb.enabled": "off",
+  { "key": "ctrl+alt+.", "command": "editor.debug.action.showDebugHover",
+                            "when": "editorTextFocus && inDebugMode" },
+  { "key": "ctrl+alt+.", "command": "editor.action.showHover",
+                            "when": "editorTextFocus" },
+  { "key": "ctrl+alt+.", "command": "workbench.action.terminal.focusHover",
+                            "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalIsOpen || terminalFocus && terminalProcessSupported || terminalHasBeenCreated && terminalTabsFocus || terminalIsOpen && terminalTabsFocus || terminalProcessSupported && terminalTabsFocus" },
+  { "key": "ctrl+alt+.", "command": "workbench.action.showTreeHover",
+                            "when": "customTreeView && listFocus && !inputFocus && !treestickyScrollFocused" },
+
+
+  /// Flip Next Problem behavior
+  /// ==========================
+  // I want F8 to stay in the current file, and F8+Shift to go to any.
+  { "key": "f8",           "command": "editor.action.marker.next",
+                              "when": "editorFocus" },
+  { "key": "shift+f8",     "command": "editor.action.marker.prev",
+                              "when": "editorFocus" },
+  { "key": "alt+f8",       "command": "editor.action.marker.nextInFiles",
+                              "when": "editorFocus" },
+  { "key": "shift+alt+f8", "command": "editor.action.marker.prevInFiles",
+                              "when": "editorFocus" },
+  /// Unbinds
+  /// -------
+  { "key": "f8",           "command": "-editor.action.marker.nextInFiles" },
+  { "key": "shift+f8",     "command": "-editor.action.marker.prevInFiles" },
+  { "key": "alt+f8",       "command": "-editor.action.marker.next" },
+  { "key": "shift+alt+f8", "command": "-editor.action.marker.prev" },
+
+
+  /// Some Sublime Keybindings
+  /// ========================
+  /// Requires the Sublime Commands extension:
+  ///     code --install-extension zarel.sublime-commands
+  ///
+  /// Modified by the rust-analyzer extension:
+  ///     code --install-extension rust-lang.rust-analyzer
+  ///
+  /// This is only required for splitIntoLines, and a transpose implementation that works on
+  /// selections, rather than individual characters. (The built-in editor.action.transpose acts like
+  /// a shell transpose, that just acts to the left and right of the cursor.)
+  /// TODO: Figure out if `expandLineSelection` has any benefit over
+  //        `editor.action.insertCursorAtEndOfEachLineSelected`.
+  { "key": "ctrl+j",       "command": "rust-analyzer.joinLines",
+                              "when": "textInputFocus && !editorReadonly && editorLangId == 'rust'" },
+  { "key": "ctrl+j",       "command": "editor.action.joinLines",
+                              "when": "textInputFocus && !editorReadonly && editorLangId != 'rust'" },
+  { "key": "ctrl+l",       "command": "expandLineSelection",
+                              "when": "textInputFocus" },
+  { "key": "ctrl+t",       "command": "extension.transpose",
+                              "when": "textInputFocus && !editorReadonly" },
+  { "key": "ctrl+shift+l", "command": "extension.splitIntoLines",
+                              "when": "editorTextFocus" },
+  /// Unbinds
+  /// -------
+  { "key": "ctrl+j",       "command": "-workbench.action.togglePanel" },
+  { "key": "ctrl+shift+j", "command": "-rust-analyzer.joinLines" },
+  { "key": "ctrl+t",       "command": "-workbench.action.showAllSymbols" },
+  { "key": "ctrl+shift+l", "command": "-editor.action.selectHighlights" },
+
+
+  /// Normalize Block Comments
+  /// ========================
+  { "key": "ctrl+shift+/", "command": "editor.action.blockComment",
+                              "when": "editorTextFocus && !editorReadonly" },
+  /// Unbinds
+  { "key": "shift+alt+a",  "command": "-editor.action.blockComment" },
+
+
+  /// Cursor Navigation
+  /// =================
+  { "key": "ctrl+-",       "command": "workbench.action.navigateBack",
+                              "when": "canNavigateBack" },
+  { "key": "ctrl+shift+-", "command": "workbench.action.navigateForward",
+                              "when": "canNavigateForward" },
+  { "key": "ctrl+alt+-",   "command": "workbench.action.navigateToLastEditLocation",
+                              "when": "canNavigateToLastEditLocation" },
+  /// Unbinds
+  /// -------
+  { "key": "ctrl+alt+-",           "command": "-workbench.action.navigateBack" },
+  { "key": "ctrl+shift+-",         "command": "-workbench.action.navigateForward" },
+  { "key": "ctrl+k ctrl+q",        "command": "-workbench.action.navigateToLastEditLocation" },
+
+
+  /// Go-To Bracket Rebind
+  /// ====================
+  { "key": "alt+\\",       "command": "editor.action.jumpToBracket",
+                              "when": "editorTextFocus" },
+  { "key": "alt+shift+\\", "command": "editor.action.selectToBracket",
+                              "when": "editorTextFocus" },
+  // These is to make the keybinding consistent across my ErgoDox layers.
+  { "key": "alt+=",        "command": "editor.action.jumpToBracket",
+                              "when": "editorTextFocus && !inSearchEditor" },
+  { "key": "alt+shift+=",  "command": "editor.action.selectToBracket",
+                              "when": "editorTextFocus && !inSearchEditor" },
+  // Unbinds
+  // -------
+  { "key": "ctrl+alt+\\",  "command": "-editor.action.jumpToBracket" },
+
+
+  /// Vim-ish Go-to-Line
+  /// ==================
+  { "key": "ctrl+k ctrl+;", "command": "workbench.action.gotoLine" },
+  // Unbinds
+  { "key": "ctrl+g",        "command": "-workbench.action.gotoLine" },
+
+
+  /// Vim-ish Relative Go-to-Line
+  /// ===========================
+  /// Requires pyrrho.vscode-relative-motion
+  ///     git clone https://github.com/pyrrho/vscode-relative-motion.git
+  ///     cd vscode-relative-motion
+  ///     npm install
+  ///     npm install -g @vscode/vsce
+  ///     vsce package
+  ///     code --install-extension vscode-relative-motion-*.vsix
+  { "key": "ctrl+up",   "command": "vscode-relative-motion.up",
+                           "when": "editorFocus" },
+  { "key": "ctrl+down", "command": "vscode-relative-motion.down",
+                           "when": "editorFocus" },
+  // Unbinds
+  { "key": "ctrl+up",   "command": "-scrollLineUp" },
+  { "key": "ctrl+down", "command": "-scrollLineDown" },
+
+
+  /// Keyboard window motions
+  /// =======================
+  // I like scrolling, but I also don't like my mouse.
+  // Keybindings!
+  //
+  // TODO: This doesn't seem to work when large sections of code are folded...
+  //       Gonna have to look into that. Might need to make a damn extension?
+  { "key": "alt+ctrl+shift+w", "command": "editorScroll",
+                                  "args": {
+                                    "to": "up",
+                                    "value": 1,
+                                    "by": "line",
+                                    "revealCursor": false
+                                  } },
+  { "key": "alt+ctrl+shift+a", "command": "runCommands",
+                                  "args": {
+                                    "commands": [
+                                      "scrollLeft",
+                                      "scrollLeft",
+                                      "scrollLeft"
+                                    ] } },
+  { "key": "alt+ctrl+shift+s", "command": "editorScroll",
+                                  "args": {
+                                    "to": "down",
+                                    "value": 1,
+                                    "by": "line",
+                                    "revealCursor": false
+                                  } },
+  { "key": "alt+ctrl+shift+d", "command": "runCommands",
+                                  "args": {
+                                    "commands": [
+                                      "scrollRight",
+                                      "scrollRight",
+                                      "scrollRight"
+                                    ] } },
+
+  { "key": "ctrl+alt+w",       "command": "editorScroll",
+                                  "args": {
+                                    "to": "up",
+                                    "value": 4,
+                                    "by": "line",
+                                    "revealCursor": false
+                                  } },
+  { "key": "ctrl+alt+a",       "command": "runCommands",
+                                  "args": {
+                                    "commands": [
+                                      "scrollLeft",
+                                      "scrollLeft",
+                                      "scrollLeft",
+                                      "scrollLeft",
+                                      "scrollLeft",
+                                      "scrollLeft",
+                                      "scrollLeft",
+                                      "scrollLeft",
+                                      "scrollLeft",
+                                      "scrollLeft"
+                                    ] } },
+  { "key": "ctrl+alt+s",       "command": "editorScroll",
+                                  "args": {
+                                    "to": "down",
+                                    "value": 4,
+                                    "by": "line",
+                                    "revealCursor": false
+                                  } },
+  { "key": "ctrl+alt+d",       "command": "runCommands",
+                                  "args": {
+                                    "commands": [
+                                      "scrollRight",
+                                      "scrollRight",
+                                      "scrollRight",
+                                      "scrollRight",
+                                      "scrollRight",
+                                      "scrollRight",
+                                      "scrollRight",
+                                      "scrollRight",
+                                      "scrollRight",
+                                      "scrollRight"
+                                    ] } },
+
+
+  /// Modify Find Widget (ctrl+f) behavior
+  /// ====================================
+  // Search windows:
+  // - Find Widget
+  //     The little in-editor dude
+  //     `ctrl+f`
+  // - Search Viewlet
+  //     The sidebar view
+  //     `ctrl+shift+f` (when the Find Widget is not focued)
+  // - Search Editor
+  //     The entire edior is a search pane
+  //     `ctrl+enter` (when the search viewlet has focus and results)
+  //
+  // States I care about;
+  // - Whether or not the Find Widget is visible
+  //     `editorFocus && [!]findWidgetVisible`
+  // - Whether or not the Find Widget is focused
+  //     `findWidgetVisible && [!]findInputFocussed`
+  // - Whether or not the edior has selected text
+  //     `editorHasSelection`
+
+  // unbinds
+  { "key": "ctrl+f",             "command": "-actions.find" },
+  { "key": "ctrl+shift+f",       "command": "-workbench.action.findInFiles" },
+  { "key": "ctrl+g",             "command": "-editor.action.nextMatchFindAction", },
+  { "key": "ctrl+shift+g",       "command": "-editor.action.previousMatchFindAction", },
+
+  { "key": "ctrl+f",             "command": "actions.find",
+                                    "when": "(editorFocus || editorIsOpen) && !findInputFocussed" },
+  { "key": "ctrl+f",             "command": "runCommands",
+                      "args": { "commands": [ "editor.action.nextMatchFindAction",
+                                              "editor.action.selectAll"
+                                            ] },
+                                    "when": "editorFocus && findWidgetVisible && findInputFocussed" },
+  { "key": "ctrl+shift+f",       "command": "runCommands",
+                      "args": { "commands": [ "editor.action.previousMatchFindAction",
+                                              "editor.action.selectAll"
+                                            ] },
+                                    "when": "editorFocus && findWidgetVisible && findInputFocussed" },
+  { "key": "ctrl+g",             "command": "workbench.action.focusActiveEditorGroup",
+                                    "when": "editorFocus && findWidgetVisible && findInputFocussed && editorHasSelection" },
+  { "key": "ctrl+shift+g",       "command": "workbench.action.focusActiveEditorGroup",
+                                    "when": "editorFocus && findWidgetVisible && findInputFocussed && editorHasSelection" },
+  { "key": "ctrl+g",             "command": "runCommands",
+                      "args": { "commands": [ "editor.action.previousMatchFindAction",
+                                              "editor.action.nextMatchFindAction",
+                                              "workbench.action.focusActiveEditorGroup",
+                                            ] },
+                                    "when": "editorFocus && findWidgetVisible && findInputFocussed && !editorHasSelection" },
+  { "key": "ctrl+shift+g",       "command": "runCommands",
+                      "args": { "commands": [ "editor.action.previousMatchFindAction",
+                                              "workbench.action.focusActiveEditorGroup",
+                                            ] },
+                                    "when": "editorFocus && findWidgetVisible && findInputFocussed && !editorHasSelection" },
+  { "key": "ctrl+g",             "command": "editor.action.nextSelectionMatchFindAction",
+                                    "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection" },
+  { "key": "ctrl+shift+g",       "command": "editor.action.previousSelectionMatchFindAction",
+                                    "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection" },
+
+  { "key": "ctrl+g",             "command": "runCommands",
+                      "args": { "commands": [ "editor.action.addSelectionToNextFindMatch",
+                                              "actions.find",
+                                              "workbench.action.focusActiveEditorGroup",
+                                            ] },
+                                    "when": "(editorFocus && !findWidgetVisible && !editorHasSelection) || (editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection)" },
+  { "key": "ctrl+shift+g",       "command": "runCommands",
+                      "args": { "commands": [ "editor.action.addSelectionToNextFindMatch",
+                                              "actions.find",
+                                              "workbench.action.focusActiveEditorGroup",
+                                            ] },
+                                    "when": "(editorFocus && !findWidgetVisible && !editorHasSelection) || (editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection)" },
+  { "key": "ctrl+g",             "command": "actions.findWithSelection",
+                                    "when": "editorFocus && !findWidgetVisible && editorHasSelection" },
+  { "key": "ctrl+shift+g",       "command": "actions.findWithSelection",
+                                    "when": "editorFocus && !findWidgetVisible && editorHasSelection" },
+
+  { "key": "ctrl+alt+g",         "command": "editor.action.selectHighlights",
+                                    "when": "editorFocus && !findInputFocussed" },
+  { "key": "ctrl+alt+g",         "command": "editor.action.selectAllMatches",
+                                    "when": "editorFocus && findInputFocussed" },
+
+  { "key": "ctrl+enter",         "command": "workbench.action.focusActiveEditorGroup",
+                                    "when": "editorFocus && findInputFocussed" },
+  { "key": "tab",                "command": "workbench.action.focusActiveEditorGroup",
+                                    "when": "editorFocus && findInputFocussed" },
+
+  /// Modify Search Viewlet (ctrl+shift+f) behavior
+  /// =============================================
+  { "key": "ctrl+shift+f", "command": "workbench.action.findInFiles",
+                              "when": "!findInputFocussed" },
+  { "key": "ctrl+alt+g",   "command": "addCursorsAtSearchResults",
+                              "when": "fileMatchOrMatchFocus && searchViewletVisible" },
+
+  // Move focus from the search input box to the search results
+  // Default binding is ctrl+down, which is masked by my relative motion hotkeys.
+  // TODO: These rules are split on there "where"; the original rule wasn't.
+  //       Figure out what the `inSearchEditor && inputBoxFocus` is about? afaikt,
+  //       that rule does nothing?
+  { "key": "tab",         "command": "search.focus.nextInputBox",
+                             "when": "searchViewletVisible && inputBoxFocus" },
+  { "key": "tab",         "command": "search.focus.nextInputBox",
+                             "when": "inSearchEditor && inputBoxFocus" },
+
+
+  // /// Modify Find Widget (ctrl+f) behavior
+  // /// ====================================
+  // /* cSpell:disable */
+  // //
+  // // | State      || ctl+f    | ctrl+g   | ctrl+alt+g | enter | tab | esc |
+  // // | ---------- || -------  | -------- | ---------- | ----- | --- | --- |
+  // // | WC, EF, NT || O F P    | O E PS R |  E PA      |       |     |     |
+  // // | WC, EF, ST || O F P    | O E P  R |  E PA      |       |     |     |
+  // // | WO, EF, NT || O F P    |   E NS R |  E  A      |       |     | C E |
+  // // | WO, WF     ||   F NS R |   E NS R |  E  A      |       | E S | C E |
+  // // | WO, EF, ST || O F P    |   E PS R |  E  A      |       |     | C E |
+  // //
+  // // States:
+  // // - WO -- Widget is open
+  // // - WC -- Widget is open
+  // // - WF -- Widget is focused
+  // // - EF -- Editor is focused
+  // // - ST -- There is some selected text
+  // // - NT -- There is no selected text
+  // //
+  // // Actions:
+  // // - O -- Open the find widget
+  // // - C -- Close the find widget
+  // // - F -- Focus (or leave focus on) the find widget
+  // // - E -- Focus (or leave focus on) the editor
+  // // - P -- Populate the query with the current selection, or the symbol under
+  // //        the cursor
+  // // - S -- Select the current instance of the query
+  // // - N -- Move the cursor to the next instance of the query
+  // // - A -- Select all highlights
+  // //        - If there is an active query, this is all instances of the query
+  // //        - If there is no active query, this is all instances of the
+  // //          current selection or symbol under the cursor
+  // // - R -- Reversed when shift is held
+  // /* cSpell:enable */
+
+  // // To start, we have to unbind some default find actions. These can't be
+  // // done platform-conditionally, so we have to shotgun these changes.
+  // { "key": "ctrl+f",       "command": "-actions.find",
+  //                             "when": "editorFocus || editorIsOpen" },
+  // { "key": "cmd+f",        "command": "-actions.find",
+  //                             "when": "editorFocus || editorIsOpen" },
+  // // While we're at it, unbind overloaded keybindings, too
+  // { "key": "ctrl+g",       "command": "-workbench.action.gotoLine" },
+  // { "key": "ctrl+shift+g", "command": "-workbench.view.scm" },
+
+  // // Move from the Find Widget to the editor
+  // { "key": "tab", "command": "workbench.action.focusActiveEditorGroup",
+  //                    "when": "(editorFocus || editorIsOpen) && findInputFocussed" },
+
+  // { "key": "ctrl+f",       "command": "actions.find",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findInputFocussed" },
+  // //   ctrl+shift+f is for the search sidebar, only `find.previous` when `findInputFocussed`
+  // // { "key": "ctrl+shift+f", "command": "actions.previous",
+  // //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findInputFocussed" },
+  // { "key": "ctrl+f",       "command": "editor.action.nextMatchFindAction",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) && findInputFocussed" },
+  // { "key": "ctrl+shift+f", "command": "editor.action.previousMatchFindAction",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) && findInputFocussed" },
+
+  // { "key": "ctrl+g",       "command": "runCommands",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible && !editorHasSelection",
+  //                             "args": {
+  //                               "commands": [
+  //                                 "editor.action.addSelectionToNextFindMatch",
+  //                                 "actions.find",
+  //                                 "workbench.action.focusActiveEditorGroup"
+  //                               ] } },
+  // { "key": "ctrl+shift+g", "command": "runCommands",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible && !editorHasSelection",
+  //                             "args": {
+  //                               "commands": [
+  //                                 "editor.action.addSelectionToNextFindMatch",
+  //                                 "actions.find",
+  //                                 "workbench.action.focusActiveEditorGroup"
+  //                               ] } },
+  // { "key": "ctrl+g",       "command": "runCommands",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible &&  editorHasSelection",
+  //                             "args": {
+  //                               "commands": [
+  //                                 "actions.find",
+  //                                 "workbench.action.focusActiveEditorGroup"
+  //                               ] } },
+  // { "key": "ctrl+shift+g", "command": "runCommands",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible &&  editorHasSelection",
+  //                             "args": {
+  //                               "commands": [
+  //                                 "actions.find",
+  //                                 "workbench.action.focusActiveEditorGroup"
+  //                               ] } },
+  // { "key": "ctrl+g",       "command": "runCommands",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible && !findInputFocussed && !editorHasSelection",
+  //                             "args": {
+  //                               "commands": [
+  //                                 "editor.action.nextMatchFindAction",
+  //                                 "workbench.action.focusActiveEditorGroup"
+  //                               ] } },
+  // { "key": "ctrl+g",       "command": "runCommands",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible &&  findInputFocussed",
+  //                             "args": {
+  //                               "commands": [
+  //                                 "editor.action.nextMatchFindAction",
+  //                                 "workbench.action.focusActiveEditorGroup"
+  //                               ] } },
+  // { "key": "ctrl+shift+g", "command": "runCommands",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible && !findInputFocussed && !editorHasSelection",
+  //                             "args": {
+  //                               "commands": [
+  //                                 "editor.action.previousMatchFindAction",
+  //                                 "workbench.action.focusActiveEditorGroup"
+  //                               ] } },
+  // { "key": "ctrl+shift+g", "command": "runCommands",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible &&  findInputFocussed",
+  //                             "args": {
+  //                               "commands": [
+  //                                 "editor.action.previousMatchFindAction",
+  //                                 "workbench.action.focusActiveEditorGroup"
+  //                               ] } },
+  // { "key": "ctrl+g",       "command": "runCommands",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible && !findInputFocussed &&  editorHasSelection",
+  //                             "args": {
+  //                               "commands": [
+  //                                 "editor.action.moveSelectionToNextFindMatch",
+  //                                 "actions.find",
+  //                                 "workbench.action.focusActiveEditorGroup"
+  //                               ] } },
+  // { "key": "ctrl+shift+g", "command": "runCommands",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible && !findInputFocussed &&  editorHasSelection",
+  //                             "args": {
+  //                               "commands": [
+  //                                 "editor.action.moveSelectionToPreviousFindMatch",
+  //                                 "actions.find",
+  //                                 "workbench.action.focusActiveEditorGroup"
+  //                               ] } },
+
+  // { "key": "ctrl+alt+g",   "command": "editor.action.selectAllMatches",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) && findInputFocussed" },
+  // { "key": "ctrl+alt+g",   "command": "runCommands",
+  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findInputFocussed",
+  //                             "args": {
+  //                               "commands": [
+  //                                 "actions.find",
+  //                                 "editor.action.selectAllMatches"
+  //                               ] } },
+
+
+  // /// Modify Search Viewlet (ctrl+shift+f) behavior
+  // /// =============================================
+  // // Move focus from the search input box to the search results
+  // // Default binding is ctrl+down, which is masked by my relative motion hotkeys.
+  // { "key": "tab",       "command": "search.focus.nextInputBox",
+  //                          "when": "inputBoxFocus && searchViewletVisible" },
+  // // TODO: Figure out what inSearchEditor && inputBoxFocus is about? afaikt,
+  // //       this rule does nothing?
+  // { "key": "tab",       "command": "search.focus.nextInputBox",
+  //                          "when": "inSearchEditor && inputBoxFocus" },
+
+
+  // // Unbind the default ctrl+down action
+  // { "key": "ctrl+down",    "command": "-search.focus.nextInputBox",
+  //                             "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible" },
+
+  // // Unbind unused commands.
+  // // TODO: This was done to avoid conflicts with the sublime `splitIntoLines`.
+  // //       I don't think these actually need to be unbound, though, since we
+  // //       can guard `splitIntoLines` based on `editorHasSelection` and these
+  // //       based on something to do with the search viewlet
+  // { "key": "ctrl+shift+l", "command": "-editor.action.selectHighlights",
+  //                             "when": "editorFocus" },
+  // { "key": "ctrl+shift+l", "command": "-addCursorsAtSearchResults",
+  //                             "when": "fileMatchOrMatchFocus && searchViewletVisible" },
+  // { "key": "ctrl+shift+l", "command": "-selectAllSearchEditorMatches",
+  //                             "when": "inSearchEditor" },
+
+
+  /// Helpers for Search Editors
+  /// ==========================
+  { "key": "ctrl+alt+f", "command": "search.action.openNewEditor" },
+
+
+  /// Show File in Explorer
+  /// =====================
+  { "key": "ctrl+alt+\\", "command": "workbench.files.action.showActiveFileInExplorer" },
+
+
+  /// Change-Case Chords
+  /// ==================
+  /// Requires the 'change-case' extension (one of many, actually...):
+  ///     code --install-extension wmaurer.change-case
+  { "key": "ctrl+' ctrl+u", "command": "extension.changeCase.upper",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "ctrl+' ctrl+i", "command": "extension.changeCase.title",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "ctrl+' ctrl+l", "command": "extension.changeCase.lower",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "ctrl+' ctrl+s", "command": "extension.changeCase.snake",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "ctrl+' ctrl+p", "command": "extension.changeCase.pascal",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "ctrl+' ctrl+c", "command": "extension.changeCase.camel",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "ctrl+' ctrl+k", "command": "extension.changeCase.constant",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "ctrl+' ctrl+z", "command": "extension.changeCase.kebab",
+                               "when": "editorTextFocus && !editorReadonly" },
+
+
+  /// Delete Helper
+  /// =============
+  { "key": "ctrl+k ctrl+k", "command": "deleteAllRight",
+                               "when": "editorTextFocus && !editorReadonly" },
+  { "key": "ctrl+shift+k",  "command": "editor.action.deleteLines",
+                               "when": "textInputFocus && !editorReadonly" },
+  /// Unbinds.
+  /// TODO: Re-export these
+  { "key": "ctrl+k ctrl+k", "command": "-editor.action.selectFromAnchorToCursor" },
+  { "key": "ctrl+k ctrl+b", "command": "-editor.action.setSelectionAnchor" },
+
+
+  /// Toggle Minimap
+  /// ==============
+  { "key": "ctrl+m", "command": "editor.action.toggleMinimap" },
+
+
+  /// Word Wrap Toggle
+  /// ================
+  /// Requires the 'Settings Cycler' extension:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  ///
+  /// The extension allows cycling between none, wordWrapColumn-bounded, and window-bounded.
+  /// Which is _really_ nice for markdown.
+  { "key": "alt+z", "command": "settings.cycle",
+    "args": {
+      "id": "toggle_word_wrap",
+      "overrideWorkspaceSettings": true,
+      "values": [
+        {
+          "editor.wordWrap": "off",
+          "[markdown]": { "editor.wordWrap": "off" }
+        },
+        { "editor.wordWrap": "on", "[markdown]": { "editor.wordWrap": "on" } },
+        {
+          "editor.wordWrap": "bounded",
+          "[markdown]": { "editor.wordWrap": "bounded" }
+        }
+      ]
+    }
+  },
+  /// Unbinds
+  { "key": "alt+z", "command": "-editor.action.toggleWordWrap" },
+
+
+  /// Code Lens Toggles
+  /// =================
+  /// Requires the 'Settings Cycler' extension:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  ///
+  /// Want to show or hide those `Run Test | Debug | Interpret` links? Here you go.
+  { "key": "alt+x", "command": "settings.cycle",
+    "args": {
+      "id": "toggle_code_lens",
+      "overrideWorkspaceSettings": false,
+      "values": [
+        { "editor.codeLens": false },
+        { "editor.codeLens": true }
+      ]
+    }
+  },
+  // TODO: Find out if this can work w/o the above enabled.
+  { "key": "shift+alt+x", "command": "codelens.showLensesInCurrentLine" },
+
+
+  /// Format On Type Toggle (and friends)
+  /// ===================================
+  /// Requires the 'Settings Cycler' extension:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  ///
+  { "key": "ctrl+k ctrl+z", "command": "settings.cycle",
+    "args": {
+      "id": "toggle_format_on_type",
+      "overrideWorkspaceSettings": false,
+      "values": [
+        { "editor.formatOnType": false },
+        { "editor.formatOnType": true }
+      ]
+    }
+  },
+
+  // NB. Not really an unbind, just a swizzle.
+  { "key": "ctrl+k ctrl+f",       "command": "-editor.action.formatSelection" },
+  { "key": "ctrl+k ctrl+shift+f", "command": "editor.action.formatSelection",
+                                     "when": "editorHasDocumentSelectionFormattingProvider && editorTextFocus && !editorReadonly" },
+  { "key": "ctrl+k ctrl+f",       "command": "editor.action.formatDocument",
+                                     "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor" },
+  { "key": "ctrl+k ctrl+f",       "command": "editor.action.formatDocument.none",
+                                     "when": "editorTextFocus && !editorHasDocumentFormattingProvider && !editorReadonly" },
+
+  /// Unbinds
+  { "key": "ctrl+shift+i", "command": "-editor.action.formatDocument" },
+  { "key": "ctrl+shift+i", "command": "-editor.action.formatDocument.none" },
+
+
+  /// Inlay Hints Toggle
+  /// ==================
+  /// Requires the 'Settings Cycler' extension:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  { "key": "ctrl+alt+x", "command": "settings.cycle",
+    "args": {
+      "id": "toggle_inlay_hints",
+      "overrideWorkspaceSettings": false,
+      "values": [
+        { "editor.inlayHints.enabled": "offUnlessPressed" },
+        { "editor.inlayHints.enabled": "on" }
+      ]
+    }
+  },
+
+
+  /// Relative Line Numbers Toggle
+  /// ============================
+  /// Requires the 'Settings Cycler' extension:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  { "key": "ctrl+k ctrl+shift+l", "command": "settings.cycle",
+    "args": {
+      "id": "toggle_relative_line_numbers",
+      "overrideWorkspaceSettings": false,
+      "values": [
+        { "editor.lineNumbers": "relative" },
+        { "editor.lineNumbers": "on" }
+      ]
+    }
+  },
+
+
+  /// CSpell Diagnostic Level Toggle
+  /// ==============================
+  /// Requires the 'Settings Cycler' and 'Code Spell Checker' extensions:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  ///     code --install-extension streetsidesoftware.code-spell-checker
+  { "key": "ctrl+f8", "command": "settings.cycle",
+    "args": {
+      "id": "toggle_cspell_diagnostic_level",
+      "overrideWorkspaceSettings": false,
+      "values": [
+        { "cSpell.diagnosticLevel": "Hint" },
+        { "cSpell.diagnosticLevel": "Information" }
+      ]
+    }
+  },
+
+
+  /// Semantic Occurrences Highlighting Toggle
+  /// ========================================
+  /// Requires the 'Settings Cycler' extensions:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  { "key": "shift+alt+s", "command": "settings.cycle",
+    "args": {
+      "id": "toggle_occurrences_highlight",
+      "overrideWorkspaceSettings": false,
+      "values": [
+        { "editor.occurrencesHighlight": "off" },
+        { "editor.occurrencesHighlight": "singleFile" }
+      ]
+    }
+  },
+
+
+  /// Multiple Clipboards Overrides
+  /// =============================
+  /// Requires the 'Multiple clipboards for VSCode' extension
+  ///     code --install-extension slevesque.vscode-multiclip
+  { "key": "ctrl+shift+v", "command": "multiclip.list",
+                              "when": "textInputFocus && !editorReadonly" },
+  { "key": "ctrl+alt+v",   "command": "multiclip.paste",
+                              "when": "textInputFocus && !editorReadonly" },
+  /// Unbinds
+  { "key": "ctrl+shift+v", "command": "-multiclip.paste" },
+  { "key": "shift+cmd+v",  "command": "-multiclip.paste" },
+  { "key": "ctrl+shift+v", "command": "-markdown.showPreview" },
+
+
+  /// Reasonable Bottom Panel Toggle
+  /// ==============================
+  { "key": "ctrl+alt+`",   "command": "workbench.action.togglePanel" },
+  { "key": "ctrl+`",       "command": "workbench.action.terminal.toggleTerminal" },
+  { "key": "ctrl+shift+`", "command": "workbench.action.terminal.new" },
+  // Unbinds
+  { "key": "ctrl+j",       "command": "-workbench.action.togglePanel" },
+
+
+  /// Globally Enable Copying File Path
+  /// =================================
+  /// Normally you have to be in the tree view (`!editorFocus`, do other
+  //  widgets work?) for these hotkeys to be active. I want them all the time!
+  { "key": "ctrl+k ctrl+c",       "command": "copyFilePath" },
+  { "key": "ctrl+k ctrl+shift+c", "command": "copyRelativeFilePath" },
+  /// Unbinds
+  /// -------
+  /// Overloaded
+  { "key": "ctrl+k ctrl+c",       "command": "-editor.action.addCommentLine" },
+  /// Unused
+  { "key": "ctrl+alt+c",          "command": "-copyFilePath" },
+  { "key": "ctrl+shift+alt+c",    "command": "-copyRelativeFilePath" },
+
+  /// Git Lens Overrides
+  /// ==================
+  /// Requires the 'Git Lens' extension
+  ///     code --install-extension eamodio.gitlens
+  ///
+  /// Assumes the the setting `"gitlens.keymap": "none"` to disable defaults.
+  ///
+  /// The gitlens chord'-'ing hotkey, ctrl+shift+g (or shift+cmd+g), is eaten by my searching
+  /// shortcuts, so I had to pick something new. These started out as default, save for the opening
+  /// chord, but they're starting to drift.
+  { "key": "ctrl+alt+z /",       "command": "gitlens.gitCommands",
+                                    "when": "!gitlens:disabled && config.gitlens.keymap == 'chorded'" },
+  { "key": "ctrl+alt+z b",       "command": "gitlens.toggleFileBlame",
+                                    "when": "editorTextFocus && config.gitlens.keymap == 'chorded' && resource in 'gitlens:tabs:blameable'" },
+  { "key": "ctrl+alt+z z",       "command": "gitlens.toggleCodeLens",
+                                    "when": "editorTextFocus && !gitlens:disabled && !gitlens:disabledToggleCodeLens && config.gitlens.keymap == 'chorded'" },
+  { "key": "ctrl+alt+z h",       "command": "gitlens.showQuickFileHistory",
+                                    "when": "!gitlens:disabled && config.gitlens.keymap == 'chorded'" },
+  { "key": "ctrl+alt+z shift+h", "command": "gitlens.showQuickRepoHistory",
+                                    "when": "!gitlens:disabled && config.gitlens.keymap == 'chorded'" },
+  { "key": "ctrl+alt+z s",       "command": "gitlens.showQuickRepoStatus",
+                                    "when": "!gitlens:disabled && config.gitlens.keymap == 'chorded'" },
+  { "key": "ctrl+alt+z c",       "command": "gitlens.showQuickCommitFileDetails",
+                                    "when": "editorTextFocus && !gitlens:disabled && config.gitlens.keymap == 'chorded'" },
+  { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPrevious",
+                                    "when": "editorTextFocus && !isInDiffEditor && config.gitlens.keymap == 'chorded' && resource in 'gitlens:tabs:tracked'" },
+  { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPreviousInDiffLeft",
+                                    "when": "editorTextFocus && isInDiffEditor && !isInDiffRightEditor && config.gitlens.keymap == 'chorded' && resource in 'gitlens:tabs:tracked'" },
+  { "key": "ctrl+alt+z ,",       "command": "gitlens.diffWithPreviousInDiffRight",
+                                    "when": "editorTextFocus && isInDiffRightEditor && config.gitlens.keymap == 'chorded' && resource in 'gitlens:tabs:tracked'" },
+  { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNext",
+                                    "when": "editorTextFocus && gitlens:enabled && !isInDiffEditor && config.gitlens.keymap == 'chorded' && resourceScheme =~ /^(gitlens|git|pr)$/" },
+  { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNextInDiffLeft",
+                                    "when": "editorTextFocus && gitlens:enabled && isInDiffEditor && !isInDiffRightEditor && config.gitlens.keymap == 'chorded' && resourceScheme =~ /^(gitlens|git|pr)$/" },
+  { "key": "ctrl+alt+z .",       "command": "gitlens.diffWithNextInDiffRight",
+                                    "when": "editorTextFocus && gitlens:enabled && isInDiffRightEditor && config.gitlens.keymap == 'chorded' && resourceScheme =~ /^(gitlens|git|pr)$/" },
+  { "key": "ctrl+alt+z shift+.", "command": "gitlens.diffWithWorking",
+                                    "when": "editorTextFocus && gitlens:enabled && config.gitlens.keymap == 'chorded' && resourceScheme =~ /^(gitlens|git|pr)$/" },
+  { "key": "ctrl+alt+z shift+,", "command": "gitlens.diffLineWithPrevious",
+                                    "when": "editorTextFocus && config.gitlens.keymap == 'chorded' && resource in 'gitlens:tabs:tracked'" },
+  { "key": "ctrl+alt+z g",       "command": "workbench.view.scm",
+                                    "when": "workbench.scm.active && !gitlens:disabled && config.gitlens.keymap == 'chorded'" },
+
+  // Not actually git lens, but git
+  { "key": "shift+alt+d", "command": "git.viewChanges" },
+
+  // Unbinds
+  // -------
+  { "key": "ctrl+k ctrl+r",     "command": "-git.revertSelectedRanges" },
+  { "key": "ctrl+k ctrl+alt+s", "command": "-git.stageSelectedRanges" },
+  { "key": "ctrl+k ctrl+n",     "command": "-git.unstageSelectedRanges" },
+
+
+  /// Sappling Overrides
+  /// ===============================
+  /// Requires the 'Sapling SCM' extension
+  ///     code --install-extension meta.sapling-scm
+  { "key": "ctrl+' escape",           "command": "sapling.open-isl",
+                                         "when": "activeWebviewPanelId != 'sapling.isl'" },
+  { "key": "ctrl+' ctrl+'",           "command": "sapling.open-file-diff-uncommitted",
+                                         "when": "activeWebviewPanelId != 'sapling.isl'" },
+  { "key": "ctrl+' ctrl+shift+'",     "command": "sapling.open-file-diff-head",
+                                         "when": "activeWebviewPanelId != 'sapling.isl'" },
+  { "key": "ctrl+' ctrl+alt+shift+'", "command": "sapling.open-file-diff-stack",
+                                         "when": "activeWebviewPanelId != 'sapling.isl'" },
+  { "key": "ctrl+' ctrl+;",           "command": "sapling.open-comparison-view-uncommitted",
+                                         "when": "activeWebviewPanelId != 'sapling.isl'" },
+  { "key": "ctrl+' ctrl+shift+;",     "command": "sapling.open-comparison-view-head",
+                                         "when": "activeWebviewPanelId != 'sapling.isl'" },
+  { "key": "ctrl+' ctrl+alt+shift+;", "command": "sapling.open-comparison-view-stack",
+                                         "when": "activeWebviewPanelId != 'sapling.isl'" },
+
+  // Unbinds
+  // -------
+  { "key": "ctrl+'",       "command": "-sapling.open-comparison-view-uncommitted" },
+  { "key": "ctrl+shift+'", "command": "-sapling.open-comparison-view-head" },
+
+  /// Settings and Keybindings (JSON)
+  /// ===============================
+  { "key": "ctrl+,",              "command": "workbench.action.openSettingsJson" },
+  { "key": "ctrl+shift+,",        "command": "workbench.action.openSettings" },
+  { "key": "ctrl+k ctrl+s",       "command": "workbench.action.openGlobalKeybindingsFile" },
+  { "key": "ctrl+k ctrl+shift+s", "command": "workbench.action.openGlobalKeybindings" },
+  /// Unbinds
+  { "key": "ctrl+k ctrl+s",       "command": "-workbench.action.openGlobalKeybindings" },
+  { "key": "ctrl+,",              "command": "-workbench.action.openSettings" },
+
+
+  /// Code Folding and Group Locking
+  /// ==============================
+  /// This is just a rebind of
+  /// - editor.unfold => editor.toggleFold
+  /// - editor.toggleFold => toggleEditorGroupLock.
+  { "key": "ctrl+k ctrl+l", "command": "-editor.toggleFold" },
+  { "key": "ctrl+k ctrl+l", "command": "workbench.action.toggleEditorGroupLock",
+                               "when": "editorFocus" },
+  { "key": "ctrl+shift+]",  "command": "-editor.unfold" },
+  { "key": "ctrl+shift+]",  "command": "editor.toggleFold",
+                               "when": "editorTextFocus && foldingEnabled" },
+
+
+  /// Developer tool shit
+  /// ===================
+  { "key": "ctrl+alt+shift+0",        "command": "workbench.action.toggleDevTools" },
+  { "key": "ctrl+alt+shift+9",        "command": "editor.action.inspectTMScopes" },
+  { "key": "ctrl+k ctrl+alt+shift+9", "command": "editor.action.startDebugTextMate" },
+  // Unbinds
+  { "key": "ctrl+shift+i", "command": "-workbench.action.toggleDevTools" },
+  { "key": "ctrl+shift+c", "command": "-multiclip.copyMerge" },
+  { "key": "ctrl+shift+c", "command": "-workbench.action.terminal.openNativeConsole" },
+
+
+  // Placeholder to make GUI edits easier to handle
+  {}
+]
