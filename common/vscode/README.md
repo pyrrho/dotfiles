@@ -12,11 +12,13 @@ Keybindings should be soft-linked into environments s.t. updates can more easily
 * Linux
   This one probably differs base on distro. The below is for Pop!_OS 22.04, manual installation
   ```
+  mv "${HOME}/.config/Code/User/keybindings.json" "${HOME}/.config/Code/User/keybindings.json_old"
   ln -s "$(pwd)/keybindings.json" "${HOME}/.config/Code/User/keybindings.json"
   ```
 
 * Mac
   ```
+  mv "${HOME}/Library/Application Support/Code/User/keybindings.json" "${HOME}/Library/Application Support/Code/User/keybindings.json_old"
   ln -s "$(pwd)/keybindings.json" "${HOME}/Library/Application Support/Code/User/keybindings.json"
   ```
 
