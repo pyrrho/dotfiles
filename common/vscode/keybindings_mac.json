@@ -399,15 +399,14 @@
   /// but the lightbulb sucks. Turn it off and use your keyboard.
   ///
   ///     "editor.lightbulb.enabled": "off",
-  { "key": "ctrl+alt+.", "command": "editor.debug.action.showDebugHover",
+  { "key": "ctrl+cmd+.", "command": "editor.debug.action.showDebugHover",
                             "when": "editorTextFocus && inDebugMode" },
-  { "key": "ctrl+alt+.", "command": "editor.action.showHover",
+  { "key": "ctrl+cmd+.", "command": "editor.action.showHover",
                             "when": "editorTextFocus" },
-  { "key": "ctrl+alt+.", "command": "workbench.action.terminal.focusHover",
+  { "key": "ctrl+cmd+.", "command": "workbench.action.terminal.focusHover",
                             "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalIsOpen || terminalFocus && terminalProcessSupported || terminalHasBeenCreated && terminalTabsFocus || terminalIsOpen && terminalTabsFocus || terminalProcessSupported && terminalTabsFocus" },
-  { "key": "ctrl+alt+.", "command": "workbench.action.showTreeHover",
+  { "key": "ctrl+cmd+.", "command": "workbench.action.showTreeHover",
                             "when": "customTreeView && listFocus && !inputFocus && !treestickyScrollFocused" },
-  // TODO: "alt+cmd+." for these?
 
 
   /// Some Sublime Keybindings
