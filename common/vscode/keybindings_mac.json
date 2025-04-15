@@ -539,69 +539,98 @@
   //     `findWidgetVisible && [!]findInputFocussed`
   // - Whether or not the edior has selected text
   //     `editorHasSelection`
-  { "key": "cmd+f",             "command": "-actions.find" },
-  { "key": "shift+cmd+f",       "command": "-workbench.action.findInFiles" },
-  { "key": "cmd+g",             "command": "-editor.action.nextMatchFindAction", },
-  { "key": "shift+cmd+g",       "command": "-editor.action.previousMatchFindAction", },
+  //
+  // Notes:
+  // 1. Use the default find action only when opening the find widget with ctrl+f
+  // 2. Use mostly-default find next/prev when the cursor is in the find widget
+  //    a. If the cursor is in the find widget but its text isn't selected, transitioning from
+  //       ctrl+f to ctrl+g isn't as nice. Select All to smooth that out. (see #___)
+  // 3. Transition from the find widget to the editor, selecting the relevant text (if possible).
+  //    The prev->[next->]focus dance is to get decent behavior both when the cursor is and is not
+  //    on a matching section.
+  // 4. In the editor **without** any text (including matching sections) selected. Select the next
+  //    (or previous) section matching the find widget.
+  // 5. In the editor **with** text selected -- NB. this may match the find widget, or it may be a
+  //    novel selection. Select the next (or previous) section matching the _selection_.
+  //    IF YOUR FIND INPUT IS A REGEX this will override it with a concrete selection. It's not
+  //    ideal. Might be worth disabling this? If we could check if the current selection matched, we
+  //    could `nextMatchFindAction` instead of `nextSelectionMatchFindAction`.
+  // 6. The find widget is not visible. Open it with the current selection.
+  // 7. The find widget is not visible. Open it with the word under the cursor (if there is one).
+  // 8. Select all matches, either matching the find widget (if open) or (otherwise) the current
+  //    selection.
+  // 9. Add some hotkeys to move from the find widget to the active editor
 
-  { "key": "cmd+f",             "command": "actions.find",
-                                   "when": "(editorFocus || editorIsOpen) && !findInputFocussed" },
-  { "key": "cmd+f",             "command": "runCommands",
+  // 1.
+  { "key": "cmd+f",                "when": "(editorFocus || editorIsOpen) && !findInputFocussed",
+                                "command": "actions.find" },
+  // 2.
+  { "key": "cmd+f",                "when": "editorFocus && findWidgetVisible && findInputFocussed",
+                                "command": "runCommands",
                      "args": { "commands": [ "editor.action.nextMatchFindAction",
-                                             "editor.action.selectAll"
-                                           ] },
-                                   "when": "editorFocus && findWidgetVisible && findInputFocussed" },
-  { "key": "cmd+shift+f",       "command": "runCommands",
+                                             "editor.action.selectAll"    // 2a.
+                                           ] } },
+  { "key": "cmd+shift+f",          "when": "editorFocus && findWidgetVisible && findInputFocussed",
+                                "command": "runCommands",
                      "args": { "commands": [ "editor.action.previousMatchFindAction",
-                                             "editor.action.selectAll"
-                                           ] },
-                                   "when": "editorFocus && findWidgetVisible && findInputFocussed" },
-  { "key": "cmd+g",             "command": "workbench.action.focusActiveEditorGroup",
-                                   "when": "editorFocus && findWidgetVisible && findInputFocussed && editorHasSelection" },
-  { "key": "shift+cmd+g",       "command": "workbench.action.focusActiveEditorGroup",
-                                   "when": "editorFocus && findWidgetVisible && findInputFocussed && editorHasSelection" },
-  { "key": "cmd+g",             "command": "runCommands",
+                                             "editor.action.selectAll"    // 2a.
+                                           ] } },
+  // 3.
+  { "key": "cmd+g",                "when": "editorFocus && findWidgetVisible && findInputFocussed",
+                                "command": "runCommands",
                      "args": { "commands": [ "editor.action.previousMatchFindAction",
                                              "editor.action.nextMatchFindAction",
-                                             "workbench.action.focusActiveEditorGroup",
-                                           ] },
-                                   "when": "editorFocus && findWidgetVisible && findInputFocussed && !editorHasSelection" },
-  { "key": "shift+cmd+g",       "command": "runCommands",
+                                             "workbench.action.focusActiveEditorGroup"
+                                           ] } },
+  { "key": "shift+cmd+g",          "when": "editorFocus && findWidgetVisible && findInputFocussed",
+                                "command": "runCommands",
                      "args": { "commands": [ "editor.action.previousMatchFindAction",
-                                             "workbench.action.focusActiveEditorGroup",
-                                           ] },
-                                   "when": "editorFocus && findWidgetVisible && findInputFocussed && !editorHasSelection" },
-  { "key": "cmd+g",             "command": "editor.action.nextSelectionMatchFindAction",
-                                   "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection" },
-  { "key": "shift+cmd+g",       "command": "editor.action.previousSelectionMatchFindAction",
-                                   "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection" },
-
-  { "key": "cmd+g",             "command": "runCommands",
+                                             "workbench.action.focusActiveEditorGroup"
+                                           ] } },
+  // 4.
+  { "key": "cmd+g",                "when": "editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
+                                "command": "editor.action.nextMatchFindAction" },
+  { "key": "shift+cmd+g",          "when": "editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
+                                "command": "editor.action.previousMatchFindAction" },
+  // 5.
+  { "key": "cmd+g",                "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection",
+                                "command": "editor.action.nextSelectionMatchFindAction" },
+  { "key": "shift+cmd+g",          "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection",
+                                "command": "editor.action.previousSelectionMatchFindAction" },
+  // 6.
+  { "key": "cmd+g",                "when": "editorFocus && !findWidgetVisible && editorHasSelection",
+                                "command": "actions.findWithSelection" },
+  { "key": "shift+cmd+g",          "when": "editorFocus && !findWidgetVisible && editorHasSelection",
+                                "command": "actions.findWithSelection" },
+  // 7.
+  { "key": "cmd+g",                "when": "editorFocus && !findWidgetVisible && !editorHasSelection",
+                                "command": "runCommands",
                      "args": { "commands": [ "editor.action.addSelectionToNextFindMatch",
                                              "actions.find",
                                              "workbench.action.focusActiveEditorGroup",
-                                           ] },
-                                   "when": "(editorFocus && !findWidgetVisible && !editorHasSelection) || (editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection)" },
-  { "key": "shift+cmd+g",       "command": "runCommands",
+                                           ] } },
+  { "key": "shift+cmd+g",          "when": "editorFocus && !findWidgetVisible && !editorHasSelection",
+                                "command": "runCommands",
                      "args": { "commands": [ "editor.action.addSelectionToNextFindMatch",
                                              "actions.find",
                                              "workbench.action.focusActiveEditorGroup",
-                                           ] },
-                                   "when": "(editorFocus && !findWidgetVisible && !editorHasSelection) || (editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection)" },
-  { "key": "cmd+g",             "command": "actions.findWithSelection",
-                                   "when": "editorFocus && !findWidgetVisible && editorHasSelection" },
-  { "key": "shift+cmd+g",       "command": "actions.findWithSelection",
-                                   "when": "editorFocus && !findWidgetVisible && editorHasSelection" },
-
-  { "key": "alt+cmd+g",         "command": "editor.action.selectHighlights",
-                                   "when": "editorFocus && !findInputFocussed" },
-  { "key": "alt+cmd+g",         "command": "editor.action.selectAllMatches",
-                                   "when": "editorFocus && findInputFocussed" },
-
+                                           ] } },
+  // 8.
+  { "key": "alt+cmd+g",            "when": "editorFocus && !findInputFocussed",
+                                "command": "editor.action.selectHighlights" },
+  { "key": "alt+cmd+g",            "when": "editorFocus && findInputFocussed",
+                                "command": "editor.action.selectAllMatches" },
+  // 9.
   { "key": "cmd+enter",         "command": "workbench.action.focusActiveEditorGroup",
                                    "when": "editorFocus && findInputFocussed" },
   { "key": "tab",               "command": "workbench.action.focusActiveEditorGroup",
                                    "when": "editorFocus && findInputFocussed" },
+
+  // unbinds
+  { "key": "cmd+f",             "command": "-actions.find" },
+  { "key": "shift+cmd+f",       "command": "-workbench.action.findInFiles" },
+  { "key": "cmd+g",             "command": "-editor.action.nextMatchFindAction" },
+  { "key": "shift+cmd+g",       "command": "-editor.action.previousMatchFindAction" },
 
   /// Modify Search Viewlet (ctrl+shift+f) behavior
   /// =============================================
