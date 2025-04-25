@@ -13,8 +13,6 @@
   // the other platforms.
 
   // TODOs:
-  // - Fix find behavior
-  // - Figure out if search editors are any good
   // - Anchors; Set Selection Anchor and friends
 
 
@@ -606,7 +604,7 @@
   // 8. Select all matches, either matching the find widget (if open) or (otherwise) the current
   //    selection.
   // 9. Add some hotkeys to move from the find widget to the active editor
-  
+
   // 1.
   { "key": "ctrl+f",                "when": "(editorFocus || editorIsOpen) && !findInputFocussed",
                                  "command": "actions.find" },
@@ -694,152 +692,6 @@
                              "when": "searchViewletVisible && inputBoxFocus" },
   { "key": "tab",         "command": "search.focus.nextInputBox",
                              "when": "inSearchEditor && inputBoxFocus" },
-
-
-  // /// Modify Find Widget (ctrl+f) behavior
-  // /// ====================================
-  // /* cSpell:disable */
-  // //
-  // // | State      || ctl+f    | ctrl+g   | ctrl+alt+g | enter | tab | esc |
-  // // | ---------- || -------  | -------- | ---------- | ----- | --- | --- |
-  // // | WC, EF, NT || O F P    | O E PS R |  E PA      |       |     |     |
-  // // | WC, EF, ST || O F P    | O E P  R |  E PA      |       |     |     |
-  // // | WO, EF, NT || O F P    |   E NS R |  E  A      |       |     | C E |
-  // // | WO, WF     ||   F NS R |   E NS R |  E  A      |       | E S | C E |
-  // // | WO, EF, ST || O F P    |   E PS R |  E  A      |       |     | C E |
-  // //
-  // // States:
-  // // - WO -- Widget is open
-  // // - WC -- Widget is open
-  // // - WF -- Widget is focused
-  // // - EF -- Editor is focused
-  // // - ST -- There is some selected text
-  // // - NT -- There is no selected text
-  // //
-  // // Actions:
-  // // - O -- Open the find widget
-  // // - C -- Close the find widget
-  // // - F -- Focus (or leave focus on) the find widget
-  // // - E -- Focus (or leave focus on) the editor
-  // // - P -- Populate the query with the current selection, or the symbol under
-  // //        the cursor
-  // // - S -- Select the current instance of the query
-  // // - N -- Move the cursor to the next instance of the query
-  // // - A -- Select all highlights
-  // //        - If there is an active query, this is all instances of the query
-  // //        - If there is no active query, this is all instances of the
-  // //          current selection or symbol under the cursor
-  // // - R -- Reversed when shift is held
-  // /* cSpell:enable */
-
-  // // To start, we have to unbind some default find actions. These can't be
-  // // done platform-conditionally, so we have to shotgun these changes.
-  // { "key": "ctrl+f",       "command": "-actions.find",
-  //                             "when": "editorFocus || editorIsOpen" },
-  // { "key": "cmd+f",        "command": "-actions.find",
-  //                             "when": "editorFocus || editorIsOpen" },
-  // // While we're at it, unbind overloaded keybindings, too
-  // { "key": "ctrl+g",       "command": "-workbench.action.gotoLine" },
-  // { "key": "ctrl+shift+g", "command": "-workbench.view.scm" },
-
-  // // Move from the Find Widget to the editor
-  // { "key": "tab", "command": "workbench.action.focusActiveEditorGroup",
-  //                    "when": "(editorFocus || editorIsOpen) && findInputFocussed" },
-
-  // { "key": "ctrl+f",       "command": "actions.find",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findInputFocussed" },
-  // //   ctrl+shift+f is for the search sidebar, only `find.previous` when `findInputFocussed`
-  // // { "key": "ctrl+shift+f", "command": "actions.previous",
-  // //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findInputFocussed" },
-  // { "key": "ctrl+f",       "command": "editor.action.nextMatchFindAction",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) && findInputFocussed" },
-  // { "key": "ctrl+shift+f", "command": "editor.action.previousMatchFindAction",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) && findInputFocussed" },
-
-  // { "key": "ctrl+g",       "command": "runCommands",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible && !editorHasSelection",
-  //                             "args": {
-  //                               "commands": [
-  //                                 "editor.action.addSelectionToNextFindMatch",
-  //                                 "actions.find",
-  //                                 "workbench.action.focusActiveEditorGroup"
-  //                               ] } },
-  // { "key": "ctrl+shift+g", "command": "runCommands",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible && !editorHasSelection",
-  //                             "args": {
-  //                               "commands": [
-  //                                 "editor.action.addSelectionToNextFindMatch",
-  //                                 "actions.find",
-  //                                 "workbench.action.focusActiveEditorGroup"
-  //                               ] } },
-  // { "key": "ctrl+g",       "command": "runCommands",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible &&  editorHasSelection",
-  //                             "args": {
-  //                               "commands": [
-  //                                 "actions.find",
-  //                                 "workbench.action.focusActiveEditorGroup"
-  //                               ] } },
-  // { "key": "ctrl+shift+g", "command": "runCommands",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findWidgetVisible &&  editorHasSelection",
-  //                             "args": {
-  //                               "commands": [
-  //                                 "actions.find",
-  //                                 "workbench.action.focusActiveEditorGroup"
-  //                               ] } },
-  // { "key": "ctrl+g",       "command": "runCommands",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible && !findInputFocussed && !editorHasSelection",
-  //                             "args": {
-  //                               "commands": [
-  //                                 "editor.action.nextMatchFindAction",
-  //                                 "workbench.action.focusActiveEditorGroup"
-  //                               ] } },
-  // { "key": "ctrl+g",       "command": "runCommands",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible &&  findInputFocussed",
-  //                             "args": {
-  //                               "commands": [
-  //                                 "editor.action.nextMatchFindAction",
-  //                                 "workbench.action.focusActiveEditorGroup"
-  //                               ] } },
-  // { "key": "ctrl+shift+g", "command": "runCommands",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible && !findInputFocussed && !editorHasSelection",
-  //                             "args": {
-  //                               "commands": [
-  //                                 "editor.action.previousMatchFindAction",
-  //                                 "workbench.action.focusActiveEditorGroup"
-  //                               ] } },
-  // { "key": "ctrl+shift+g", "command": "runCommands",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible &&  findInputFocussed",
-  //                             "args": {
-  //                               "commands": [
-  //                                 "editor.action.previousMatchFindAction",
-  //                                 "workbench.action.focusActiveEditorGroup"
-  //                               ] } },
-  // { "key": "ctrl+g",       "command": "runCommands",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible && !findInputFocussed &&  editorHasSelection",
-  //                             "args": {
-  //                               "commands": [
-  //                                 "editor.action.moveSelectionToNextFindMatch",
-  //                                 "actions.find",
-  //                                 "workbench.action.focusActiveEditorGroup"
-  //                               ] } },
-  // { "key": "ctrl+shift+g", "command": "runCommands",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) &&  findWidgetVisible && !findInputFocussed &&  editorHasSelection",
-  //                             "args": {
-  //                               "commands": [
-  //                                 "editor.action.moveSelectionToPreviousFindMatch",
-  //                                 "actions.find",
-  //                                 "workbench.action.focusActiveEditorGroup"
-  //                               ] } },
-
-  // { "key": "ctrl+alt+g",   "command": "editor.action.selectAllMatches",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) && findInputFocussed" },
-  // { "key": "ctrl+alt+g",   "command": "runCommands",
-  //                             "when": "isLinux && (editorFocus || editorIsOpen) && !findInputFocussed",
-  //                             "args": {
-  //                               "commands": [
-  //                                 "actions.find",
-  //                                 "editor.action.selectAllMatches"
-  //                               ] } },
 
 
   // /// Modify Search Viewlet (ctrl+shift+f) behavior
