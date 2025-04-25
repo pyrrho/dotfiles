@@ -82,6 +82,7 @@ plugins=(
     forgit
     fzf
     genpass
+    gh
     git
     git-lfs
     isodate
@@ -96,9 +97,47 @@ plugins=(
 zstyle ':omz:plugins:nvm' lazy yes
 ZOXIDE_CMD_OVERRIDE="cd"
 
+## Early definition of `add_to_path`
+# Adds the first argument to the user's PATH **iff** it's not already on the PATH
+#
+# Defined early s.t. we can use it throughout this file
+
+function add_to_path {
+    if [ $# -ne 1 ]; then
+        echo "ERROR: \`add_to_path\` requires exactuly 1 argument"
+        return 1
+    fi
+
+    case ":$PATH:" in
+      *":$1:"*) ;;
+      *) export PATH="$PATH:$1" ;;
+    esac
+}
+function add_to_path_front {
+    if [ $# -ne 1 ]; then
+        echo "ERROR: \`add_to_path_front\` requires exactuly 1 argument"
+        return 1
+    fi
+
+    case ":$PATH:" in
+      *":$1:"*) ;;
+      *) export PATH="$1:$PATH" ;;
+    esac
+}
+
+# Tests for the above
+# Turn this `if false` to an `if true`, `source ~/.zshrc` *twice*, and observe
+# that each of the additions is only present once (`echo $PATH | tr ':' '\n'`).
+if false; then
+    add_to_path "/a/path"
+    add_to_path "/a"
+    add_to_path "/a/path/somewhere"
+fi
+
+
 # Turn forgit into a git extension s.t. oh-my-zsh alises don't clash
 if [ -d "$ZSH/custom/plugins/forgit/bin" ] ; then
-    export PATH="$PATH:$ZSH/custom/plugins/forgit/bin"
+    add_to_path "$ZSH/custom/plugins/forgit/bin"
     export fpath=($ZSH/custom/plugins/forgit/completions $fpath)
 fi
 
@@ -190,21 +229,22 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 
+# Ludum Ipsum env vars
 export LI_API_KEY_PATH="${HOME}/li/api.key"
 export DISCORD_OAUTH_SECRET_PATH="${HOME}/li/discord-oauth"
-# `x rp forkliftd -- bootstrap-signing-key`
-export CONFIG_FORKLIFT_RPC_PACKAGE_VERIFICATION_KEY_BASE64_URLSAFE="..."
-export SIGNING_KEY_PATH="${HOME}/li/test_forklift_signing_key"
+
 
 # # Add the dotnet-install.sh'd sdks to the PATH ...
 # export PATH="$HOME/.dotnet:$HOME/.dotnet/tools:$PATH"
 # # ... and define the DOTNET_ROOT path based on that binary.
 # export DOTNET_ROOT=$(dirname $(which dotnet))
 
+
 # # Set up pyenv
 # export PYENV_ROOT="$HOME/.pyenv"
 # export PATH="$PYENV_ROOT/bin:$PATH"
 # eval "$(pyenv init --path)"
+
 
 # # Set up NVM
 # # But actually don't. Let the `nvm` plugin handle it.
@@ -212,18 +252,15 @@ export SIGNING_KEY_PATH="${HOME}/li/test_forklift_signing_key"
 # [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 # [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+
 # Set up pnpm
-if [ -d "/home/dpb/.local/share/pnpm" ]; then
-    export PNPM_HOME="/home/dpb/.local/share/pnpm"
-    case ":$PATH:" in
-    *":$PNPM_HOME:"*) ;;
-    *) export PATH="$PNPM_HOME:$PATH" ;;
-    esac
-fi
+export PNPM_HOME="/home/dpb/.local/share/pnpm"
+add_to_path_front "$PNPM_HOME"
+
 
 # Set up rust
 if [ -d "$HOME/.cargo/bin" ] ; then
-    export PATH="$PATH:$HOME/.cargo/bin"
+    add_to_path "$HOME/.cargo/bin"
 
     # Rustc and Cargo use this environment variable to enable "nightly-like"
     # behavior on stable/beta compilers. Some people in the rust-lang project
@@ -238,25 +275,30 @@ if [ -d "$HOME/.cargo/bin" ] ; then
     # intended, blocking you from enabling unstable features which are nevertheless
     # shipped in the binaries you're running.
     export __CARGO_TEST_CHANNEL_OVERRIDE_DO_NOT_USE_THIS="dev"
+
+    # # Default to printing backtraces on panic (or don't)
+    # export RUST_BACKTRACE=1
 fi
-export RUST_BACKTRACE=full
+
 
 # Set up Golang
 if [ -d "/usr/local/go" ]; then
-    export PATH="$PATH:/usr/local/go/bin"
+    add_to_path "/usr/local/go/bin"
 fi
+
 
 # Set up Zig
 if [ -d "$HOME/.zig" ]; then
-    export PATH="$PATH:$HOME/.zig"
+    add_to_path "$HOME/.zig"
 fi
 # Add the vscode zls to PATH
 # TODO: I can't remember why I have to do this...
 if [ -d "${HOME}/Library/Application Support/Code/User/globalStorage/ziglang.vscode-zig/zig_install" ]; then
-    export PATH="${PATH}:${HOME}/Library/Application Support/Code/User/globalStorage/ziglang.vscode-zig/zig_install"
+    add_to_path "${HOME}/Library/Application Support/Code/User/globalStorage/ziglang.vscode-zig/zig_install"
 elif [ -d "${HOME}/.config/Code/User/globalStorage/ziglang.vscode-zig/zls_install" ]; then
-    export PATH="${PATH}:${HOME}/.config/Code/User/globalStorage/ziglang.vscode-zig/zls_install"
+    add_to_path "${HOME}/.config/Code/User/globalStorage/ziglang.vscode-zig/zls_install"
 fi
+
 
 # Help Bevy and lldb play nice in VSCode.
 # Without this explicit LD_LIBRARY_PATH, attempting to launch a sufficently
@@ -268,17 +310,53 @@ if command -v rustup >> /dev/null; then
     export LD_LIBRARY_PATH="$(rustup show home)/toolchains/$(rustup show active-toolchain | cut -d " " -f 1)/lib/"
 fi
 
+
 # Source my chirps and squawks
 source ${HOME}/repos/dotfiles/common/chirp/source.sh
 
+
+# Set up Base16 Shell to maybe be able to set my terminal theme via cli
+BASE16_SHELL="$HOME/.config/base16-shell/"
+[ -n "$PS1" ] && \
+    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
+        source "$BASE16_SHELL/profile_helper.sh"
+
+function th {
+    if [ $# -ne 1 ]; then
+        echo "ERROR: \`th\` requires exactuly 1 argument"
+        return 1
+    fi
+
+    case "$1" in
+        l) base16_selenized-light
+          ;;
+        d) base16_selenized-dark
+          ;;
+        *) echo "unknown argument '$1'"; return 1
+          ;;
+    esac
+}
+alias th-l="base16_selenized-light"
+alias th-d="base16_selenized-dark"
+
+# An attempt to make Rust tools use sane colors for output
+BAT_THEME_DARK="Solarized (dark)"
+BAT_THEME_LIGHT="Solarized (light)"
+
+
 # Shortcut into the LI repo
 alias 0="cd ${HOME}/li/repo"
-# Add LI binaries to PATH
+alias 00="cd ${HOME}/li/sl"
+# Helpers to add LI binaries to PATH
 alias _src_li_dbg="export PATH=\"${PATH}:${HOME}/li/repo/target/debug\""
 alias _src_li_rel="export PATH=\"${PATH}:${HOME}/li/repo/target/release\""
 
 alias _ls_path="echo $PATH | tr ':' '\n'"
 
+alias xc="x fmt --check"
+
+
+# The usual suspects
 alias rf="rm -rf"
 alias ll="ls -lAh"
 alias la="ls -lah"
@@ -286,6 +364,9 @@ alias l1="ls -1"
 alias cpr="cp -r"
 
 alias xcc="xclip -r -selection clipboard"
+
+# Press F1 to open a relative file path in vscode
+bindkey -s '^[OP' 'code \"$(pwd)/$(xclip -o)\"\n'
 
 function prg {
     ps aux | rg $@ | less -F -X
@@ -306,6 +387,7 @@ function unquote {
 function seg {
     awk '{ print $'"$1"' }'
 }
+alias s="seg"
 
 alias py="python"
 alias py2="python2"
@@ -809,4 +891,15 @@ function lab_to_rgb {
             -H 'Priority: u=0, i' \
             -H 'TE: trailers' --data-raw "color-picker=%23000000\&c=CIE-LAB+${1}+${2}+${3}\&h=h" \
             -v 2>&1 | rg location: | perl -p -e 's/.*.com\/(......)/\1/'
+}
+
+function inspect_rustc_warning_group {
+    rustc -W help |\
+        rg ' (allow|warn|deny) ' |\
+        rg $(\
+            rustc -W help |\
+            rg '^ *'$@' ' |\
+            sed 's/^ *\S*  /, /' |\
+            sed 's/, / -e /g' \
+        )
 }
