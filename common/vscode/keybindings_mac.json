@@ -82,9 +82,9 @@
 
   /// Duplicate Cmd Pallet Bindings
   /// =============================
-  { "key": "ctrl+p",       "command": "workbench.action.quickOpen" },
-  { "key": "ctrl+shift+p", "command": "workbench.action.showCommands" },
-  { "key": "ctrl+shift+e", "command": "workbench.action.showAllSymbols" },
+  // { "key": "ctrl+p",       "command": "workbench.action.quickOpen" },
+  // { "key": "ctrl+shift+p", "command": "workbench.action.showCommands" },
+  // { "key": "ctrl+shift+e", "command": "workbench.action.showAllSymbols" },
 
 
   /// Delete Helpers
@@ -130,6 +130,11 @@
   { "key": "ctrl+shift+alt+right",    "command": "-cursorWordPartRightSelect" },
   { "key": "ctrl+shift+alt+left",     "command": "-cursorWordPartLeftSelect" },
 
+
+  /// Go To Bracket to match Remove Bracket
+  /// =====================================
+  { "key": "shift+cmd+\\",  "command": "editor.action.jumpToBracket",
+                               "when": "editorTextFocus" },
 
   /// Normalize Cursor Inserts
   /// ========================
@@ -322,7 +327,9 @@
   { "key": "shift+cmd+space",  "command": "-editor.action.triggerParameterHints" },
 
   { "key": "cmd+shift+;",  "command": "editor.action.triggerParameterHints",
-                              "when": "editorHasSignatureHelpProvider && editorTextFocus" },
+                              "when": "editorHasSignatureHelpProvider && editorTextFocus && editorLangId != 'rust'" },
+  { "key": "ctrl+shift+;", "command": "rust-analyzer.triggerParameterHints",
+                              "when": "editorHasSignatureHelpProvider && editorTextFocus && editorLangId == 'rust'" },
   { "key": "cmd+shift+;",  "command": "closeParameterHints",
                               "when": "editorFocus && parameterHintsVisible" },
 
@@ -403,10 +410,23 @@
                             "when": "editorTextFocus && inDebugMode" },
   { "key": "ctrl+cmd+.", "command": "editor.action.showHover",
                             "when": "editorTextFocus" },
+  { "key": "ctrl+alt+.", "command": "workbench.action.showHover",
+                            "when": "!editorTextFocus" },
   { "key": "ctrl+cmd+.", "command": "workbench.action.terminal.focusHover",
                             "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalIsOpen || terminalFocus && terminalProcessSupported || terminalHasBeenCreated && terminalTabsFocus || terminalIsOpen && terminalTabsFocus || terminalProcessSupported && terminalTabsFocus" },
   { "key": "ctrl+cmd+.", "command": "workbench.action.showTreeHover",
                             "when": "customTreeView && listFocus && !inputFocus && !treestickyScrollFocused" },
+  { "key": "ctrl+alt+.", "command": "list.showHover",
+                            "when": "listFocus && !inputFocus && !treestickyScrollFocused" },
+
+  /// Unbinds
+  /// -------
+  { "key": "cmd+k cmd+i", "command": "-editor.debug.action.showDebugHover" },
+  { "key": "cmd+k cmd+i", "command": "-editor.action.showHover" },
+  { "key": "cmd+k cmd+i", "command": "-workbench.action.showHover" },
+  { "key": "cmd+k cmd+i", "command": "-workbench.action.terminal.focusHover" },
+  { "key": "cmd+k cmd+i", "command": "-workbench.action.showTreeHover" },
+  { "key": "cmd+k cmd+i", "command": "-list.showHover" },
 
 
   /// Some Sublime Keybindings
@@ -422,6 +442,14 @@
   { "key": "shift+cmd+l",  "command": "extension.splitIntoLines",
                               "when": "isMac && editorTextFocus"},
 
+  { "key": "ctrl+j",       "command": "rust-analyzer.joinLines",
+                              "when": "textInputFocus && !editorReadonly && editorLangId == 'rust'" },
+  { "key": "ctrl+j",       "command": "editor.action.joinLines",
+                              "when": "textInputFocus && !editorReadonly && editorLangId != 'rust'" },
+  /// Unbinds
+  /// -------
+  { "key": "ctrl+j",       "command": "-workbench.action.togglePanel" },
+  { "key": "ctrl+shift+j", "command": "-rust-analyzer.joinLines" },
   { "key": "ctrl+t",       "command": "-editor.action.transposeLetters" },
   { "key": "shift+cmd+l",  "command": "-editor.action.selectHighlights" },
 
@@ -459,10 +487,11 @@
   /// ==================
   // `ctrl+;` feels better, but it's being used by the test API, which I want
   // access to.
-  { "key": "ctrl+cmd+;", "command": "workbench.action.gotoLine" },
-  { "key": "ctrl+g",     "command": "-workbench.action.gotoLine" },
+  { "key": "ctrl+cmd+;",  "command": "workbench.action.gotoLine" },
+  { "key": "cmd+k cmd+;", "command": "workbench.action.gotoLine" },
+  { "key": "ctrl+g",      "command": "-workbench.action.gotoLine" },
 
-  
+
   /// Vim-ish Relative Go-to-Line
   /// ===========================
   /// Requires pyrrho.vscode-relative-motion
@@ -550,6 +579,12 @@
   //    on a matching section.
   // 4. In the editor **without** any text (including matching sections) selected. Select the next
   //    (or previous) section matching the find widget.
+  //
+  // 4. In the editor with the find widget visible. Select the next (or previous) section matching
+  //    the find widget.
+  //
+  // old, currently disabled
+  //
   // 5. In the editor **with** text selected -- NB. this may match the find widget, or it may be a
   //    novel selection. Select the next (or previous) section matching the _selection_.
   //    IF YOUR FIND INPUT IS A REGEX this will override it with a concrete selection. It's not
@@ -588,14 +623,19 @@
                                              "workbench.action.focusActiveEditorGroup"
                                            ] } },
   // 4.
-  { "key": "cmd+g",                "when": "editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
+  { "key": "ctrl+g",                "when": "editorFocus && findWidgetVisible && !findInputFocussed",
+                                 "command": "editor.action.nextMatchFindAction" },
+  { "key": "ctrl+shift+g",          "when": "editorFocus && findWidgetVisible && !findInputFocussed",
+                                 "command": "editor.action.previousMatchFindAction" },
+  // 4. [old]
+  { "key": "ctrl+g",               "when": "false && editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
                                 "command": "editor.action.nextMatchFindAction" },
-  { "key": "shift+cmd+g",          "when": "editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
+  { "key": "shift+cmd+g",          "when": "false && editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
                                 "command": "editor.action.previousMatchFindAction" },
-  // 5.
-  { "key": "cmd+g",                "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection",
+  // 5. [old]
+  { "key": "cmd+g",                "when": "false && editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection",
                                 "command": "editor.action.nextSelectionMatchFindAction" },
-  { "key": "shift+cmd+g",          "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection",
+  { "key": "shift+cmd+g",          "when": "false && editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection",
                                 "command": "editor.action.previousSelectionMatchFindAction" },
   // 6.
   { "key": "cmd+g",                "when": "editorFocus && !findWidgetVisible && editorHasSelection",
