@@ -86,13 +86,23 @@
   { "key": "ctrl+shift+tab", "command": "workbench.action.previousEditorInGroup",
                                 "when": "!inQuickOpen" },
 
+
+  { "key": "ctrl+alt+home",       "command": "workbench.action.previousEditorInGroup",
+                                     "when": "!inQuickOpen" },
+  { "key": "ctrl+alt+end",        "command": "workbench.action.nextEditorInGroup",
+                                     "when": "!inQuickOpen" },
+  { "key": "ctrl+alt+shift+home", "command": "workbench.action.moveEditorLeftInGroup",
+                                     "when": "!inQuickOpen" },
+  { "key": "ctrl+alt+shift+end",  "command": "workbench.action.moveEditorRightInGroup",
+                                     "when": "!inQuickOpen" },
+
   /// Quick open LRU interface
   // NB. These are not going to unify across OSes b/c each uses tab differently.
   // NB. I've not been able to make arrow key navigation work for the quick open
   //     b/c it selects as soon as you release `ctrl`, which is generally a good
   //     thing, but messes with arrow input.
   { "key": "ctrl+pageup",    "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup",
-                                "when": "editorTextFocus &&!activeEditorGroupEmpty && !inQuickOpen && !inEditorsPicker" },
+                                "when": "!activeEditorGroupEmpty && !inQuickOpen && !inEditorsPicker" },
   { "key": "ctrl+tab",       "command": "workbench.action.quickOpenNavigateNextInEditorPicker",
                                 "when": "inEditorsPicker && inQuickOpen" },
   { "key": "ctrl+shift+tab", "command": "workbench.action.quickOpenNavigatePreviousInEditorPicker",
@@ -115,6 +125,7 @@
   { "key": "alt+7",                "command": "-workbench.action.openEditorAtIndex7" },
   { "key": "alt+8",                "command": "-workbench.action.openEditorAtIndex8" },
   { "key": "alt+9",                "command": "-workbench.action.openEditorAtIndex9" },
+
 
 
   /// Normalize Editor and Tab Group Movement
@@ -252,7 +263,9 @@
 
   // Show suggestions
   { "key": "ctrl+space",       "command": "-editor.action.triggerSuggest" },
+  { "key": "ctrl+i",           "command": "-editor.action.triggerSuggest" },
   { "key": "ctrl+space",       "command": "-focusSuggestion" },
+  { "key": "ctrl+i",           "command": "-focusSuggestion" },
 
   { "key": "ctrl+;",           "command": "editor.action.triggerSuggest",
                                   "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible" },
@@ -262,6 +275,7 @@
   // Is there some way to un-focus a suggestion + the suggestion widget?
   { "key": "ctrl+alt+space",   "command": "-toggleSuggestionFocus" },
 
+  // This seems to do nothing?
   //{ "key": "ctrl+shift+;",   "command": "toggleSuggestionFocus",
   //                              "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
 
@@ -274,6 +288,7 @@
 
   // Toggle the sidebar that contains additional information about the focused symbol
   { "key": "ctrl+space",       "command": "-toggleSuggestionDetails" },
+  { "key": "ctrl+i",           "command": "-toggleSuggestionDetails" },
 
   { "key": "ctrl+;",           "command": "toggleSuggestionDetails",
                                   "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus" },
@@ -282,11 +297,23 @@
   { "key": "ctrl+shift+space", "command": "-editor.action.triggerParameterHints" },
 
   { "key": "ctrl+shift+;",     "command": "editor.action.triggerParameterHints",
-                                  "when": "editorHasSignatureHelpProvider && editorTextFocus" },
+                                  "when": "editorHasSignatureHelpProvider && editorTextFocus && editorLangId != 'rust'" },
+  { "key": "ctrl+shift+;",     "command": "rust-analyzer.triggerParameterHints",
+                                  "when": "editorHasSignatureHelpProvider && editorTextFocus && editorLangId == 'rust'" },
   { "key": "ctrl+shift+;",     "command": "closeParameterHints",
                                   "when": "editorFocus && parameterHintsVisible" },
 
-  // Lawl use indent/detent to cycle inline hints
+  // Suggestion toggles for the terminal
+  { "key": "ctrl+i",           "command": "-workbench.action.terminal.suggestToggleDetails" },
+  { "key": "ctrl+space",       "command": "-workbench.action.terminal.suggestToggleDetails" },
+  { "key": "ctrl+alt+space",   "command": "-workbench.action.terminal.suggestToggleDetailsFocus" },
+
+  { "key": "ctrl+;",           "command": "workbench.action.terminal.suggestToggleDetails",
+                                  "when": "simpleSuggestWidgetHasFocusedSuggestion && terminalFocus && terminalHasBeenCreated && terminalIsOpen && terminalSuggestWidgetVisible || simpleSuggestWidgetHasFocusedSuggestion && terminalFocus && terminalIsOpen && terminalProcessSupported && terminalSuggestWidgetVisible" },
+  { "key": "ctrl+shift+;",     "command": "workbench.action.terminal.suggestToggleDetailsFocus",
+                                  "when": "!textInputFocus" },
+
+  // Use indent/detent to cycle inline hints I guess?
   { "key": "alt+]",            "command": "-editor.action.inlineSuggest.showNext" },
   { "key": "alt+[",            "command": "-editor.action.inlineSuggest.showPrevious" },
 
@@ -363,10 +390,22 @@
                             "when": "editorTextFocus && inDebugMode" },
   { "key": "ctrl+alt+.", "command": "editor.action.showHover",
                             "when": "editorTextFocus" },
+  { "key": "ctrl+alt+.", "command": "workbench.action.showHover",
+                            "when": "!editorTextFocus" },
   { "key": "ctrl+alt+.", "command": "workbench.action.terminal.focusHover",
                             "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalIsOpen || terminalFocus && terminalProcessSupported || terminalHasBeenCreated && terminalTabsFocus || terminalIsOpen && terminalTabsFocus || terminalProcessSupported && terminalTabsFocus" },
   { "key": "ctrl+alt+.", "command": "workbench.action.showTreeHover",
                             "when": "customTreeView && listFocus && !inputFocus && !treestickyScrollFocused" },
+  { "key": "ctrl+alt+.", "command": "list.showHover",
+                            "when": "listFocus && !inputFocus && !treestickyScrollFocused" },
+  /// Unbinds
+  /// -------
+  { "key": "ctrl+k ctrl+i", "command": "-editor.debug.action.showDebugHover" },
+  { "key": "ctrl+k ctrl+i", "command": "-editor.action.showHover" },
+  { "key": "ctrl+k ctrl+i", "command": "-workbench.action.showHover" },
+  { "key": "ctrl+k ctrl+i", "command": "-workbench.action.terminal.focusHover" },
+  { "key": "ctrl+k ctrl+i", "command": "-workbench.action.showTreeHover" },
+  { "key": "ctrl+k ctrl+i", "command": "-list.showHover" },
 
 
   /// Flip Next Problem behavior
@@ -592,6 +631,12 @@
   // 3. Transition from the find widget to the editor, selecting the relevant text (if possible).
   //    The prev->[next->]focus dance is to get decent behavior both when the cursor is and is not
   //    on a matching section.
+  //
+  // 4. In the editor with the find widget visible. Select the next (or previous) section matching
+  //    the find widget.
+  //
+  // old, currently disabled
+  //
   // 4. In the editor **without** any text (including matching sections) selected. Select the next
   //    (or previous) section matching the find widget.
   // 5. In the editor **with** text selected -- NB. this may match the find widget, or it may be a
@@ -599,6 +644,8 @@
   //    IF YOUR FIND INPUT IS A REGEX this will override it with a concrete selection. It's not
   //    ideal. Might be worth disabling this? If we could check if the current selection matched, we
   //    could `nextMatchFindAction` instead of `nextSelectionMatchFindAction`.
+  //
+  //
   // 6. The find widget is not visible. Open it with the current selection.
   // 7. The find widget is not visible. Open it with the word under the cursor (if there is one).
   // 8. Select all matches, either matching the find widget (if open) or (otherwise) the current
@@ -632,14 +679,19 @@
                                               "workbench.action.focusActiveEditorGroup"
                                             ] } },
   // 4.
-  { "key": "ctrl+g",                "when": "editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
+  { "key": "ctrl+g",                "when": "editorFocus && findWidgetVisible && !findInputFocussed",
                                  "command": "editor.action.nextMatchFindAction" },
-  { "key": "ctrl+shift+g",          "when": "editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
+  { "key": "ctrl+shift+g",          "when": "editorFocus && findWidgetVisible && !findInputFocussed",
                                  "command": "editor.action.previousMatchFindAction" },
-  // 5.
-  { "key": "ctrl+g",                "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection",
+  // 4. [old]
+  { "key": "ctrl+g",                "when": "false && editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
+                                 "command": "editor.action.nextMatchFindAction" },
+  { "key": "ctrl+shift+g",          "when": "false && editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
+                                 "command": "editor.action.previousMatchFindAction" },
+  // 5. [old]
+  { "key": "ctrl+g",                "when": "false && editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection",
                                  "command": "editor.action.nextSelectionMatchFindAction" },
-  { "key": "ctrl+shift+g",          "when": "editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection",
+  { "key": "ctrl+shift+g",          "when": "false && editorFocus && findWidgetVisible && !findInputFocussed && editorHasSelection",
                                  "command": "editor.action.previousSelectionMatchFindAction" },
   // 6.
   { "key": "ctrl+g",                "when": "editorFocus && !findWidgetVisible && editorHasSelection",
@@ -1032,7 +1084,7 @@
   /// Settings and Keybindings (JSON)
   /// ===============================
   { "key": "ctrl+,",              "command": "workbench.action.openSettingsJson" },
-  { "key": "ctrl+shift+,",        "command": "workbench.action.openSettings" },
+  { "key": "ctrl+shift+,",        "command": "workbench.action.openGlobalSettings" },
   { "key": "ctrl+k ctrl+s",       "command": "workbench.action.openGlobalKeybindingsFile" },
   { "key": "ctrl+k ctrl+shift+s", "command": "workbench.action.openGlobalKeybindings" },
   /// Unbinds
