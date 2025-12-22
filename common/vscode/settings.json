@@ -1,40 +1,44 @@
 {
-  "editor.renderWhitespace": "selection",
   "workbench.colorCustomizations": {
-    // "statusBarItem.compactHoverBackground": "#f00",
-    // "editorSuggestWidgetStatus.foreground": "#f00",
-    // "descriptionForeground": "#f00",
-    // "panelSectionHeader.border": "#f00",
-    // "commandCenter.debuggingBackground": "#0f0",
-    // "sideBar.dropBackground": "#0f0"
-    // "list.dropBetweenBackground": "#f00",
-    // "list.dropBackground": "#f00",
-    //"list.deemphasizedForeground": "#f00,
-    // "diffEditor.move.border": "#f00",                  // The border color for text that got moved in the diff editor.
-    // "diffEditor.moveActive.border": "#f00",            // The active border color for text that got moved in the diff editor.
-    // "multiDiffEditor.headerBackground": "#f00",        // The background color of the diff editor's header
-    // "multiDiffEditor.background": "#f00",              // The background color of the multi file diff editor
-    // "multiDiffEditor.border": "#f00",
-    // "editorOverviewRuler.rangeHighlightForeground": "#0f0d",
-    // "statusBarItem.offlineBackground": "#6c1717",
-    // "statusBarItem.offlineForeground": "#ffffff",
-    // "statusBarItem.offlineHoverBackground": "#ffffff1f",
-    // "statusBarItem.offlineHoverForeground": "#52666d",
-    // "editorGhostText.background": "#f008",
-    // "editorGhostText.border": "#0f08",
-    // "editorGhostText.foreground": "#00f8",
-    // ===========
+    "editorInlayHint.background": "#009c8f10"
   },
+  "cSpell.userWords": [
+    "boid",
+    "boids",
+    "Brusse",
+    "clipring",
+    "cmds",
+    "cognito",
+    "enqueues",
+    "enumerables",
+    "esbenp",
+    "executables",
+    "fieldless",
+    "gameplay",
+    "hardcode",
+    "hardcoded",
+    "includable",
+    "includables",
+    "initialisms",
+    "multiclip",
+    "pagedown",
+    "pageup",
+    "Pirrone",
+    "postgres",
+    "recurse",
+    "rustfmt",
+    "selenized",
+    "Targeter",
+    "timeseries",
+    "transpile",
+    "transpiled",
+    "unconfigured"
+  ],
+  "editor.renderWhitespace": "selection",
   "editor.rulers": [50, 70, 78, 80, 100, 120, 160],
-  "cSpell.showCommandsInEditorContextMenu": true,
   "editor.cursorBlinking": "phase",
   "editor.dragAndDrop": false,
   "editor.fontFamily": "Source Code Pro",
-
-  // The sequence 'l l' is a single-width ligature in Source Code
-  // Pro for... reasons? It renders incorrectly, and causes
-  // navigation and rendering to not really work. Disable it.
-  "editor.fontLigatures": "'ccmp' off",
   "explorer.enableDragAndDrop": false,
   "explorer.autoReveal": false,
   "explorer.excludeGitIgnore": false,
@@ -42,65 +46,39 @@
   "debug.allowBreakpointsEverywhere": true,
   "terminal.integrated.scrollback": 100000,
   "trailing-spaces.highlightCurrentLine": false,
-  "editor.acceptSuggestionOnCommitCharacter": false,
-  "editor.quickSuggestionsDelay": 40,
   "editor.wordWrapColumn": 100,
-  "window.zoomLevel": 0,
-  "cSpell.userWords": [
-    "boid",
-    "boids",
-    "Brusse",
-    "cmds",
-    "Cognito",
-    "enqueues",
-    "executables",
-    "Gatito",
-    "hardcode",
-    "hardcoded",
-    "Includable",
-    "Includables",
-    "Pirrone",
-    "postgres",
-    "recurse",
-    "rustfmt",
-    "Selenized",
-    "timeseries",
-    "transpile",
-    "transpiled",
-    "unconfigured"
-  ],
-  "cSpell.ignoreWords": ["enumerables", "initialisms"],
-  "[plaintext]": {
-    "editor.quickSuggestions": {
-      "comments": "off",
-      "strings": "off",
-      "other": "off"
-    }
-  },
   "gitlens.defaultDateFormat": "YYYY MMMM D, H:mm",
   "gitlens.defaultDateShortFormat": "YYYY MMM D",
   "gitlens.codeLens.enabled": false,
-  "python.jediEnabled": false,
+  "git.detectWorktrees": true,
   "clipring.selectTextAfterPasteFromMenu": false,
   "diffEditor.ignoreTrimWhitespace": false,
   "workbench.editor.navigationScope": "editorGroup",
-  // "editor.quickSuggestions": {
-  //     "other": "inline",
-  //     "comments": "inline"
-  // },
-  // "editor.suggest.selectionMode": "never"
-  // These will likely change based on toggles. Place new setting above.
-  "editor.codeLens": false,
+  "workbench.editor.empty.hint": "hidden",
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[tailwindcss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "security.workspace.trust.untrustedFiles": "open",
-  // "files.exclude": {
-  //   "**/.git": false,
-  //   "**/.hg": false,
-  //   "**/.svn": false,
-  //   "**/CVS": false
-  // },
   "window.confirmBeforeClose": "keyboardOnly",
   "editor.inlayHints.enabled": "offUnlessPressed",
-  "workbench.editor.empty.hint": "hidden",
+  // Make the suggestions widget not suck.
+  // See the hotkey 'Normalize the Suggest Widget' section
+  "editor.suggest.selectionMode": "never",
+  "editor.inlineSuggest.suppressSuggestions": true,
+  "editor.inlineSuggest.showToolbar": "never",
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  // Other other changes to the suggestions nonsense.
+  "editor.acceptSuggestionOnEnter": "smart",
+  "editor.inlineSuggest.syntaxHighlightingEnabled": true,
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
   "javascript.inlayHints.parameterNames.enabled": "all",
   "javascript.inlayHints.parameterTypes.enabled": true,
@@ -111,43 +89,132 @@
   "typescript.inlayHints.parameterTypes.enabled": true,
   "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
   "typescript.inlayHints.variableTypes.enabled": true,
+  "rust-analyzer.inlayHints.maxLength": null,
+  "rust-analyzer.inlayHints.bindingModeHints.enable": true,
+  "rust-analyzer.inlayHints.closureCaptureHints.enable": true,
+  "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "with_block",
+  "rust-analyzer.inlayHints.discriminantHints.enable": "fieldless",
+  "rust-analyzer.inlayHints.expressionAdjustmentHints.enable": "always",
+  "rust-analyzer.inlayHints.lifetimeElisionHints.useParameterNames": true,
+  "editor.quickSuggestions": {
+    "other": "inline"
+  },
+  // These will likely change based on toggles. Place new setting above.
+  "editor.codeLens": false,
   "cmake.showOptionsMovedNotification": false,
-  "editor.lineNumbers": "relative",
+  "editor.inlayHints.maximumLength": 0,
+  "editor.lineNumbers": "on",
   "zig.path": "zig",
   "zig.zls.path": "/home/dpb/.config/Code/User/globalStorage/ziglang.vscode-zig/zls_install/zls",
   "zig.initialSetupDone": true,
   // "editor.formatOnSaveMode": "modificationsIfAvailable",
-  "editor.formatOnType": false,
+  "editor.formatOnType": true,
   "hexeditor.columnWidth": 16,
   "hexeditor.showDecodedText": true,
   "hexeditor.defaultEndianness": "little",
   "hexeditor.inspectorType": "aside",
   "workbench.editor.labelFormat": "short",
   "editor.lightbulb.enabled": "off",
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[tailwindcss]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
   "cSpell.diagnosticLevel": "Hint",
+  "cSpell.useCustomDecorations": false,
   "editor.wordWrap": "off",
   "[markdown]": {
     "editor.wordWrap": "off"
   },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "[html]": {
+    "editor.wordWrap": "bounded",
+    "editor.defaultFormatter": "vscode.html-language-features"
   },
-  "files.autoSave": "afterDelay",
   "editor.minimap.showSlider": "always",
   "window.titleBarStyle": "custom",
-  "editor.occurrencesHighlight": "off",
+  "editor.occurrencesHighlight": "singleFile",
   "window.autoDetectColorScheme": true,
   "workbench.preferredLightColorTheme": "Little Moon (light)",
-  "diffEditor.renderSideBySide": false,
+  "workbench.preferredDarkColorTheme": "Little Moon (dark)",
   "diffEditor.hideUnchangedRegions.enabled": true,
-  "workbench.preferredDarkColorTheme": "Little Moon (dark)"
+  "godotTools.inlayHints.gdscript": true,
+  "todo-tree.tree.scanMode": "workspace only",
+  "window.customTitleBarVisibility": "auto",
+  "todo-tree.highlights.defaultHighlight": {
+    "background": "#384c52",
+    "opacity": 20
+  },
+  "todo-tree.highlights.highlightDelay": 1,
+  "rust-analyzer.testExplorer": true,
+  "rust-analyzer.runnables.extraEnv": {
+    "CARGO_TARGET_DIR": "target/rust-analyzer"
+  },
+  "[liquid]": {
+    "editor.defaultFormatter": "vscode.html-language-features",
+    "editor.formatOnSave": false
+  },
+  "claudeCode.initialPermissionMode": "acceptEdits",
+  "claudeCode.preferredLocation": "panel",
+  "editor.hover.delay": 400,
+  "terminal.integrated.commandsToSkipShell": [
+    "workbench.action.focusAboveGroup",
+    "workbench.action.focusBelowGroup",
+    "workbench.action.focusLeftGroup",
+    "workbench.action.focusRightGroup",
+  ],
+  "editor.minimap.enabled": false
 }
+
+//
+// "[plaintext]": {
+//   "editor.quickSuggestions": {
+//     "comments": "off",
+//     "strings": "off",
+//     "other": "off"
+//   }
+// },
+// "editor.quickSuggestions": {
+//     "other": "inline",
+//     "comments": "inline"
+// },
+// "editor.suggest.selectionMode": "never"
+
+// ## 'l l' ligature messing up my monospace
+// https://github.com/adobe-fonts/source-code-pro/issues/260
+// This seems to no longer be a problem. Not sure if VSCode changed how it
+// renders the Catalan language, or if Source Code Pro changed its handling of
+// that ligature.
+//     // The sequence 'l l' is a single-width ligature in Source Code
+//     // Pro for... reasons? It renders incorrectly, and causes
+//     // navigation and rendering to not really work. Disable it.
+//     "editor.fontLigatures": "'ccmp' off",
+
+// Don't exclude vcs meta-directories in search, etc.
+//     // "files.exclude": {
+//     //   "**/.git": false,
+//     //   "**/.hg": false,
+//     //   "**/.svn": false,
+//     //   "**/CVS": false
+//     // },
+
+// Color theme work;
+//     "workbench.colorCustomizations": {
+//       // "statusBarItem.compactHoverBackground": "#f00",
+//       // "editorSuggestWidgetStatus.foreground": "#f00",
+//       // "descriptionForeground": "#f00",
+//       // "panelSectionHeader.border": "#f00",
+//       // "commandCenter.debuggingBackground": "#0f0",
+//       // "sideBar.dropBackground": "#0f0"
+//       // "list.dropBetweenBackground": "#f00",
+//       // "list.dropBackground": "#f00",
+//       //"list.deemphasizedForeground": "#f00,
+//       // "diffEditor.move.border": "#f00",                  // The border color for text that got moved in the diff editor.
+//       // "diffEditor.moveActive.border": "#f00",            // The active border color for text that got moved in the diff editor.
+//       // "multiDiffEditor.headerBackground": "#f00",        // The background color of the diff editor's header
+//       // "multiDiffEditor.background": "#f00",              // The background color of the multi file diff editor
+//       // "multiDiffEditor.border": "#f00",
+//       // "editorOverviewRuler.rangeHighlightForeground": "#0f0d",
+//       // "statusBarItem.offlineBackground": "#6c1717",
+//       // "statusBarItem.offlineForeground": "#ffffff",
+//       // "statusBarItem.offlineHoverBackground": "#ffffff1f",
+//       // "statusBarItem.offlineHoverForeground": "#52666d",
+//       // "editorGhostText.background": "#f008",
+//       // "editorGhostText.border": "#0f08",
+//       // "editorGhostText.foreground": "#00f8",
+//       // ===========
+//     },

@@ -131,25 +131,57 @@
   /// Normalize Editor and Tab Group Movement
   /// =======================================
   // move focus
+  // NB. To get these to work with an in-editor terminal;
+  //     "terminal.integrated.commandsToSkipShell": [
+  //       "workbench.action.focusAboveGroup",
+  //       "workbench.action.focusBelowGroup",
+  //       "workbench.action.focusLeftGroup",
+  //       "workbench.action.focusRightGroup",
+  //     ],
   { "key": "ctrl+alt+up",             "command": "workbench.action.focusAboveGroup" },
   { "key": "ctrl+alt+down",           "command": "workbench.action.focusBelowGroup" },
   { "key": "ctrl+alt+left",           "command": "workbench.action.focusLeftGroup" },
   { "key": "ctrl+alt+right",          "command": "workbench.action.focusRightGroup" },
+
+  { "key": "ctrl+alt+up",             "command": "workbench.action.focusActiveEditorGroup",
+                                         "when": "panelFocus" },
+
   // move editor
-  { "key": "ctrl+k ctrl+up",          "command": "workbench.action.moveEditorToAboveGroup" },
-  { "key": "ctrl+k ctrl+down",        "command": "workbench.action.moveEditorToBelowGroup" },
-  { "key": "ctrl+k ctrl+left",        "command": "workbench.action.moveEditorToLeftGroup" },
-  { "key": "ctrl+k ctrl+right",       "command": "workbench.action.moveEditorToRightGroup" },
+  { "key": "ctrl+k ctrl+up",          "command": "workbench.action.moveEditorToAboveGroup",
+                                         "when": "!panelFocus" },
+  { "key": "ctrl+k ctrl+down",        "command": "workbench.action.moveEditorToBelowGroup",
+                                         "when": "!panelFocus" },
+  { "key": "ctrl+k ctrl+left",        "command": "workbench.action.moveEditorToLeftGroup",
+                                         "when": "!panelFocus" },
+  { "key": "ctrl+k ctrl+right",       "command": "workbench.action.moveEditorToRightGroup",
+                                         "when": "!panelFocus" },
+
+  { "key": "ctrl+k ctrl+up",          "command": "workbench.action.terminal.moveToEditor",
+                                         "when": "panelFocus && terminalFocus && terminal.canMove" },
+
   // split editor into
-  { "key": "ctrl+k ctrl+shift+up",    "command": "workbench.action.splitEditorToAboveGroup" },
-  { "key": "ctrl+k ctrl+shift+down",  "command": "workbench.action.splitEditorToBelowGroup" },
-  { "key": "ctrl+k ctrl+shift+left",  "command": "workbench.action.splitEditorToLeftGroup" },
-  { "key": "ctrl+k ctrl+shift+right", "command": "workbench.action.splitEditorToRightGroup" },
+  { "key": "ctrl+k ctrl+shift+up",    "command": "workbench.action.splitEditorToAboveGroup",
+                                         "when": "!panelFocus" },
+  { "key": "ctrl+k ctrl+shift+down",  "command": "workbench.action.splitEditorToBelowGroup",
+                                         "when": "!panelFocus" },
+  { "key": "ctrl+k ctrl+shift+left",  "command": "workbench.action.splitEditorToLeftGroup",
+                                         "when": "!panelFocus" },
+  { "key": "ctrl+k ctrl+shift+right", "command": "workbench.action.splitEditorToRightGroup",
+                                         "when": "!panelFocus" },
+
+  { "key": "ctrl+k ctrl+shift+up",    "command": "workbench.action.terminal.moveToEditor",
+                                         "when": "terminalFocus && terminal.canMove || terminalFocus && terminalProcessSupported" },
+
   // move editor group
-  { "key": "ctrl+k up",               "command": "workbench.action.moveActiveEditorGroupUp" },
-  { "key": "ctrl+k down",             "command": "workbench.action.moveActiveEditorGroupDown" },
-  { "key": "ctrl+k left",             "command": "workbench.action.moveActiveEditorGroupLeft" },
-  { "key": "ctrl+k right",            "command": "workbench.action.moveActiveEditorGroupRight" },
+  { "key": "ctrl+k up",               "command": "workbench.action.moveActiveEditorGroupUp",
+                                         "when": "!panelFocus" },
+  { "key": "ctrl+k down",             "command": "workbench.action.moveActiveEditorGroupDown",
+                                         "when": "!panelFocus" },
+  { "key": "ctrl+k left",             "command": "workbench.action.moveActiveEditorGroupLeft",
+                                         "when": "!panelFocus" },
+  { "key": "ctrl+k right",            "command": "workbench.action.moveActiveEditorGroupRight",
+                                         "when": "!panelFocus" },
+
   // split into new group w/ default behavior
   { "key": "ctrl+k ctrl+\\",          "command": "workbench.action.splitEditor" },
   { "key": "ctrl+k ctrl+shift+\\",    "command": "workbench.action.splitEditorOrthogonal" },
@@ -195,6 +227,9 @@
   /// ============================
   { "key": "ctrl+shift+e", "command": "workbench.action.showAllSymbols" },
   { "key": "ctrl+shift+e", "command": "-workbench.view.explorer" },
+
+  { "key": "ctrl+shift+0", "command": "workbench.view.explorer",
+                              "when": "viewContainer.workbench.view.explorer.enabled" },
 
 
   /// Rebind Test commands from `ctrl+;` to `alt+;`
@@ -520,6 +555,8 @@
   // Unbinds
   { "key": "ctrl+up",   "command": "-scrollLineUp" },
   { "key": "ctrl+down", "command": "-scrollLineDown" },
+  { "key": "alt+k",     "command": "--vscode-relative-motion.up" },
+  { "key": "alt+j",     "command": "--vscode-relative-motion.down" },
 
 
   /// Keyboard window motions
@@ -819,6 +856,11 @@
   { "key": "ctrl+k ctrl+b", "command": "-editor.action.setSelectionAnchor" },
 
 
+  /// Overtype
+  /// ========
+  { "key": "ctrl+shift+i", "command": "editor.action.toggleOvertypeInsertMode" },
+
+
   /// Toggle Minimap
   /// ==============
   { "key": "ctrl+m", "command": "editor.action.toggleMinimap" },
@@ -1105,6 +1147,29 @@
                                "when": "editorTextFocus && foldingEnabled" },
 
 
+  /// LLM Assistants
+  /// ==============
+  { "key": "alt+k alt+i",  "command": "claude-vscode.editor.open",
+                              "when": "!config.claudeCode.useTerminal" },
+  { "key": "alt+k alt+i",  "command": "claude-vscode.terminal.open.keyboard",
+                              "when": "config.claudeCode.useTerminal" },
+  { "key": "alt+k alt+i",  "command": "claude-vscode.focus",
+                              "when": "editorTextFocus && !config.claudeCode.useTerminal" },
+  { "key": "alt+k alt+k",  "command": "claude-code.insertAtMentioned",
+                              "when": "editorTextFocus" },
+  { "key": "alt+k k",      "command": "claude-vscode.insertAtMention",
+                              "when": "editorTextFocus" },
+  { "key": "alt+k escape", "command": "claude-vscode.blur",
+                              "when": "!config.claudeCode.useTerminal && !editorTextFocus" },
+  // Unbinds
+  { "key": "ctrl+escape",       "command": "-claude-vscode.focus", },
+  { "key": "ctrl+shift+escape", "command": "-claude-vscode.editor.open", },
+  { "key": "ctrl+escape",       "command": "-claude-vscode.terminal.open.keyboard", },
+  { "key": "ctrl+escape",       "command": "-claude-vscode.blur", },
+  { "key": "ctrl+alt+k",        "command": "-claude-code.insertAtMentioned", },
+  { "key": "alt+k",             "command": "-claude-vscode.insertAtMention", },
+
+
   /// Developer tool shit
   /// ===================
   { "key": "ctrl+alt+shift+0",        "command": "workbench.action.toggleDevTools" },
@@ -1117,5 +1182,5 @@
 
 
   // Placeholder to make GUI edits easier to handle
-  {}
+  {},
 ]

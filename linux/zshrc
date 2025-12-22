@@ -87,14 +87,15 @@ plugins=(
     git-lfs
     isodate
     npm
-    nvm
+#    nvm
     qrcode
     rust
     sudo
     taskwarrior
     zig-shell-completions
 )
-zstyle ':omz:plugins:nvm' lazy yes
+# zstyle ':omz:plugins:nvm' lazy yes
+# zstyle ':omz:plugins:nvm' autoload yes
 ZOXIDE_CMD_OVERRIDE="cd"
 
 ## Early definition of `add_to_path`
@@ -246,12 +247,47 @@ export DISCORD_OAUTH_SECRET_PATH="${HOME}/li/discord-oauth"
 # eval "$(pyenv init --path)"
 
 
-# # Set up NVM
-# # But actually don't. Let the `nvm` plugin handle it.
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-# [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# Set up NVM
+# But actually don't. Let the `nvm` plugin handle it.
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+# Lift the nvm autoload function out of the nvm plugin
+function _omz_nvm_setup_autoload {
+  # if ! zstyle -t ':omz:plugins:nvm' autoload; then
+  #   unfunction _omz_nvm_setup_autoload
+  #   return
+  # fi
+
+  # Autoload nvm when finding a .nvmrc file in the current directory
+  # Adapted from: https://github.com/nvm-sh/nvm#zsh
+  function load-nvmrc {
+    local nvmrc_path="$(nvm_find_nvmrc)"
+    local nvm_silent=""
+    # zstyle -t ':omz:plugins:nvm' silent-autoload && nvm_silent="--silent"
+
+    if [[ -n "$nvmrc_path" ]]; then
+      local nvmrc_node_version=$(nvm version $(command cat "$nvmrc_path" | tr -dc '[:print:]'))
+
+      if [[ "$nvmrc_node_version" = "N/A" ]]; then
+        nvm install
+      elif [[ "$nvmrc_node_version" != "$(nvm version)" ]]; then
+        nvm use $nvm_silent
+      fi
+    elif [[ -n "$(PWD=$OLDPWD nvm_find_nvmrc)" ]] && [[ "$(nvm version)" != "$(nvm version default)" ]]; then
+      [[ -z $nvm_silent ]] && echo "Reverting to nvm default version"
+
+      nvm use default $nvm_silent
+    fi
+  }
+
+  autoload -U add-zsh-hook
+  add-zsh-hook chpwd load-nvmrc
+
+  load-nvmrc
+  unfunction _omz_nvm_setup_autoload
+}
 
 # Set up pnpm
 export PNPM_HOME="/home/dpb/.local/share/pnpm"
@@ -353,8 +389,6 @@ alias _src_li_rel="export PATH=\"${PATH}:${HOME}/li/repo/target/release\""
 
 alias _ls_path="echo $PATH | tr ':' '\n'"
 
-alias xc="x fmt --check"
-
 
 # The usual suspects
 alias rf="rm -rf"
@@ -364,6 +398,9 @@ alias l1="ls -1"
 alias cpr="cp -r"
 
 alias xcc="xclip -r -selection clipboard"
+
+# Rust!
+alias b="bacon"
 
 # Press F1 to open a relative file path in vscode
 bindkey -s '^[OP' 'code \"$(pwd)/$(xclip -o)\"\n'
@@ -406,7 +443,9 @@ function pyc {
 function pp_epoch {
     python3 <<EOF
 import time;
-if len("$1") == 13:
+if len("$1") == 16:
+    print(time.strftime("%Y/%m/%d %H:%M:%S.{} %Z".format($1%1000000), time.gmtime($1/1000000)))
+elif len("$1") == 13:
     print(time.strftime("%Y/%m/%d %H:%M:%S.{} %Z".format($1%1000), time.gmtime($1/1000)))
 else:
     print(time.strftime("%Y/%m/%d %H:%M:%S %Z", time.gmtime($1)))
@@ -415,7 +454,9 @@ EOF
 function pp_local_epoch {
     python3 <<EOF
 import time;
-if len("$1") == 13:
+if len("$1") == 16:
+    print(time.strftime("%Y/%m/%d %H:%M:%S.{} %Z".format($1%1000000), time.localtime($1/1000000)))
+elif len("$1") == 13:
     print(time.strftime("%Y/%m/%d %H:%M:%S.{} %Z".format($1%1000), time.localtime($1/1000)))
 else:
     print(time.strftime("%Y/%m/%d %H:%M:%S %Z", time.localtime($1)))
@@ -903,3 +944,24 @@ function inspect_rustc_warning_group {
             sed 's/, / -e /g' \
         )
 }
+
+function audio_output_switcher {
+    CARD="alsa_card.pci-0000_0b_00.1"
+    CURRENT_PROFILE=$(pactl list cards | rg "Active Profile: output:hdmi" | cut -d' ' -f3)
+
+    if [ "$CURRENT_PROFILE" = "output:hdmi-stereo-extra1" ]; then
+        pactl set-card-profile "$CARD" output:hdmi-stereo
+        echo "Switched to speakers"
+    else
+        pactl set-card-profile "$CARD" output:hdmi-stereo-extra1
+        echo "Switched to headphones"
+    fi
+}
+alias a="audio_output_switcher"
+
+
+alias gd="/home/dpb/li/ld58/engine/linux/Godot_v4.5-stable_linux.x86_64"
+
+
+# Run some additional setup AFTER THE REST OF THIS FILE HAS EXECUTED
+_omz_nvm_setup_autoload
