@@ -1009,6 +1009,22 @@
   },
 
 
+  /// Mouse Hovercard Toggle
+  /// ======================
+  /// Requires the 'Settings Cycler' extensions:
+  ///     code --install-extension hoovercj.vscode-settings-cycler
+  { "key": "alt+d", "command": "settings.cycle",
+    "args": {
+      "id": "toggle_editor_hover",
+      "overrideWorkspaceSettings": false,
+      "values": [
+        { "editor.hover.enabled": true },
+        { "editor.hover.enabled": false }
+      ]
+    }
+  },
+
+
   /// Multiple Clipboards Overrides
   /// =============================
   /// Requires the 'Multiple clipboards for VSCode' extension
