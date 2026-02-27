@@ -1,0 +1,31 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:		happy-guake
+# Required-Start:
+# Required-Stop:
+# Should-Start:
+# Should-Stop:
+# Default-Start:	S
+# Default-Stop:
+# Short-Description:	fixup the Xcursor.size for guake
+### END INIT INFO
+
+set -e
+
+case "${1}" in
+	start)
+		echo "Xcursor.size: 24" | xrdb -merge
+		;;
+
+	stop|restart|force-reload)
+
+		;;
+
+	*)
+		echo "Usage: ${0} {start|stop|restart|force-reload}" >&2
+		exit 1
+		;;
+esac
+
+exit 0

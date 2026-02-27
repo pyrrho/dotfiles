@@ -1,0 +1,12 @@
+[Unit]
+Description=Fix Guake Cursor Size via xrdb
+PartOf=graphical-session.target
+Before=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/xrdb -merge /home/dpb/.Xresources
+
+[Install]
+WantedBy=graphical-session.target
+
