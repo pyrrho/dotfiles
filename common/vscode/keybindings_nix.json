@@ -1153,7 +1153,7 @@
                               "when": "!config.claudeCode.useTerminal" },
   { "key": "alt+k alt+i",  "command": "claude-vscode.terminal.open.keyboard",
                               "when": "config.claudeCode.useTerminal" },
-  { "key": "alt+k alt+i",  "command": "claude-vscode.focus",
+  { "key": "alt+k i",      "command": "claude-vscode.focus",
                               "when": "editorTextFocus && !config.claudeCode.useTerminal" },
   { "key": "alt+k alt+k",  "command": "claude-code.insertAtMentioned",
                               "when": "editorTextFocus" },
@@ -1179,6 +1179,13 @@
   { "key": "ctrl+shift+i", "command": "-workbench.action.toggleDevTools" },
   { "key": "ctrl+shift+c", "command": "-multiclip.copyMerge" },
   { "key": "ctrl+shift+c", "command": "-workbench.action.terminal.openNativeConsole" },
+
+
+  /// Send newline on shift+enter in terminals
+  /// Makes amp work more good
+  { "key": "shift+enter",  "command": "workbench.action.terminal.sendSequence",
+                              "args": { "text": "\u001b\r" },
+                              "when": "terminalFocus" },
 
 
   // Placeholder to make GUI edits easier to handle
