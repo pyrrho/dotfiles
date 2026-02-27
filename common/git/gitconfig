@@ -24,6 +24,7 @@
 	st = status --short
 	sta = status --short --ignored --branch
 	stat = show --stat
+	sw = switch
 
 	# Difference between the stage and HEAD (rather than the working dir and HEAD)
 	siff = diff --staged
@@ -59,14 +60,18 @@
 	fpurge = ! git purgeable | xargs git branch -D
 	rpop = ! git rpo && git purge
 	fpop = ! git rpo && git fpurge
+	fp = fpurge
+
+	rtm = ! git fetch && git checkout origin/main && git fp
 
 	# The only way(s) to look at git logs.
-	lg = log --graph --abbrev-commit --date=iso --decorate --format=format:'%C(yellow)%h%C(reset) %C(bold red)<%an>%C(reset) - %s %C(green)(%ad)%C(reset)%C(yellow)%d%C(reset)'
-	lga = log --graph --all --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) %C(bold red)<%an>%C(reset) - %s %C(green)(%ad)%C(reset)%C(yellow)%d%C(reset)'
-	lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s'
-	lga2 = log --graph --all --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s'
-	lg2s = log --name-status --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s'
-	lga2s = log --name-status --graph --all --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s'
+	lg = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) %C(bold red)<%an>%C(reset) - %s %C(green)(%ad)%C(reset)%C(yellow)%d%C(reset)' --exclude='refs/remotes/origin/sapling-pr-archive-*'
+	lga = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) %C(bold red)<%an>%C(reset) - %s %C(green)(%ad)%C(reset)%C(yellow)%d%C(reset)' --exclude='refs/remotes/origin/sapling-pr-archive-*' --all
+	lgaa = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) %C(bold red)<%an>%C(reset) - %s %C(green)(%ad)%C(reset)%C(yellow)%d%C(reset)' --all
+	lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s' --exclude='refs/remotes/origin/sapling-pr-archive-*'
+	lga2 = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s' --exclude='refs/remotes/origin/sapling-pr-archive-*' --all
+	lg2s = log --name-status --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s' --exclude='refs/remotes/origin/sapling-pr-archive-*'
+	lga2s = log --name-status --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(blue)%aD%C(reset) %C(green)(%ar)%C(reset)%C(yellow)%d%C(reset)%n''          %C(bold red)<%an>%C(reset) %s' --exclude='refs/remotes/origin/sapling-pr-archive-*' --all
 
 	# VERY DANGEROUS; clears _all_ changes and untracked files in the given directory.
 	# Can accept a path specify on, but that path is RELATIVE TO THE ROOT OF THE REPO, NOT `pwd`.
@@ -97,6 +102,9 @@
 [core]
 	editor = vim
 	pager = less -F -X
+
+[rebase]
+	updateRefs = true
 
 [rerere]
 	# https://git-scm.com/book/en/v2/Git-Tools-Rerere
