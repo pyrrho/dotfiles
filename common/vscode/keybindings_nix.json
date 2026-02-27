@@ -555,8 +555,8 @@
   // Unbinds
   { "key": "ctrl+up",   "command": "-scrollLineUp" },
   { "key": "ctrl+down", "command": "-scrollLineDown" },
-  { "key": "alt+k",     "command": "--vscode-relative-motion.up" },
-  { "key": "alt+j",     "command": "--vscode-relative-motion.down" },
+  { "key": "alt+k",     "command": "-vscode-relative-motion.up" },
+  { "key": "alt+j",     "command": "-vscode-relative-motion.down" },
 
 
   /// Keyboard window motions
