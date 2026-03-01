@@ -442,13 +442,14 @@
   { "key": "shift+cmd+l",  "command": "extension.splitIntoLines",
                               "when": "isMac && editorTextFocus"},
 
-  { "key": "ctrl+j",       "command": "rust-analyzer.joinLines",
+  { "key": "cmd+j",        "command": "rust-analyzer.joinLines",
                               "when": "textInputFocus && !editorReadonly && editorLangId == 'rust'" },
-  { "key": "ctrl+j",       "command": "editor.action.joinLines",
+  { "key": "cmd+j",        "command": "editor.action.joinLines",
                               "when": "textInputFocus && !editorReadonly && editorLangId != 'rust'" },
   /// Unbinds
   /// -------
   { "key": "ctrl+j",       "command": "-workbench.action.togglePanel" },
+  { "key": "cmd+j",        "command": "-workbench.action.togglePanel" },
   { "key": "ctrl+shift+j", "command": "-rust-analyzer.joinLines" },
   { "key": "ctrl+t",       "command": "-editor.action.transposeLetters" },
   { "key": "shift+cmd+l",  "command": "-editor.action.selectHighlights" },
@@ -547,6 +548,37 @@
           "scrollRight", "scrollRight", "scrollRight", "scrollRight", "scrollRight"]
     }},
 
+  { "key": "ctrl+cmd+w",     "command": "editorScroll",
+                                "when": "true",
+    "args": {
+      "to": "up",
+      "value": 4,
+      "by": "line",
+      "revealCursor": false
+    }},
+  { "key": "ctrl+cmd+a",     "command": "runCommands",
+                                "when": "true",
+    "args": {
+      "commands": [
+          "scrollLeft", "scrollLeft", "scrollLeft", "scrollLeft", "scrollLeft",
+          "scrollLeft", "scrollLeft", "scrollLeft", "scrollLeft", "scrollLeft"]
+    }},
+  { "key": "ctrl+cmd+s",     "command": "editorScroll",
+                                "when": "true",
+    "args": {
+      "to": "down",
+      "value": 4,
+      "by": "line",
+      "revealCursor": false
+    }},
+  { "key": "ctrl+cmd+d",     "command": "runCommands",
+                                "when": "true",
+    "args": {
+      "commands": [
+          "scrollRight", "scrollRight", "scrollRight", "scrollRight", "scrollRight",
+          "scrollRight", "scrollRight", "scrollRight", "scrollRight", "scrollRight"]
+    }},
+
 
   /// Modify Find Widget (ctrl+f) behavior
   /// ====================================
@@ -623,12 +655,12 @@
                                              "workbench.action.focusActiveEditorGroup"
                                            ] } },
   // 4.
-  { "key": "ctrl+g",                "when": "editorFocus && findWidgetVisible && !findInputFocussed",
+  { "key": "cmd+g",                 "when": "editorFocus && findWidgetVisible && !findInputFocussed",
                                  "command": "editor.action.nextMatchFindAction" },
-  { "key": "ctrl+shift+g",          "when": "editorFocus && findWidgetVisible && !findInputFocussed",
+  { "key": "cmd+shift+g",           "when": "editorFocus && findWidgetVisible && !findInputFocussed",
                                  "command": "editor.action.previousMatchFindAction" },
   // 4. [old]
-  { "key": "ctrl+g",               "when": "false && editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
+  { "key": "cmd+g",                "when": "false && editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
                                 "command": "editor.action.nextMatchFindAction" },
   { "key": "shift+cmd+g",          "when": "false && editorFocus && findWidgetVisible && !findInputFocussed && !editorHasSelection",
                                 "command": "editor.action.previousMatchFindAction" },
