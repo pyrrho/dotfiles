@@ -53,6 +53,7 @@
   "gitlens.defaultDateFormat": "YYYY MMMM D, H:mm",
   "gitlens.defaultDateShortFormat": "YYYY MMM D",
   "gitlens.codeLens.enabled": false,
+  "gitlens.rebaseEditor.openOnPausedRebase": false,
   "git.detectWorktrees": true,
   "clipring.selectTextAfterPasteFromMenu": false,
   "diffEditor.ignoreTrimWhitespace": false,
