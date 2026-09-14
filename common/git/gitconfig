@@ -55,9 +55,9 @@
 	# - `git fpop` combines the two, aggressively (see `branch -D`).
 	rp = remote prune
 	rpo = remote prune origin
-	purgeable = ! git branch -vv | grep ': gone]' | grep -v \"*\" | awk '{ print $1 }'
-	purge = ! git purgeable | xargs git branch -d
-	fpurge = ! git purgeable | xargs git branch -D
+	purgeable = ! git branch -vv | grep ': gone]' | grep -v '^[*+]' | awk '{ print $1 }'
+	purge = ! git purgeable | xargs -r git branch -d
+	fpurge = ! git purgeable | xargs -r git branch -D
 	rpop = ! git rpo && git purge
 	fpop = ! git rpo && git fpurge
 	fp = fpurge
