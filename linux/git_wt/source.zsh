@@ -8,10 +8,9 @@
 # - `gwt` -- `[g]it [w]orktree [t]ake`
 #   `cd` to the worktree with the given directory name. An `@branch` argument
 #   instead selects the worktree containing that branch, creating it if needed.
-#   NB. Tab completion works with this command. I haven't figured out how to
-#       group completions, but existing worktrees will be sorted before
-#       unlinked branches that could be targeted for creation. And unlinked
-#       branches will be sorted in order of most recently updated.
+#   Tab completion lists worktree directories, including the main checkout,
+#   before unlinked branches ordered by most recent update. Type `@` to complete
+#   attached branches instead of their worktree directories.
 # - `gwrm` -- `[g]it [w]orktree [r]e[m]ove`
 #   Delete the worktree with the given directory name, or the worktree
 #   containing an `@branch`. `-b` also deletes its attached branch, and `-f`
@@ -127,16 +126,29 @@ function gwt {
 function _gwt_completion {
     __gw_require_repo >/dev/null || return $?
 
-    local -a options
-    options=("${(@f)$(__gw_worktree_completion_options)}")
+    local -a worktrees branches
+    worktrees=("${(@f)$(__gw_worktree_completion_options "${PREFIX}")}")
+
+    local -A linked
+    local option
+    for option in "${(@f)$(__gw_worktree_completion_options @)}"; do
+        linked[${option%%:*}]=1
+    done
 
     local branch
     while IFS= read -r branch; do
-        options+=("@${branch}:branch")
+        if (( ! ${+linked[@${branch}]} )); then
+            branches+=("@${branch}:branch")
+        fi
     done < <(__gw_list_branches)
 
-    _describe -V 'arguments' options
+    local ret=1
+    _describe -t worktrees -V 'worktrees' worktrees && ret=0
+    _describe -t branches -V 'unlinked branches' branches && ret=0
+    return $ret
 }
+zstyle ':completion:*:*:gwt:*' group-name ''
+zstyle ':completion:*:*:gwt:*' group-order worktrees branches
 compdef _gwt_completion gwt
 
 unfunction gwrmb gwrf 2>/dev/null || true
@@ -220,7 +232,7 @@ function _gwrm_completion {
 
     if [ "${state}" = worktree ]; then
         local -a worktrees
-        worktrees=("${(@f)$(__gw_worktree_completion_options)}")
+        worktrees=("${(@f)$(__gw_worktree_completion_options "${PREFIX}")}")
         _describe -V 'worktrees' worktrees
     fi
 }
@@ -311,7 +323,13 @@ function __gw_find_worktree {
         branch=${selector#@}
     else
         local wt_root=$(__gw_get_worktrees_root) || return $?
-        expected_path="${wt_root}/${selector}"
+        local main_repo_path=$(dirname \
+            "$(realpath "$(git rev-parse --git-common-dir)")")
+        if [[ "${selector}" = "${main_repo_path:t}" ]]; then
+            expected_path=${main_repo_path}
+        else
+            expected_path="${wt_root}/${selector}"
+        fi
     fi
 
     local line
@@ -365,6 +383,8 @@ function __gw_leave_worktree {
 
 function __gw_worktree_completion_options {
     local wt_root=$(__gw_get_worktrees_root) || return $?
+    local main_repo_path=$(dirname \
+        "$(realpath "$(git rev-parse --git-common-dir)")")
     local line
     local wt_path
     local wt_branch
@@ -379,11 +399,14 @@ function __gw_worktree_completion_options {
                 wt_branch=${line#branch refs/heads/}
                 ;;
             "")
-                if [[ "${wt_path}" = "${wt_root}"/* ]]; then
+                if [[ "${1:-}" = @* ]]; then
+                    if [ -n "${wt_branch}" ]; then
+                        echo "@${wt_branch}:${wt_path}"
+                    fi
+                elif [[ "${wt_path}" = "${main_repo_path}" ]]; then
+                    echo "${main_repo_path:t}:${wt_path}"
+                elif [[ "${wt_path}" = "${wt_root}"/* ]]; then
                     echo "${wt_path#${wt_root}/}:${wt_path}"
-                fi
-                if [ -n "${wt_branch}" ]; then
-                    echo "@${wt_branch}:${wt_path}"
                 fi
                 ;;
         esac
