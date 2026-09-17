@@ -3,41 +3,27 @@
 #
 # tl;dr - a few commands for making the `git worktree` command set more fun.
 #
-# - `gwl` -- `[g]it [w]orktree [l]ist`
+# - `gwl`  -- `[g]it [w]orktree [l]ist`
 #   List active worktrees
-# - `gwt` -- `[g]it [w]orktree [t]ake`
-#   `cd` to the worktree with the given directory name. An `@branch` argument
-#   instead selects the worktree containing that branch, creating it if needed.
-#   Tab completion lists worktrees, unlinked local branches, then remote
-#   branches. Each section is newest commit first, by committer date.
-#   Type `@` to complete attached branches instead of worktree directories.
-#   Remote selectors include the remote, e.g. `@origin/topic`; Git creates a
-#   detached worktree at that remote-tracking ref.
+# - `gwt`  -- `[g]it [w]orktree [t]ake`
+#   Switch to an existing worktree with the given name or that is on the given
+#   branch, or create a new worktree for the given branch.
 # - `gwrm` -- `[g]it [w]orktree [r]e[m]ove`
-#   Delete the worktree with the given directory name, or the worktree
-#   containing an `@branch`. `-b` also deletes its attached branch, and `-f`
-#   forces removal.
-#   NB. Tab completion works with this command.
-#   NB. idk what happens if you try to delete the main worktree. Worth trying?
-# - `gwn` -- `[g]it [w]orktree [n]ew`
-#   `gwn name [start-point]` creates a detached worktree. `gwn @branch
-#   [start-point [name]]` creates a new branch and worktree, using the branch
-#   name as the directory name when no name is given.
-#
-#
+#   Delete the given worktree, optionally deleting the relevant branch.
+# - `gwn`  -- `[g]it [w]orktree [n]ew`
+#   Create a new worktree, either in a detached head state or on a new branch.
+
+
 # A NOTE ON DIRECTORY LAYOUTS
-# Because I never want to think about where my worktrees live, `gwt` can be used
-# to cd into existing worktrees by directory or branch, or to create a worktree
-# for an existing branch. `gwn` creates detached worktrees and new branches.
 #
 # Worktrees managed by these commands are created in a sister directory of the
-# main repository: `.<repo>_worktrees/<name>`, where <repo> is the base directory
-# of the main repository and <name> is the supplied directory or branch name.
-# See A NOTE ON FINDING THE WORKTREE ROOT to see how to consistently find the
-# worktree root.
-#
-#
+# main repository: `.<repo>_worktrees/<name>`, where <repo> is the base
+# directory of the main repository and <name> is the supplied directory or
+# branch name. See A NOTE ON FINDING THE WORKTREE ROOT to see how to
+# consistently find the worktree root.
+
 # A NOTE ON FINDING THE WORKTREE ROOT
+#
 # Executing `git rev-parse --git-common-dir` returns one of two things;
 # - When executed in the main worktree (a `git clone`d repo) it will return a
 #   relative path to the .git directory of the current repository.
@@ -48,7 +34,17 @@
 # absolute path. Then we can nest a pair of `dirname` calls to strip the .git
 # directory and the main worktree directory. And then we have a root.
 
-# Unset git worktree ailases porvided by the ohmyzsh git plugin
+
+# TODOs:
+# - Make sure `gwrm -b` removes branches when targeting directories
+# - `gwt` currently doesn't scan for detached heads; calling `gwt @abc123`
+#   multiple times results in errors instead of reuse.
+# - Update `gwrm` s.t. it deletes the root when the last worktree is deleted.
+# - `gwt @name` could optionally accept a `[dir-name]`.
+# - `gwrm` could take multiple branches
+
+
+# Unset git worktree aliases provided by the ohmyzsh git plugin
 unalias gwt
 unalias gwta
 unalias gwtls
@@ -91,16 +87,38 @@ function __gw_validate_directory_name {
     fi
 }
 
+# [g]it [w]orktree [l]ist
+# List extant worktrees. This is an alias for `git worktree list`.
+#
+# usage: gwl
 function gwl {
     __gw_require_repo || return $?
     git worktree list
 }
 
-alias gcd=gwt
+# [g]it [w]orktree [t]ake
+# `cd` to, or take, the targeted worktree.
+#
+# usage: gwt <[@]name>
+#
+# When `name` isn't `@` prefixed it is treated a directory target. When it is
+# `@` prefixed, it is treated as a git target; typically this will be a branch
+# or tag, but may be anything that git can resolve to a commit.
+#
+# If `name` is a directory target that matches a directory in the worktree root,
+# that directory will be taken. Otherwise, an error will be returned.
+#
+# If `@name` is a git target, behavior varies based on repository state:
+# - If the given target is checked out by an existing worktree, that worktree
+#   will be taken.
+# - If the given target is not checked out by an existing worktree, a new
+#   worktree named for the target will be created and taken at the given target.
+# - If the given target doesn't identify a commit in the current git repository,
+#   an error will be returned.
 function gwt {
     __gw_require_repo || return $?
     if [ $# -ne 1 ]; then
-        echo "ERROR: \`gwt\` requires exactly 1 argument"
+        echo "ERROR: usage: gwt <[@]NAME>"
         return 1
     fi
     __gw_validate_selector "$1" || return $?
@@ -124,6 +142,7 @@ function gwt {
         cd -- "${wt_path}"
     fi
 }
+alias gcd=gwt
 
 function _gwt_completion {
     __gw_require_repo >/dev/null || return $?
@@ -161,6 +180,15 @@ compdef _gwt_completion gwt
 unfunction gwrmb gwrf 2>/dev/null || true
 compdef -d gwrmb gwrf 2>/dev/null || true
 
+
+# [g]it [w]orktree [r]e[m]ove
+# Remove the targeted worktree.
+#
+# usage: gwrm [-b] [-f] <[@]name>
+#
+# OPTIONS
+#   -b    Delete the branch associated with the given worktree
+#   -f    Force the deletion; ignore uncommitted changes
 function gwrm {
     __gw_require_repo || return $?
 
@@ -178,7 +206,7 @@ function gwrm {
                 ;;
             \?)
                 echo "ERROR: unknown option '-${OPTARG}'"
-                echo "ERROR: usage: gwrm [-b] [-f] <directory|@branch>"
+                echo "ERROR: usage: gwrm [-b] [-f] <[@]name>"
                 return 1
                 ;;
         esac
@@ -186,7 +214,7 @@ function gwrm {
     shift $((OPTIND - 1))
 
     if [ $# -ne 1 ]; then
-        echo "ERROR: usage: gwrm [-b] [-f] <directory|@branch>"
+        echo "ERROR: usage: gwrm [-b] [-f] <[@]name>"
         return 1
     fi
     __gw_validate_selector "$1" || return $?
@@ -245,11 +273,28 @@ function _gwrm_completion {
 }
 compdef _gwrm_completion gwrm
 
+
+# [g]it [w]orktree [n]ew
+# Create a new worktree.
+#
+# usage: gwn <[@]name> [start-point [dir-name]]
+#
+# When `name` isn't `@` prefixed it is treated a directory target. When it is
+# `@` prefixed, it is treated as a git target; typically this will be a branch
+# or tag, but may be anything that git can resolve to a commit.
+#
+# If `name` is a directory target, a new worktree with the given `name` will be
+# created. If `start-point` is provided, the worktree will be initialized at the
+# given commit-ish, otherwise the worktree will be initialized in a detached
+# HEAD at the commit of the current directory. `dir-name` is not valid when
+# `name` is a directory target.
+#
+# TODO: The `@` stuff here is actually... bad.
 function gwn {
     __gw_require_repo || return $?
     if [ $# -lt 1 ] || [ $# -gt 3 ]; then
         echo "ERROR: usage: gwn name [start-point]"
-        echo "             gwn @branch [start-point [name]]"
+        echo "              gwn @branch [start-point [name]]"
         return 1
     fi
     __gw_validate_selector "$1" || return $?
