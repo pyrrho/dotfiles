@@ -8,9 +8,11 @@
 # - `gwt` -- `[g]it [w]orktree [t]ake`
 #   `cd` to the worktree with the given directory name. An `@branch` argument
 #   instead selects the worktree containing that branch, creating it if needed.
-#   Tab completion lists worktree directories, including the main checkout,
-#   before unlinked branches ordered by most recent update. Type `@` to complete
-#   attached branches instead of their worktree directories.
+#   Tab completion lists worktrees, unlinked local branches, then remote
+#   branches. Each section is newest commit first, by committer date.
+#   Type `@` to complete attached branches instead of worktree directories.
+#   Remote selectors include the remote, e.g. `@origin/topic`; Git creates a
+#   detached worktree at that remote-tracking ref.
 # - `gwrm` -- `[g]it [w]orktree [r]e[m]ove`
 #   Delete the worktree with the given directory name, or the worktree
 #   containing an `@branch`. `-b` also deletes its attached branch, and `-f`
@@ -126,29 +128,34 @@ function gwt {
 function _gwt_completion {
     __gw_require_repo >/dev/null || return $?
 
-    local -a worktrees branches
+    local -a worktrees local_branches remote_branches
     worktrees=("${(@f)$(__gw_worktree_completion_options "${PREFIX}")}")
 
-    local -A linked
-    local option
-    for option in "${(@f)$(__gw_worktree_completion_options @)}"; do
-        linked[${option%%:*}]=1
-    done
-
-    local branch
-    while IFS= read -r branch; do
-        if (( ! ${+linked[@${branch}]} )); then
-            branches+=("@${branch}:branch")
-        fi
-    done < <(__gw_list_branches)
+    local ref symref wt_path
+    while IFS='|' read -r ref symref wt_path; do
+        [[ -n "${symref}" ]] && continue
+        case "${ref}" in
+            refs/heads/*)
+                [[ -n "${wt_path}" ]] && continue
+                local_branches+=("@${ref#refs/heads/}")
+                ;;
+            refs/remotes/*)
+                remote_branches+=("@${ref#refs/remotes/}")
+                ;;
+        esac
+    done < <(git for-each-ref --sort=-committerdate \
+        --format='%(refname)|%(symref)|%(worktreepath)' refs/heads refs/remotes)
 
     local ret=1
     _describe -t worktrees -V 'worktrees' worktrees && ret=0
-    _describe -t branches -V 'unlinked branches' branches && ret=0
+    _describe -t local-branches -V 'local branches' local_branches && ret=0
+    _describe -t remote-branches -V 'remote branches' remote_branches && ret=0
     return $ret
 }
 zstyle ':completion:*:*:gwt:*' group-name ''
-zstyle ':completion:*:*:gwt:*' group-order worktrees branches
+zstyle ':completion:*:*:gwt:*' group-order worktrees local-branches remote-branches
+zstyle ':completion:*:*:gwt:*' list-grouped false
+zstyle ':completion:*:*:gwt:*:descriptions' format '----- %d'
 compdef _gwt_completion gwt
 
 unfunction gwrmb gwrf 2>/dev/null || true
@@ -388,12 +395,17 @@ function __gw_worktree_completion_options {
     local line
     local wt_path
     local wt_branch
+    local commit_date
 
     while IFS= read -r line; do
         case "${line}" in
             worktree\ *)
                 wt_path=${line#worktree }
                 wt_branch=""
+                commit_date=0
+                ;;
+            HEAD\ *)
+                commit_date=$(git show -s --format=%ct "${line#HEAD }" 2>/dev/null) || commit_date=0
                 ;;
             branch\ refs/heads/*)
                 wt_branch=${line#branch refs/heads/}
@@ -401,16 +413,29 @@ function __gw_worktree_completion_options {
             "")
                 if [[ "${1:-}" = @* ]]; then
                     if [ -n "${wt_branch}" ]; then
-                        echo "@${wt_branch}:${wt_path}"
+                        printf '%s\t%s\t%s\t%s\n' "$commit_date" "@${wt_branch}" "" "$wt_path"
                     fi
                 elif [[ "${wt_path}" = "${main_repo_path}" ]]; then
-                    echo "${main_repo_path:t}:${wt_path}"
+                    printf '%s\t%s\t%s\t%s\n' "$commit_date" "${main_repo_path:t}" "[${wt_branch:-"detached HEAD"}]" "$wt_path"
                 elif [[ "${wt_path}" = "${wt_root}"/* ]]; then
-                    echo "${wt_path#${wt_root}/}:${wt_path}"
+                    printf '%s\t%s\t%s\t%s\n' "$commit_date" "${wt_path#${wt_root}/}" "[${wt_branch:-"detached HEAD"}]" "$wt_path"
                 fi
                 ;;
         esac
-    done < <(git worktree list --porcelain)
+    done < <(git worktree list --porcelain) | sort -s -k1,1nr | awk -F '\t' '
+        {
+            selectors[NR] = $2
+            labels[NR] = $3
+            paths[NR] = $4
+            if (length($3) > width) width = length($3)
+        }
+        END {
+            for (i = 1; i <= NR; i++) {
+                printf "%s:", selectors[i]
+                if (labels[i] != "") printf "%-*s ", width, labels[i]
+                printf "%s\n", paths[i]
+            }
+        }'
 }
 
 function __gw_list_branches {
