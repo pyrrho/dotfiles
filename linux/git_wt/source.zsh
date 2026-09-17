@@ -196,22 +196,37 @@ function gwrm {
     local force=no
     local option
     local OPTIND=1
-    while getopts ':bf' option; do
-        case "${option}" in
-            b)
-                delete_branch=yes
-                ;;
-            f)
-                force=yes
-                ;;
-            \?)
-                echo "ERROR: unknown option '-${OPTARG}'"
-                echo "ERROR: usage: gwrm [-b] [-f] <[@]name>"
-                return 1
-                ;;
-        esac
+    local -a positional
+    while (( $# )); do
+        if [[ "$1" = -- ]]; then
+            shift
+            positional+=("$@")
+            break
+        elif [[ "$1" != -* || "$1" = - ]]; then
+            positional+=("$1")
+            shift
+            continue
+        fi
+
+        OPTIND=1
+        while getopts ':bf' option "$1"; do
+            case "${option}" in
+                b)
+                    delete_branch=yes
+                    ;;
+                f)
+                    force=yes
+                    ;;
+                \?)
+                    echo "ERROR: unknown option '-${OPTARG}'"
+                    echo "ERROR: usage: gwrm [-b] [-f] <[@]name>"
+                    return 1
+                    ;;
+            esac
+        done
+        shift
     done
-    shift $((OPTIND - 1))
+    set -- "${positional[@]}"
 
     if [ $# -ne 1 ]; then
         echo "ERROR: usage: gwrm [-b] [-f] <[@]name>"
@@ -277,75 +292,69 @@ compdef _gwrm_completion gwrm
 # [g]it [w]orktree [n]ew
 # Create a new worktree.
 #
-# usage: gwn <[@]name> [start-point [dir-name]]
+# usage: gwn <name> [start-point] [-c branch-name]
 #
-# When `name` isn't `@` prefixed it is treated a directory target. When it is
-# `@` prefixed, it is treated as a git target; typically this will be a branch
-# or tag, but may be anything that git can resolve to a commit.
+# Create a new worktree in a directory named for `name`.
 #
-# If `name` is a directory target, a new worktree with the given `name` will be
-# created. If `start-point` is provided, the worktree will be initialized at the
-# given commit-ish, otherwise the worktree will be initialized in a detached
-# HEAD at the commit of the current directory. `dir-name` is not valid when
-# `name` is a directory target.
+# If `start-point` is provided, the worktree will be initialized at the commit
+# resolved therefrom. Otherwise, the worktree will be initialized at the commit
+# of the directory from which the command was run.
 #
-# TODO: The `@` stuff here is actually... bad.
+# If `-c` is provided, a new branch will be created as part of this operation.
+# Otherwise, the worktree will be initialized in a detached HEAD state.
 function gwn {
     __gw_require_repo || return $?
-    if [ $# -lt 1 ] || [ $# -gt 3 ]; then
-        echo "ERROR: usage: gwn name [start-point]"
-        echo "              gwn @branch [start-point [name]]"
+    local usage='ERROR: usage: gwn <name> [start-point] [-c branch-name]'
+    local -a positional branch_args=(--detach)
+    while (( $# )); do
+        case "$1" in
+            -c)
+                if (( $# < 2 )) || [[ -z "$2" || "${branch_args[1]}" = -b ]]; then
+                    echo "$usage"
+                    return 1
+                fi
+                branch_args=(-b "$2")
+                shift 2
+                ;;
+            -*)
+                echo "$usage"
+                return 1
+                ;;
+            *)
+                positional+=("$1")
+                shift
+                ;;
+        esac
+    done
+    if (( ${#positional} < 1 || ${#positional} > 2 )); then
+        echo "$usage"
         return 1
     fi
-    __gw_validate_selector "$1" || return $?
+    local name=${positional[1]}
+    __gw_validate_directory_name "$name" || return $?
 
+    local start_point=${positional[2]-HEAD}
     local wt_root=$(__gw_get_worktrees_root) || return $?
-    if [[ "$1" = @* ]]; then
-        local branch=${1#@}
-        local start_point=${2:-HEAD}
-        local name=${branch}
-        if [ $# -eq 3 ]; then
-            name=$3
-            __gw_validate_directory_name "${name}" || return $?
-        fi
-
-        local wt_path="${wt_root}/${name}"
-        git worktree add -b "${branch}" "${wt_path}" "${start_point}"
-    else
-        if [ $# -eq 3 ]; then
-            echo "ERROR: usage: gwn name [start-point]"
-            return 1
-        fi
-
-        local start_point=${2:-HEAD}
-        local wt_path="${wt_root}/$1"
-        git worktree add --detach "${wt_path}" "${start_point}"
-    fi
-
-    if [ $? -eq 0 ]; then
-        cd -- "${wt_path}"
-    fi
+    local wt_path="${wt_root}/${name}"
+    git worktree add "${branch_args[@]}" "${wt_path}" "${start_point}" || return $?
+    cd -- "${wt_path}"
 }
 
 function _gwn_completion {
     __gw_require_repo >/dev/null || return $?
 
-    case "${CURRENT}" in
-        2)
-            compadd -x '<directory-name>'
-            compadd -x '@<branch-name>'
-            ;;
-        3)
-            local -a branches
-            branches=("${(@f)$(__gw_list_branches)}")
-            _describe -V 'branches' branches
-            ;;
-        4)
-            if [[ "${words[2]}" = @* ]]; then
-                compadd -x '<directory-name>'
-            fi
-            ;;
-    esac
+    local context state line
+    local -A opt_args
+    _arguments \
+        '-c[create a new branch]:branch name:' \
+        '1:directory name:' \
+        '2:start point:->start-point' && return 0
+
+    if [[ "$state" = start-point ]]; then
+        local -a branches
+        branches=("${(@f)$(__gw_list_branches)}")
+        _describe -V 'branches' branches
+    fi
 }
 compdef _gwn_completion gwn
 

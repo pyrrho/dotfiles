@@ -83,4 +83,80 @@ gwrm -b @topic
 PREFIX=@
 _gwt_completion
 [[ -z "${(F)rendered_worktrees}" ]]
+
+# gwn always takes a directory name; -c independently names the new branch.
+gwn branch-dir main -c created
+[[ "$PWD" = "$root/.repo_worktrees/branch-dir" ]]
+[[ "$(git branch --show-current)" = created ]]
+[[ "$(git rev-parse HEAD)" = "$(git rev-parse main)" ]]
+gwt detached
+gwn default-branch -c from-current
+[[ "$(git branch --show-current)" = from-current ]]
+[[ "$(git rev-parse HEAD)" = "$newer" ]]
+gwn default-detached
+[[ -z "$(git branch --show-current)" ]]
+[[ "$(git rev-parse HEAD)" = "$newer" ]]
+gwn explicit-detached main
+[[ -z "$(git branch --show-current)" ]]
+[[ "$(git rev-parse HEAD)" = "$(git rev-parse main)" ]]
+before=$PWD
+function expect_gwn_failure {
+    if gwn "$@"; then
+        print -u2 -- "Expected gwn to fail: $*"
+        exit 1
+    fi
+}
+expect_gwn_failure missing-branch -c
+expect_gwn_failure extra main unexpected
+expect_gwn_failure @old-syntax
+expect_gwn_failure invalid -c ''
+expect_gwn_failure duplicate -c first -c second
+expect_gwn_failure existing-branch -c created
+[[ "$PWD" = "$before" ]]
+[[ ! -d "$root/.repo_worktrees/missing-branch" ]]
+
+# Options can surround positionals, including grouped gwrm flags.
+for placement in 1 2 3 4 5 6; do
+    gwt detached
+    name="option-order-$placement"
+    branch="branch-$placement"
+    case "$placement" in
+        1|4) gwn -c "$branch" "$name" main ;;
+        2|5) gwn "$name" -c "$branch" main ;;
+        3|6) gwn "$name" main -c "$branch" ;;
+    esac
+    [[ "$PWD" = "$root/.repo_worktrees/$name" ]]
+    [[ "$(git branch --show-current)" = "$branch" ]]
+    [[ "$(git rev-parse HEAD)" = "$(git rev-parse main)" ]]
+    print dirty > untracked-file
+    case "$placement" in
+        1) gwrm -b -f "$name" ;;
+        2) gwrm -b "$name" -f ;;
+        3) gwrm "$name" -bf ;;
+        4) gwrm -fb "$name" ;;
+        5) gwrm "$name" -f -b ;;
+        6) gwrm -f "@$branch" -b ;;
+    esac
+    [[ ! -d "$root/.repo_worktrees/$name" ]]
+    if git show-ref --verify --quiet "refs/heads/$branch"; then
+        print -u2 -- "gwrm failed to delete $branch"
+        exit 1
+    fi
+done
+
+git worktree add -q -b separator "$root/.repo_worktrees/-f" main
+if gwrm -- -f -b; then
+    print -u2 'gwrm interpreted an option after --'
+    exit 1
+fi
+if gwrm -f -z; then
+    print -u2 'gwrm accepted an unknown option'
+    exit 1
+fi
+[[ -d "$root/.repo_worktrees/-f" ]]
+gwrm -b -- -f
+[[ ! -d "$root/.repo_worktrees/-f" ]]
+if git show-ref --verify --quiet refs/heads/separator; then
+    exit 1
+fi
 print 'PASS: directory and branch completions, detached main checkout, and navigation'
