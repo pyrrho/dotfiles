@@ -159,4 +159,34 @@ gwrm -b -- -f
 if git show-ref --verify --quiet refs/heads/separator; then
     exit 1
 fi
+
+# Nested removal prunes empty ancestors without disturbing siblings or files.
+gwn renovate/group/first -c nested-first
+gwn renovate/group/second
+gwrm -b renovate/group/first
+[[ -d "$root/.repo_worktrees/renovate/group/second" ]]
+if git show-ref --verify --quiet refs/heads/nested-first; then
+    exit 1
+fi
+print keep > "$root/.repo_worktrees/renovate/keep"
+gwrm renovate/group/second
+[[ ! -d "$root/.repo_worktrees/renovate/group" ]]
+[[ -f "$root/.repo_worktrees/renovate/keep" ]]
+rm "$root/.repo_worktrees/renovate/keep"
+gwn renovate/some-dep
+print dirty > untracked-file
+if gwrm renovate/some-dep; then
+    print -u2 'gwrm removed a dirty worktree without force'
+    exit 1
+fi
+[[ -f "$root/.repo_worktrees/renovate/some-dep/untracked-file" ]]
+gwrm -f renovate/some-dep
+[[ ! -d "$root/.repo_worktrees/renovate" ]]
+[[ -d "$root/.repo_worktrees" ]]
+
+# Branch selectors can also target worktrees outside the managed root.
+git worktree add -q -b external "$root/outside/nested/tree" main
+gwrm -b @external
+[[ ! -d "$root/outside/nested/tree" ]]
+[[ -d "$root/outside/nested" ]]
 print 'PASS: directory and branch completions, detached main checkout, and navigation'

@@ -249,6 +249,7 @@ function gwrm {
 
     local branch=$(git -C "${wt_path}" symbolic-ref --quiet --short HEAD \
         2>/dev/null)
+    local wt_root=$(__gw_get_worktrees_root) || return $?
     __gw_leave_worktree "${wt_path}" || return $?
 
     if [ "${force}" = yes ]; then
@@ -260,6 +261,13 @@ function gwrm {
     if [ "${remove_status}" -ne 0 ]; then
         return "${remove_status}"
     fi
+
+    # Remove empty ancestors, but never the worktree root or anything outside it.
+    local parent=${wt_path:h}
+    while [[ "${parent}" = "${wt_root}"/* ]]; do
+        rmdir -- "${parent}" 2>/dev/null || break
+        parent=${parent:h}
+    done
 
     if [ "${delete_branch}" = yes ]; then
         if [ -n "${branch}" ]; then
