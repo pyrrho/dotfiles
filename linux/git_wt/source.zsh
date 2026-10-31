@@ -184,13 +184,17 @@ compdef -d gwrmb gwrf 2>/dev/null || true
 # [g]it [w]orktree [r]e[m]ove
 # Remove the targeted worktree.
 #
-# usage: gwrm [-b] [-f] <[@]name>
+# usage: gwrm [-b] [-f] [[@]name]
+#
+# Without a target, remove the worktree containing the current directory.
 #
 # OPTIONS
 #   -b    Delete the branch associated with the given worktree
 #   -f    Force the deletion; ignore uncommitted changes
 function gwrm {
     __gw_require_repo || return $?
+    local main_repo_path=$(dirname \
+        "$(realpath "$(git rev-parse --git-common-dir)")")
 
     local delete_branch=no
     local force=no
@@ -219,7 +223,7 @@ function gwrm {
                     ;;
                 \?)
                     echo "ERROR: unknown option '-${OPTARG}'"
-                    echo "ERROR: usage: gwrm [-b] [-f] <[@]name>"
+                    echo "ERROR: usage: gwrm [-b] [-f] [[@]name]"
                     return 1
                     ;;
             esac
@@ -228,22 +232,24 @@ function gwrm {
     done
     set -- "${positional[@]}"
 
-    if [ $# -ne 1 ]; then
-        echo "ERROR: usage: gwrm [-b] [-f] <[@]name>"
-        return 1
-    fi
-    __gw_validate_selector "$1" || return $?
-
-    local worktree_count=$(git worktree list --porcelain | \
-        awk '$1 == "worktree" { count++ } END { print count }')
-    if [ "${worktree_count}" -eq 1 ]; then
-        echo "ERROR: do you really want to delete the last active worktree?"
+    if [ $# -gt 1 ]; then
+        echo "ERROR: usage: gwrm [-b] [-f] [[@]name]"
         return 1
     fi
 
     local wt_path
-    if ! wt_path=$(__gw_find_worktree "$1"); then
-        echo "ERROR: failed to find a worktree matching '$1'"
+    if [ $# -eq 0 ]; then
+        wt_path=$(git rev-parse --show-toplevel) || return $?
+    else
+        __gw_validate_selector "$1" || return $?
+        if ! wt_path=$(__gw_find_worktree "$1"); then
+            echo "ERROR: failed to find a worktree matching '$1'"
+            return 1
+        fi
+    fi
+
+    if [[ "${wt_path}" = "${main_repo_path}" ]]; then
+        echo "ERROR: cannot remove the main checkout"
         return 1
     fi
 

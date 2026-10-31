@@ -189,4 +189,39 @@ git worktree add -q -b external "$root/outside/nested/tree" main
 gwrm -b @external
 [[ ! -d "$root/outside/nested/tree" ]]
 [[ -d "$root/outside/nested" ]]
+
+# With no target, remove the current worktree, even from a subdirectory.
+gwn current-detached
+gwrm
+[[ ! -d "$root/.repo_worktrees/current-detached" ]]
+[[ "$PWD" = "$root/repo" ]]
+git worktree add -q -b current-external "$root/outside/current" main
+mkdir "$root/outside/current/subdir"
+cd "$root/outside/current/subdir"
+print dirty > untracked-file
+if gwrm; then
+    print -u2 'gwrm removed the current dirty worktree without force'
+    exit 1
+fi
+[[ -f "$root/outside/current/subdir/untracked-file" ]]
+cd "$root/outside/current/subdir"
+gwrm -bf
+[[ ! -d "$root/outside/current" ]]
+[[ "$PWD" = "$root/repo" ]]
+if git show-ref --verify --quiet refs/heads/current-external; then
+    exit 1
+fi
+
+# Reject the main checkout before moving away, for default and explicit targets.
+mkdir "$root/repo/subdir"
+cd "$root/repo/subdir"
+for args in default explicit; do
+    if [[ "$args" = default ]]; then
+        if gwrm; then exit 1; fi
+    else
+        if gwrm -bf repo; then exit 1; fi
+    fi
+    [[ "$PWD" = "$root/repo/subdir" ]]
+    [[ -d "$root/repo/.git" ]]
+done
 print 'PASS: directory and branch completions, detached main checkout, and navigation'
