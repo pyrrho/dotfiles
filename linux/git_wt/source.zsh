@@ -306,29 +306,49 @@ compdef _gwrm_completion gwrm
 # [g]it [w]orktree [n]ew
 # Create a new worktree.
 #
-# usage: gwn <name> [start-point] [-c branch-name]
+# usage: gwn <name> [--base start-point | --main] [-c branch-name | --detached]
 #
 # Create a new worktree in a directory named for `name`.
 #
-# If `start-point` is provided, the worktree will be initialized at the commit
-# resolved therefrom. Otherwise, the worktree will be initialized at the commit
-# of the directory from which the command was run.
+# Use -b/--base to select a starting commit, or -m/--main to fetch and start at
+# the latest origin/main. Otherwise, start at the commit of the directory from
+# which the command was run. The base and main options are mutually exclusive.
 #
-# If `-c` is provided, a new branch will be created as part of this operation.
-# Otherwise, the worktree will be initialized in a detached HEAD state.
+# Create a new branch named for `name`, unless overridden by -c. Use
+# -d/--detached instead to create a detached HEAD worktree. The -c and detached
+# options are mutually exclusive.
 function gwn {
     __gw_require_repo || return $?
-    local usage='ERROR: usage: gwn <name> [start-point] [-c branch-name]'
-    local -a positional branch_args=(--detach)
+    local usage='ERROR: usage: gwn <name> [-b|--base start-point | -m|--main] [-c branch-name | -d|--detached]'
+    local start_point=HEAD base_mode='' branch_mode='' branch=''
+    local -a positional branch_args
     while (( $# )); do
         case "$1" in
-            -c)
-                if (( $# < 2 )) || [[ -z "$2" || "${branch_args[1]}" = -b ]]; then
+            -b|--base|-c)
+                if (( $# < 2 )) || [[ -z "$2" || "$2" = -* ]]; then
                     echo "$usage"
                     return 1
                 fi
-                branch_args=(-b "$2")
+                if [[ "$1" = -c ]]; then
+                    [[ -z "$branch_mode" ]] || { echo "$usage"; return 1; }
+                    branch_mode=branch
+                    branch=$2
+                else
+                    [[ -z "$base_mode" ]] || { echo "$usage"; return 1; }
+                    base_mode=base
+                    start_point=$2
+                fi
                 shift 2
+                ;;
+            -m|--main)
+                [[ -z "$base_mode" ]] || { echo "$usage"; return 1; }
+                base_mode=main
+                shift
+                ;;
+            -d|--detached)
+                [[ -z "$branch_mode" ]] || { echo "$usage"; return 1; }
+                branch_mode=detached
+                shift
                 ;;
             -*)
                 echo "$usage"
@@ -340,14 +360,22 @@ function gwn {
                 ;;
         esac
     done
-    if (( ${#positional} < 1 || ${#positional} > 2 )); then
+    if (( ${#positional} != 1 )); then
         echo "$usage"
         return 1
     fi
     local name=${positional[1]}
     __gw_validate_directory_name "$name" || return $?
 
-    local start_point=${positional[2]-HEAD}
+    if [[ "$base_mode" = main ]]; then
+        git fetch origin +refs/heads/main:refs/remotes/origin/main || return $?
+        start_point=refs/remotes/origin/main
+    fi
+    if [[ "$branch_mode" = detached ]]; then
+        branch_args=(--detach)
+    else
+        branch_args=(-b "${branch:-$name}")
+    fi
     local wt_root=$(__gw_get_worktrees_root) || return $?
     local wt_path="${wt_root}/${name}"
     git worktree add "${branch_args[@]}" "${wt_path}" "${start_point}" || return $?
@@ -360,9 +388,11 @@ function _gwn_completion {
     local context state line
     local -A opt_args
     _arguments \
-        '-c[create a new branch]:branch name:' \
-        '1:directory name:' \
-        '2:start point:->start-point' && return 0
+        '(-b --base -m --main)'{-b,--base}'[select the starting commit]:start point:->start-point' \
+        '(-b --base -m --main)'{-m,--main}'[fetch and start at origin/main]' \
+        '(-c -d --detached)-c[override the new branch name]:branch name:' \
+        '(-c -d --detached)'{-d,--detached}'[create a detached HEAD worktree]' \
+        '1:directory name:' && return 0
 
     if [[ "$state" = start-point ]]; then
         local -a branches

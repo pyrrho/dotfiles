@@ -85,7 +85,7 @@ _gwt_completion
 [[ -z "${(F)rendered_worktrees}" ]]
 
 # gwn always takes a directory name; -c independently names the new branch.
-gwn branch-dir main -c created
+gwn branch-dir -b main -c created
 [[ "$PWD" = "$root/.repo_worktrees/branch-dir" ]]
 [[ "$(git branch --show-current)" = created ]]
 [[ "$(git rev-parse HEAD)" = "$(git rev-parse main)" ]]
@@ -93,10 +93,13 @@ gwt detached
 gwn default-branch -c from-current
 [[ "$(git branch --show-current)" = from-current ]]
 [[ "$(git rev-parse HEAD)" = "$newer" ]]
-gwn default-detached
+gwn named-branch
+[[ "$(git branch --show-current)" = named-branch ]]
+[[ "$(git rev-parse HEAD)" = "$newer" ]]
+gwn default-detached -d
 [[ -z "$(git branch --show-current)" ]]
 [[ "$(git rev-parse HEAD)" = "$newer" ]]
-gwn explicit-detached main
+gwn explicit-detached --base main --detached
 [[ -z "$(git branch --show-current)" ]]
 [[ "$(git rev-parse HEAD)" = "$(git rev-parse main)" ]]
 before=$PWD
@@ -107,13 +110,43 @@ function expect_gwn_failure {
     fi
 }
 expect_gwn_failure missing-branch -c
+expect_gwn_failure missing-base -b
+expect_gwn_failure empty-base --base ''
+expect_gwn_failure old-positional main
 expect_gwn_failure extra main unexpected
 expect_gwn_failure @old-syntax
 expect_gwn_failure invalid -c ''
 expect_gwn_failure duplicate -c first -c second
+expect_gwn_failure duplicate-base -b main --base main
+expect_gwn_failure conflicting-base -b main -m
+expect_gwn_failure conflicting-main --main --base main
+expect_gwn_failure conflicting-detached -d -c unwanted
+expect_gwn_failure conflicting-branch -c unwanted --detached
 expect_gwn_failure existing-branch -c created
 [[ "$PWD" = "$before" ]]
 [[ ! -d "$root/.repo_worktrees/missing-branch" ]]
+
+# Fetch a remote main newer than both the cached origin/main and local main.
+git init -q --bare "$root/origin.git"
+git remote add origin "$root/origin.git"
+git push -q origin main
+git push -q origin "${newer}:refs/heads/main"
+[[ "$(git rev-parse origin/main)" = "$newer" ]]
+git update-ref refs/remotes/origin/main main
+gwn latest-main --main
+[[ "$(git branch --show-current)" = latest-main ]]
+[[ "$(git rev-parse HEAD)" = "$newer" ]]
+[[ "$(git rev-parse origin/main)" = "$newer" ]]
+[[ "$(git rev-parse main)" != "$newer" ]]
+gwn detached-main -m -d
+[[ -z "$(git branch --show-current)" ]]
+[[ "$(git rev-parse HEAD)" = "$newer" ]]
+git remote set-url origin "$root/missing.git"
+before=$PWD
+expect_gwn_failure failed-fetch -m
+[[ "$PWD" = "$before" ]]
+[[ ! -d "$root/.repo_worktrees/failed-fetch" ]]
+git remote set-url origin "$root/origin.git"
 
 # Options can surround positionals, including grouped gwrm flags.
 for placement in 1 2 3 4 5 6; do
@@ -121,9 +154,9 @@ for placement in 1 2 3 4 5 6; do
     name="option-order-$placement"
     branch="branch-$placement"
     case "$placement" in
-        1|4) gwn -c "$branch" "$name" main ;;
-        2|5) gwn "$name" -c "$branch" main ;;
-        3|6) gwn "$name" main -c "$branch" ;;
+        1|4) gwn -c "$branch" "$name" -b main ;;
+        2|5) gwn "$name" -c "$branch" --base main ;;
+        3|6) gwn -b main "$name" -c "$branch" ;;
     esac
     [[ "$PWD" = "$root/.repo_worktrees/$name" ]]
     [[ "$(git branch --show-current)" = "$branch" ]]
@@ -191,7 +224,7 @@ gwrm -b @external
 [[ -d "$root/outside/nested" ]]
 
 # With no target, remove the current worktree, even from a subdirectory.
-gwn current-detached
+gwn current-detached -d
 gwrm
 [[ ! -d "$root/.repo_worktrees/current-detached" ]]
 [[ "$PWD" = "$root/repo" ]]
