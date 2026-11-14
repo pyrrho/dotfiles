@@ -88,12 +88,49 @@ function __gw_validate_directory_name {
 }
 
 # [g]it [w]orktree [l]ist
-# List extant worktrees. This is an alias for `git worktree list`.
+# List extant worktrees with managed directory names and @branch selectors.
 #
 # usage: gwl
 function gwl {
     __gw_require_repo || return $?
-    git worktree list
+    local main_repo_path=$(dirname \
+        "$(realpath "$(git rev-parse --git-common-dir)")")
+    local wt_root="${main_repo_path:h}/.${main_repo_path:t}_worktrees"
+    local -a names commits labels
+    local line name commit label flags
+    local name_width=0 commit_width=0 i
+
+    while IFS= read -r -d '' line; do
+        case "${line}" in
+            worktree\ *)
+                name=${line#worktree }
+                if [[ "${name}" = "${wt_root}"/* ]]; then
+                    name=${name#${wt_root}/}
+                fi
+                commit='' label='' flags=''
+                ;;
+            HEAD\ *)
+                commit=$(git rev-parse --short "${line#HEAD }")
+                ;;
+            branch\ refs/heads/*) label="@${line#branch refs/heads/}" ;;
+            detached) label='(detached HEAD)' ;;
+            bare) commit='(bare)' ;;
+            locked*) flags+=' locked' ;;
+            prunable*) flags+=' prunable' ;;
+            '')
+                names+=("$name")
+                commits+=("$commit")
+                labels+=("${label}${flags}")
+                (( ${#name} > name_width )) && name_width=${#name}
+                (( ${#commit} > commit_width )) && commit_width=${#commit}
+                ;;
+        esac
+    done < <(git worktree list --porcelain -z)
+
+    for (( i = 1; i <= ${#names}; i++ )); do
+        printf '%-*s  %-*s  %s\n' "$name_width" "${names[i]}" \
+            "$commit_width" "${commits[i]}" "${labels[i]}"
+    done
 }
 
 # [g]it [w]orktree [t]ake

@@ -27,6 +27,33 @@ git update-ref refs/remotes/origin/z-newest "$newer"
 git update-ref refs/remotes/other/z-newest HEAD
 git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/z-newest
 
+# gwl aligns shortened directory names, hashes, and @branch labels.
+git worktree add -q -b feature/list "$root/.repo_worktrees/nested/with space"
+git worktree add -q --detach "$root/external tree"
+git worktree lock "$root/.repo_worktrees/nested/with space"
+git config core.abbrev 9
+initial_short=$(git rev-parse --short HEAD)
+newer_short=$(git rev-parse --short "$newer")
+list_width=$(( ${#root} + 14 ))
+printf -v expected_list '%-*s  %s  %s\n' \
+    "$list_width" "$root/repo" "$initial_short" '(detached HEAD)' \
+    "$list_width" attached "$initial_short" '@topic' \
+    "$list_width" detached "$newer_short" '(detached HEAD)' \
+    "$list_width" 'nested/with space' "$initial_short" '@feature/list locked' \
+    "$list_width" "$root/external tree" "$initial_short" '(detached HEAD)'
+expected_list=${expected_list%$'\n'}
+actual=$(gwl)
+if [[ "$actual" != "$expected_list" ]]; then
+    print -u2 -- "Unexpected worktree listing:\n$actual\nExpected:\n$expected_list"
+    exit 1
+fi
+cd "$root/.repo_worktrees/nested/with space"
+[[ "$(gwl)" = "$expected_list" ]]
+cd "$root/repo"
+git worktree remove --force --force "$root/.repo_worktrees/nested/with space"
+git worktree remove "$root/external tree"
+git branch -D feature/list
+
 expected="detached:[detached HEAD] $root/.repo_worktrees/detached
 repo:[detached HEAD] $root/repo
 attached:[topic]         $root/.repo_worktrees/attached"
