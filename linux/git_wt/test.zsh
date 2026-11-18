@@ -189,20 +189,47 @@ for placement in 1 2 3 4 5 6; do
     [[ "$(git branch --show-current)" = "$branch" ]]
     [[ "$(git rev-parse HEAD)" = "$(git rev-parse main)" ]]
     print dirty > untracked-file
+    gwn "$name-other" -c "$branch-other" -b main
+    print dirty > untracked-file
     case "$placement" in
-        1) gwrm -b -f "$name" ;;
-        2) gwrm -b "$name" -f ;;
-        3) gwrm "$name" -bf ;;
-        4) gwrm -fb "$name" ;;
-        5) gwrm "$name" -f -b ;;
-        6) gwrm -f "@$branch" -b ;;
+        1) gwrm -b -f "$name" "$name-other" ;;
+        2) gwrm -b "$name" -f "@$branch-other" ;;
+        3) gwrm "$name" "$name-other" -bf ;;
+        4) gwrm -fb "$name" "@$branch-other" ;;
+        5) gwrm "$name" -f "$name-other" -b ;;
+        6) gwrm -f "@$branch" -b "@$branch-other" ;;
     esac
     [[ ! -d "$root/.repo_worktrees/$name" ]]
+    [[ ! -d "$root/.repo_worktrees/$name-other" ]]
     if git show-ref --verify --quiet "refs/heads/$branch"; then
         print -u2 -- "gwrm failed to delete $branch"
         exit 1
     fi
+    if git show-ref --verify --quiet "refs/heads/$branch-other"; then
+        print -u2 -- "gwrm failed to delete $branch-other"
+        exit 1
+    fi
 done
+
+# A failed removal stops the batch; without -b, removed branches are retained.
+gwn batch-first
+gwn batch-dirty
+print dirty > untracked-file
+gwn batch-last
+if gwrm batch-first batch-dirty batch-last; then
+    print -u2 'gwrm accepted a dirty worktree in a batch without force'
+    exit 1
+fi
+[[ ! -d "$root/.repo_worktrees/batch-first" ]]
+git show-ref --verify --quiet refs/heads/batch-first
+[[ -f "$root/.repo_worktrees/batch-dirty/untracked-file" ]]
+[[ -d "$root/.repo_worktrees/batch-last" ]]
+if gwrm -bf batch-last repo; then
+    print -u2 'gwrm accepted the main checkout in a batch'
+    exit 1
+fi
+[[ -d "$root/.repo_worktrees/batch-last" ]]
+gwrm -bf batch-dirty batch-last
 
 git worktree add -q -b separator "$root/.repo_worktrees/-f" main
 if gwrm -- -f -b; then
@@ -214,9 +241,14 @@ if gwrm -f -z; then
     exit 1
 fi
 [[ -d "$root/.repo_worktrees/-f" ]]
-gwrm -b -- -f
+git worktree add -q -b separator-other "$root/.repo_worktrees/-b" main
+gwrm -b -- -f -b
 [[ ! -d "$root/.repo_worktrees/-f" ]]
+[[ ! -d "$root/.repo_worktrees/-b" ]]
 if git show-ref --verify --quiet refs/heads/separator; then
+    exit 1
+fi
+if git show-ref --verify --quiet refs/heads/separator-other; then
     exit 1
 fi
 
@@ -300,7 +332,9 @@ gwrm second
 [[ -f "$root/.cleanup-repo_worktrees/keep" ]]
 rm "$root/.cleanup-repo_worktrees/keep"
 gwn nested/last
-gwrm -b nested/last
+gwn detached-final -d
+gwn final -c final-branch
+gwrm -b nested/last detached-final @final-branch
 if [[ -d "$root/.cleanup-repo_worktrees" ]]; then
     print -u2 'gwrm left the empty root after removing the last worktree'
     exit 1

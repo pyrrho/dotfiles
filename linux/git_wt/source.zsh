@@ -9,7 +9,7 @@
 #   Switch to an existing worktree with the given name or that is on the given
 #   branch, or create a new worktree for the given branch.
 # - `gwrm` -- `[g]it [w]orktree [r]e[m]ove`
-#   Delete the given worktree, optionally deleting the relevant branch.
+#   Delete the given worktrees, optionally deleting their branches.
 # - `gwn`  -- `[g]it [w]orktree [n]ew`
 #   Create a new worktree, either in a detached head state or on a new branch.
 
@@ -38,7 +38,6 @@
 # TODOs:
 # - `gwt` currently doesn't scan for detached heads; calling `gwt @abc123`
 #   multiple times results in errors instead of reuse.
-# - `gwrm` could take multiple branches
 
 
 # Unset git worktree aliases provided by the ohmyzsh git plugin
@@ -213,14 +212,16 @@ compdef _gwt_completion gwt
 
 
 # [g]it [w]orktree [r]e[m]ove
-# Remove the targeted worktree.
+# Remove the targeted worktrees.
 #
-# usage: gwrm [-b] [-f] [[@]name]
+# usage: gwrm [-b] [-f] [[@]name ...]
 #
 # Without a target, remove the worktree containing the current directory.
+# Flags apply to all targets. Resolve targets before removing any worktrees,
+# then remove them in order, stopping on the first failure.
 #
 # OPTIONS
-#   -b    Delete the branch associated with the given worktree
+#   -b    Delete the branch associated with each worktree
 #   -f    Force the deletion; ignore uncommitted changes
 function gwrm {
     __gw_require_repo || return $?
@@ -254,7 +255,7 @@ function gwrm {
                     ;;
                 \?)
                     echo "ERROR: unknown option '-${OPTARG}'"
-                    echo "ERROR: usage: gwrm [-b] [-f] [[@]name]"
+                    echo "ERROR: usage: gwrm [-b] [-f] [[@]name ...]"
                     return 1
                     ;;
             esac
@@ -263,56 +264,61 @@ function gwrm {
     done
     set -- "${positional[@]}"
 
-    if [ $# -gt 1 ]; then
-        echo "ERROR: usage: gwrm [-b] [-f] [[@]name]"
-        return 1
-    fi
-
-    local wt_path
+    local wt_path target
+    local -a wt_paths
     if [ $# -eq 0 ]; then
         wt_path=$(git rev-parse --show-toplevel) || return $?
+        wt_paths+=("${wt_path}")
     else
-        __gw_validate_selector "$1" || return $?
-        if ! wt_path=$(__gw_find_worktree "$1"); then
-            echo "ERROR: failed to find a worktree matching '$1'"
+        for target in "$@"; do
+            __gw_validate_selector "${target}" || return $?
+            if ! wt_path=$(__gw_find_worktree "${target}"); then
+                echo "ERROR: failed to find a worktree matching '${target}'"
+                return 1
+            fi
+            wt_paths+=("${wt_path}")
+        done
+    fi
+
+    for wt_path in "${wt_paths[@]}"; do
+        if [[ "${wt_path}" = "${main_repo_path}" ]]; then
+            echo "ERROR: cannot remove the main checkout"
             return 1
         fi
-    fi
-
-    if [[ "${wt_path}" = "${main_repo_path}" ]]; then
-        echo "ERROR: cannot remove the main checkout"
-        return 1
-    fi
-
-    local branch=$(git -C "${wt_path}" symbolic-ref --quiet --short HEAD \
-        2>/dev/null)
-    local wt_root=$(__gw_get_worktrees_root) || return $?
-    __gw_leave_worktree "${wt_path}" || return $?
-
-    if [ "${force}" = yes ]; then
-        git worktree remove --force "${wt_path}"
-    else
-        git worktree remove "${wt_path}"
-    fi
-    local remove_status=$?
-    if [ "${remove_status}" -ne 0 ]; then
-        return "${remove_status}"
-    fi
-
-    # Remove empty ancestors, including the worktree root, but nothing outside it.
-    local parent=${wt_path:h}
-    while [[ "${parent}" = "${wt_root}" || "${parent}" = "${wt_root}"/* ]]; do
-        rmdir -- "${parent}" 2>/dev/null || break
-        parent=${parent:h}
     done
 
-    if [ "${delete_branch}" = yes ]; then
-        if [ -n "${branch}" ]; then
-            git branch -D -- "${branch}"
+    local wt_root=$(__gw_get_worktrees_root) || return $?
+    local branch parent remove_status
+    for wt_path in "${wt_paths[@]}"; do
+        branch=$(git -C "${wt_path}" symbolic-ref --quiet --short HEAD \
+            2>/dev/null) || branch=''
+        __gw_leave_worktree "${wt_path}" || return $?
+
+        if [ "${force}" = yes ]; then
+            git worktree remove --force "${wt_path}"
         else
-            echo "WARNING: the removed worktree was not attached to a branch"
+            git worktree remove "${wt_path}"
         fi
-    fi
+        remove_status=$?
+        if [ "${remove_status}" -ne 0 ]; then
+            return "${remove_status}"
+        fi
+
+        # Remove empty ancestors, including the worktree root, but nothing outside it.
+        parent=${wt_path:h}
+        while [[ "${parent}" = "${wt_root}" || "${parent}" = "${wt_root}"/* ]]; do
+            rmdir -- "${parent}" 2>/dev/null || break
+            parent=${parent:h}
+        done
+
+        if [ "${delete_branch}" = yes ]; then
+            if [ -n "${branch}" ]; then
+                git branch -D -- "${branch}" || return $?
+            else
+                echo "WARNING: the removed worktree was not attached to a branch"
+            fi
+        fi
+    done
 }
 
 function _gwrm_completion {
@@ -323,7 +329,7 @@ function _gwrm_completion {
     _arguments -s \
         '-b[delete the attached branch]' \
         '-f[force removal]' \
-        '1:worktree:->worktree' && return 0
+        '*:worktree:->worktree' && return 0
 
     if [ "${state}" = worktree ]; then
         local -a worktrees
