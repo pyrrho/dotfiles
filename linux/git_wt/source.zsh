@@ -36,10 +36,8 @@
 
 
 # TODOs:
-# - Make sure `gwrm -b` removes branches when targeting directories
 # - `gwt` currently doesn't scan for detached heads; calling `gwt @abc123`
 #   multiple times results in errors instead of reuse.
-# - Update `gwrm` s.t. it deletes the root when the last worktree is deleted.
 # - `gwt @name` could optionally accept a `[dir-name]`.
 # - `gwrm` could take multiple branches
 
@@ -305,9 +303,9 @@ function gwrm {
         return "${remove_status}"
     fi
 
-    # Remove empty ancestors, but never the worktree root or anything outside it.
+    # Remove empty ancestors, including the worktree root, but nothing outside it.
     local parent=${wt_path:h}
-    while [[ "${parent}" = "${wt_root}"/* ]]; do
+    while [[ "${parent}" = "${wt_root}" || "${parent}" = "${wt_root}"/* ]]; do
         rmdir -- "${parent}" 2>/dev/null || break
         parent=${parent:h}
     done

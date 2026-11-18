@@ -284,4 +284,27 @@ for args in default explicit; do
     [[ "$PWD" = "$root/repo/subdir" ]]
     [[ -d "$root/repo/.git" ]]
 done
+
+# Last-worktree cleanup removes an empty root, but preserves siblings and files.
+git init -q -b main "$root/cleanup-repo"
+cd "$root/cleanup-repo"
+git -c user.name=Test -c user.email=test@example.com -c commit.gpgsign=false \
+    commit -q --allow-empty -m Initial
+gwn nested/first
+gwn second
+print keep > "$root/.cleanup-repo_worktrees/keep"
+gwrm nested/first
+[[ -d "$root/.cleanup-repo_worktrees/second" ]]
+[[ ! -d "$root/.cleanup-repo_worktrees/nested" ]]
+gwrm second
+[[ -f "$root/.cleanup-repo_worktrees/keep" ]]
+rm "$root/.cleanup-repo_worktrees/keep"
+gwn nested/last
+gwrm -b nested/last
+if [[ -d "$root/.cleanup-repo_worktrees" ]]; then
+    print -u2 'gwrm left the empty root after removing the last worktree'
+    exit 1
+fi
+[[ "$PWD" = "$root/cleanup-repo" ]]
+[[ -d "$root/cleanup-repo/.git" ]]
 print 'PASS: directory and branch completions, detached main checkout, and navigation'
