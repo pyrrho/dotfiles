@@ -170,38 +170,66 @@ function gwt {
     local branch=${1#@}
     local wt_root=$(__gw_get_worktrees_root) || return $?
     wt_path="${wt_root}/${branch}"
-    git worktree add "${wt_path}" "${branch}"
-    if [ $? -eq 0 ]; then
-        cd -- "${wt_path}"
-    fi
+    git worktree add "${wt_path}" "${branch}" || return $?
+    cd -- "${wt_path}"
 }
 alias gcd=gwt
 
 function _gwt_completion {
     __gw_require_repo >/dev/null || return $?
 
-    local -a worktrees local_branches remote_branches
+    local -a worktrees local_branches remote_branches remote_refs
+    local -A local_names remote_counts
     worktrees=("${(@f)$(__gw_worktree_completion_options "${PREFIX}")}")
 
-    local ref symref wt_path
+    local default_remote
+    default_remote=$(git config --get checkout.defaultRemote) || default_remote=''
+    local ref symref wt_path branch remote remote_ref explicit_remote=''
     while IFS='|' read -r ref symref wt_path; do
         [[ -n "${symref}" ]] && continue
         case "${ref}" in
             refs/heads/*)
+                local_names[${ref#refs/heads/}]=1
                 [[ -n "${wt_path}" ]] && continue
                 local_branches+=("@${ref#refs/heads/}")
                 ;;
             refs/remotes/*)
-                remote_branches+=("@${ref#refs/remotes/}")
+                remote_ref=${ref#refs/remotes/}
+                remote=${remote_ref%%/*}
+                branch=${remote_ref#*/}
+                remote_refs+=("${remote_ref}")
+                remote_counts[$branch]=$(( ${remote_counts[$branch]:-0} + 1 ))
+                [[ "${PREFIX}" = "@${remote}/"* ]] && explicit_remote=${remote}
                 ;;
         esac
     done < <(git for-each-ref --sort=-committerdate \
         --format='%(refname)|%(symref)|%(worktreepath)' refs/heads refs/remotes)
 
+    local remote_description='remote branches (create local tracking branch)'
+    if [[ -n "${explicit_remote}" ]]; then
+        remote_description='remote branches (detached checkout)'
+    fi
+    # Keep Git's commit-date order; -V below prevents zsh from alphabetizing it.
+    for remote_ref in "${remote_refs[@]}"; do
+        remote=${remote_ref%%/*}
+        branch=${remote_ref#*/}
+        if [[ -n "${explicit_remote}" ]]; then
+            [[ "${remote}" = "${explicit_remote}" ]] || continue
+            remote_branches+=("@${remote_ref}:${remote}")
+        else
+            [[ -n "${local_names[$branch]:-}" ]] && continue
+            if (( remote_counts[$branch] > 1 )) && \
+                [[ "${remote}" != "${default_remote}" ]]; then
+                continue
+            fi
+            remote_branches+=("@${branch}:${remote}")
+        fi
+    done
+
     local ret=1
     _describe -t worktrees -V 'worktrees' worktrees && ret=0
     _describe -t local-branches -V 'local branches' local_branches && ret=0
-    _describe -t remote-branches -V 'remote branches' remote_branches && ret=0
+    _describe -t remote-branches -V "${remote_description}" remote_branches && ret=0
     return $ret
 }
 zstyle ':completion:*:*:gwt:*' group-name ''

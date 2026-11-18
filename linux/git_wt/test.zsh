@@ -26,6 +26,12 @@ git branch z-newest "$newer"
 git update-ref refs/remotes/origin/z-newest "$newer"
 git update-ref refs/remotes/other/z-newest HEAD
 git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/z-newest
+git remote add origin "$root/origin.git"
+git remote add other "$root/other.git"
+git update-ref refs/remotes/origin/z-remote "$newer"
+git update-ref refs/remotes/other/a-remote HEAD
+git update-ref refs/remotes/origin/shared HEAD
+git update-ref refs/remotes/other/shared HEAD
 
 # gwl aligns shortened directory names, hashes, and @branch labels.
 git worktree add -q -b feature/list "$root/.repo_worktrees/nested/with space"
@@ -76,7 +82,10 @@ function _describe {
     case "$2" in
         worktrees) rendered_worktrees=("${(@P)5}") ;;
         local-branches) rendered_branches=("${(@P)5}") ;;
-        remote-branches) rendered_remotes=("${(@P)5}") ;;
+        remote-branches)
+            rendered_remotes=("${(@P)5}")
+            rendered_remote_description=$4
+            ;;
     esac
     return 0
 }
@@ -85,12 +94,35 @@ PREFIX=''
 _gwt_completion
 [[ "${(F)rendered_worktrees}" = "$expected" ]]
 [[ "${(j: :)rendered_branches}" = '@z-newest @main @unlinked' ]]
-[[ "${(j: :)rendered_remotes}" = '@origin/z-newest @other/z-newest' ]]
+[[ "${(j: :)rendered_remotes}" = '@z-remote:origin @a-remote:other' ]]
+[[ "$rendered_remote_description" = 'remote branches (create local tracking branch)' ]]
 PREFIX=@
 _gwt_completion
 [[ "${(F)rendered_worktrees}" = "@topic:$root/.repo_worktrees/attached" ]]
 [[ "${(j: :)rendered_branches}" = '@z-newest @main @unlinked' ]]
-[[ "${(j: :)rendered_remotes}" = '@origin/z-newest @other/z-newest' ]]
+[[ "${(j: :)rendered_remotes}" = '@z-remote:origin @a-remote:other' ]]
+git config checkout.defaultRemote origin
+_gwt_completion
+[[ "${(j: :)rendered_remotes}" = '@z-remote:origin @shared:origin @a-remote:other' ]]
+git config --unset checkout.defaultRemote
+PREFIX=@origin/
+_gwt_completion
+[[ "${(j: :)rendered_remotes}" = '@origin/z-newest:origin @origin/z-remote:origin @origin/shared:origin' ]]
+[[ "$rendered_remote_description" = 'remote branches (detached checkout)' ]]
+PREFIX=@
+
+gwt @z-remote
+[[ "$(git branch --show-current)" = z-remote ]]
+[[ "$(git rev-parse --abbrev-ref '@{upstream}')" = origin/z-remote ]]
+_gwt_completion
+[[ "${(j: :)rendered_remotes}" = '@a-remote:other' ]]
+gwt repo
+gwrm -b z-remote
+if gwt @shared; then
+    print -u2 'gwt reported success for an ambiguous remote branch'
+    exit 1
+fi
+[[ "$PWD" = "$root/repo" ]]
 
 gwt attached
 [[ "$PWD" = "$root/.repo_worktrees/attached" ]]
@@ -155,7 +187,6 @@ expect_gwn_failure existing-branch -c created
 
 # Fetch a remote main newer than both the cached origin/main and local main.
 git init -q --bare "$root/origin.git"
-git remote add origin "$root/origin.git"
 git push -q origin main
 git push -q origin "${newer}:refs/heads/main"
 [[ "$(git rev-parse origin/main)" = "$newer" ]]
