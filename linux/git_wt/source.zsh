@@ -38,7 +38,6 @@
 # TODOs:
 # - `gwt` currently doesn't scan for detached heads; calling `gwt @abc123`
 #   multiple times results in errors instead of reuse.
-# - `gwt @name` could optionally accept a `[dir-name]`.
 # - `gwrm` could take multiple branches
 
 
@@ -211,9 +210,6 @@ zstyle ':completion:*:*:gwt:*' group-order worktrees local-branches remote-branc
 zstyle ':completion:*:*:gwt:*' list-grouped false
 zstyle ':completion:*:*:gwt:*:descriptions' format '----- %d'
 compdef _gwt_completion gwt
-
-unfunction gwrmb gwrf 2>/dev/null || true
-compdef -d gwrmb gwrf 2>/dev/null || true
 
 
 # [g]it [w]orktree [r]e[m]ove
